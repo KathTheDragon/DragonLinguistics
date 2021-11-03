@@ -1,0 +1,49 @@
+{%extends 'dragonlinguistics/words/base.html'%}
+
+{%block title%}{{lang.name}} Dictionary{%endblock%}
+
+{%block stylesheets%}
+<style>
+    #lemmas {
+        list-style-type: none;
+        column-count: 5;
+        column-width: 6.875em;
+        column-gap: 1.875em;
+        column-rule: 1px solid #eaecef;
+    }
+</style>
+{%endblock%}
+
+{%block breadcrumbs%}{{block.super}}
+<span><a href="{{lang.get_absolute_url}}" class="lang {{lang.code}}">{{lang.name}}</a></span>
+<span>Dictionary</span>
+{%endblock%}
+
+{%block content%}
+{%if user.is_authenticated%}
+<div class="page-controls">
+    <a class="button" href="{%url 'words:new' lang.code%}">Add word</a>
+    <a class="button" href="{%url 'words:search' lang.code%}">Search words</a>
+</div>
+{%endif%}
+
+<form class="search-form" method="get">
+    <h4>Quick-search:</h4>
+    {{searchform.lemma.label_tag}} {{searchform.lemma}}
+    <input type="submit" value="Search" />
+</form>
+
+{%if page.has_previous%}
+<p><a href="?{%if query%}{{query}}&{%endif%}page={{page.previous_page_number}}">Previous Page</a></p>
+{%endif%}
+<ul id="lemmas">
+{%for word in page.object_list%}
+    <li><a href="{{word.get_absolute_url}}"><span class="word {{lang.code}}">{{word}}</span> &quot;{{word.firstgloss}}&quot;</a></li>
+{%endfor%}
+</ul>
+{%if page.has_next%}
+<p><a href="?{%if query%}{{query}}&{%endif%}page={{page.next_page_number}}">Next Page</a></p>
+{%endif%}
+
+<!-- <hr class="divider" /> -->
+{%endblock%}

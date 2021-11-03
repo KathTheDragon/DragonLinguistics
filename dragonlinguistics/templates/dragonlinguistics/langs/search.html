@@ -1,0 +1,10 @@
+{%extends 'dragonlinguistics/langs/base.html'%}
+
+{%block title%}Search{%endblock%}
+
+{%block breadcrumbs%}{{block.super}}
+<span><a href="{%url 'langs:list'%}">Languages</a></span>
+<span>Search</span>
+{%endblock%}
+
+{%block content%}{%include 'dragonlinguistics/search.html' with form=searchform%}{%endblock%}

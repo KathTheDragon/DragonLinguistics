@@ -1,0 +1,36 @@
+{%extends 'dragonlinguistics/words/base.html'%}
+
+{%block title%}Edit {{word.lemma}}{%endblock%}
+
+{%block breadcrumbs%}{{block.super}}
+<span><a href="{{lang.get_absolute_url}}" class="lang {{lang.code}}">{{lang.name}}</a></span>
+<span><a href="{%url 'words:list' lang.code%}">Dictionary</a></span>
+<span><a href="{{word.get_absolute_url}}" class="word {{lang.code}}">{{word}}</a></span>
+<span>Edit</span>
+{%endblock%}
+
+{%block content%}
+<h1>Editing <span class="word {{lang.code}}">{{word}}</span></h1>
+
+<form method="post">
+    {%csrf_token%}
+    <input type="submit" value="Save changes" />
+    {{wordform.non_field_errors}}
+    <dl>
+        {%include 'dragonlinguistics/form-fields.html' with form=wordform%}
+
+        {{senseformset.management_form}}
+        {%for senseform in senseformset%}
+        <dt><h2>Sense {{forloop.counter}}</h2></dt>
+        <dd>
+            {{senseform.non_field_errors}}
+            <dl>
+                {%include 'dragonlinguistics/form-fields.html' with form=senseform%}
+            </dl>
+        </dd>
+        {%endfor%}
+    </dl>
+    <input type="submit" value="Save changes" />
+</form><br /><br />
+<a href="{{word.get_absolute_url}}">Cancel</a>
+{%endblock%}

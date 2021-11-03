@@ -1,0 +1,34 @@
+{%load static%}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{%block title%}{%endblock%}</title>
+    <link rel="stylesheet" href="{%static 'styles/main.css'%}" type="text/css" />
+    {%block stylesheets%}{%endblock%}
+    {%block javascripts%}{%endblock%}
+</head>
+
+<body>
+    <div id="page">
+        <header id="page-header">
+            <h1><a href="{%url 'home'%}">Dragon Linguistics</a></h1>
+            <nav>
+                {%block navbar%}{%include 'navbar.html'%}{%endblock%}
+            </nav>
+        </header>
+
+        <div id="breadcrumbs">{%block breadcrumbs%}{%endblock%}</div>
+
+        <section class="body-section">
+            {%block content%}{%endblock%}
+        </section>
+
+        <footer id="page-footer">
+            <a href="#top" class="low-opacity">Back to top</a>
+        </footer>
+    </div>
+</body>
+</html>

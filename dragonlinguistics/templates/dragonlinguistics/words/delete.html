@@ -1,0 +1,22 @@
+{%extends 'dragonlinguistics/words/base.html'%}
+
+{%block title%}Delete {{word.lemma}}{%endblock%}
+
+{%block breadcrumbs%}{{block.super}}
+<span><a href="{{lang.get_absolute_url}}" class="lang {{lang.code}}">{{lang.name}}</a></span>
+<span><a href="{%url 'words:list' lang.code%}">Dictionary</a></span>
+<span><a href="{{word.get_absolute_url}}" class="word {{lang.code}}">{{word}}</a></span>
+<span>Delete</span>
+{%endblock%}
+
+{%block content%}
+<h1 class="word {{lang.code}}">{{word}}</h1>
+
+Are you <i>sure</i> you want to delete this word?
+
+<form method='post'>
+{%csrf_token%}
+    <input type='submit' value='Delete'/>
+</form><br/><br/>
+<a href="{{word.get_absolute_url}}">Cancel</a>
+{%endblock%}

@@ -1,0 +1,25 @@
+{%extends 'dragonlinguistics/langs/base.html'%}
+
+{%block title%}View {{lang.name}}{%endblock%}
+
+{%block breadcrumbs%}{{block.super}}
+<span><a href="{%url 'langs:list'%}">Languages</a></span>
+<span>{{lang.name}}</span>
+{%endblock%}
+
+{%block content%}
+<h1 class="lang {{lang.code}}">{{lang.name}}</h1>
+
+<p>{{lang.blurb}}</p>
+
+<h2>Options</h2>
+<ul>
+    <li><a href="{%url 'words:list' lang.code%}">View dictionary</a></li>
+    {%if lang.hasgrammar%}<li><a href="{%url 'langs:grammar' lang.code%}">View grammar</a></li>{%endif%}
+    {%if user.is_authenticated%}
+    <li><a href="{%url 'words:new' lang.code%}">Add a new word</a></li>
+    <li><a href="{%url 'langs:edit' lang.code%}">Edit {{lang.name}}</a></li>
+    <li><a href="{%url 'langs:delete' lang.code%}">Delete {{lang.name}}</a></li>
+    {%endif%}
+</ul>
+{%endblock%}
