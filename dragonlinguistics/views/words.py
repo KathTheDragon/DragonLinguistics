@@ -47,7 +47,7 @@ class WordMixin:
         except models.Word.DoesNotExist:
             if request.method == 'GET':
                 return base.redirect_params(
-                    'words:dictionary',
+                    'langs:words:list',
                     kwargs={'code': lang.code},
                     params={'lemma': lemma}
                 )
@@ -78,7 +78,7 @@ class List(LangMixin, base.SearchMixin, TemplateView):
 
 class Search(base.Search):
     template_name = 'dragonlinguistics/words/search.html'
-    target_url = 'words:dictionary'
+    target_url = 'langs:words:list'
     form = forms.Search
 
 
@@ -151,4 +151,4 @@ class Delete(LoginRequiredMixin, LangMixin, WordMixin, TemplateView):
         lemma = word.lemma
         word.delete()
         correcthomonyms(lang, lemma)
-        return redirect('words:dictionary', code=lang.code)
+        return redirect('langs:words:list', code=lang.code)
