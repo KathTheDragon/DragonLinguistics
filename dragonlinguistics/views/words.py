@@ -76,7 +76,7 @@ class List(LangMixin, base.SearchMixin, TemplateView):
         )
 
 
-class Search(base.Search):
+class Search(LangMixin, base.Search):
     template_name = 'dragonlinguistics/words/search.html'
     target_url = 'langs:words:list'
     form = forms.Search
