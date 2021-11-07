@@ -134,7 +134,7 @@ USE_TZ = True
 
 STATIC_URL = env('STATIC_URL')
 
-STATIC_ROOT = str(BASE_DIR / 'dragonlinguistics' / 'static')
+STATIC_ROOT = str(BASE_DIR / 'staticfiles')
 
 
 # Media root for uploaded files
