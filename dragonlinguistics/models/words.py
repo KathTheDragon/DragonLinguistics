@@ -44,12 +44,12 @@ class Word(models.Model):
         from django.urls import reverse
         if self.homonym:
             return reverse(
-                f'words:{action}-homonym',
+                f'langs:words:{action}-homonym',
                 kwargs={'code': self.lang.code, 'lemma': self.lemma, 'homonym': self.homonym}
             )
         else:
             return reverse(
-                f'words:{action}',
+                f'langs:words:{action}',
                 kwargs={'code': self.lang.code, 'lemma': self.lemma}
             )
 
