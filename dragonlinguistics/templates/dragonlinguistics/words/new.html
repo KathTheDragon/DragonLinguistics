@@ -4,7 +4,7 @@
 
 {%block breadcrumbs%}{{block.super}}
 <span><a href="{{lang.get_absolute_url}}" class="lang {{lang.code}}">{{lang.name}}</a></span>
-<span><a href="{%url 'words:list' lang.code%}">Dictionary</a></span>
+<span><a href="{%url 'langs:words:list' lang.code%}">Dictionary</a></span>
 <span>Add Word</span>
 {%endblock%}
 
@@ -32,5 +32,5 @@
     </dl>
     <input type="submit" value="Add word" />
 </form><br /><br />
-<a href="{%url 'words:list' lang.code%}">Cancel</a>
+<a href="{%url 'langs:words:list' lang.code%}">Cancel</a>
 {%endblock%}
