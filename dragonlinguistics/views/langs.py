@@ -4,8 +4,7 @@ from django.shortcuts import redirect
 from django.views.generic import TemplateView
 
 from . import base
-from .. import models
-from ..forms import langs as forms
+from .. import forms, models
 
 # Views
 class LangMixin:
@@ -23,7 +22,7 @@ class LangMixin:
 
 class List(base.SearchMixin, TemplateView):
     template_name = 'dragonlinguistics/langs/list.html'
-    form = forms.Search
+    form = forms.LanguageSearch
 
     def get_object_list(self, query):
         return models.Language.objects.filter(
@@ -37,7 +36,7 @@ class List(base.SearchMixin, TemplateView):
 class Search(base.Search):
     template_name = 'dragonlinguistics/langs/search.html'
     target_url = 'langs:list'
-    form = forms.Search
+    form = forms.LanguageSearch
 
 
 class New(LoginRequiredMixin, TemplateView):

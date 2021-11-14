@@ -5,8 +5,7 @@ from django.views.generic import TemplateView
 
 from . import base
 from .langs import LangMixin
-from .. import models
-from ..forms import words as forms
+from .. import forms, models
 
 # Helper functions
 def correcthomonyms(lang, lemma):
@@ -59,7 +58,7 @@ class WordMixin:
 
 class List(LangMixin, base.SearchMixin, TemplateView):
     template_name = 'dragonlinguistics/words/list.html'
-    form = forms.Search
+    form = forms.WordSearch
 
     def get_object_list(self, query, **kwargs):
         return models.Word.objects.filter(
@@ -79,7 +78,7 @@ class List(LangMixin, base.SearchMixin, TemplateView):
 class Search(LangMixin, base.Search):
     template_name = 'dragonlinguistics/words/search.html'
     target_url = 'langs:words:list'
-    form = forms.Search
+    form = forms.WordSearch
 
 
 class New(LoginRequiredMixin, LangMixin, TemplateView):
