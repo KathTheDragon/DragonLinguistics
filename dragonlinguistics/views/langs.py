@@ -4,8 +4,8 @@ from django.shortcuts import redirect
 from django.views.generic import TemplateView
 
 from . import base
+from .. import models
 from ..forms import langs as forms
-from ..models import langs as models
 
 # Views
 class LangMixin:

@@ -3,10 +3,10 @@ from django.http import Http404
 from django.shortcuts import redirect
 from django.views.generic import TemplateView
 
-from . import base, langs
+from . import base
 from .langs import LangMixin
+from .. import models
 from ..forms import words as forms
-from ..models import words as models
 
 # Helper functions
 def correcthomonyms(lang, lemma):

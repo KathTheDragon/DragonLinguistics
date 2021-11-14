@@ -7,7 +7,7 @@ from django.forms import (
     inlineformset_factory
 )
 
-from ..models import words as models
+from .. import models
 
 class Word(ModelForm):
     class Meta:

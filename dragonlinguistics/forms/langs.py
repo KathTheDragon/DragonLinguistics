@@ -1,6 +1,6 @@
 from django.forms import CharField, Textarea, Form, ModelForm
 
-from ..models import langs as models
+from .. import models
 
 class Language(ModelForm):
     code = CharField(max_length=5, min_length=3)

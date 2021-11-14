@@ -1,7 +1,3 @@
+from .langs import Language
 from .user import User
-
-
-__all__ = [
-    # user
-    'User',
-]
+from .words import Word, Sense
