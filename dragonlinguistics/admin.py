@@ -14,7 +14,6 @@ class ArticleAdmin(admin.ModelAdmin):
     save_on_top = True
 
 
-admin.site.register(models.Tag)
 admin.site.register(models.Language)
 admin.site.register(models.User, UserAdmin)
 

@@ -19,7 +19,7 @@
 {%endif%}
 
 <div id="article-tags">
-    {%for tag in article.tags.all%}<span>#{{tag.text}}</span>{%endfor%}
+    {%for tag in article.tag_list%}<span>#{{tag}}</span>{%endfor%}
 </div>
 <article>
     {# As of right now, this is raw HTML #}
