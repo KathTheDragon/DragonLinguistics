@@ -75,4 +75,4 @@ class Delete(LoginRequiredMixin, LangMixin, GrammarMixin, TemplateView):
 
     def post(self, request, lang, article):
         article.delete()
-        return redirect('langs:grammar:list')
+        return redirect('langs:grammar:list', code=lang.code)
