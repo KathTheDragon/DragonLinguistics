@@ -38,4 +38,7 @@ class Tag(models.Model):
 
 
 # Create default folders
-Folder(parent=None, path='langs').save()
+try:
+    Folder.objects.get(path='langs')
+except Folder.DoesNotExist:
+    Folder(parent=None, path='langs').save()
