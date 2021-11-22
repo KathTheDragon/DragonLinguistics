@@ -12,8 +12,8 @@ class Folder(models.Model):
 class Article(models.Model):
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
     slug = models.SlugField()
-    title = models.CharField(length=255)
-    description = models.CharField(length=255)
+    title = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
     content = models.TextField()
     tags = models.ManyToManyField('Tag')
     created = models.DateTimeField(auto_now_add=True)
