@@ -5,6 +5,16 @@ from django.forms import ModelForm, Textarea
 from . import models
 
 
+admin.site.register(models.Folder)
+
+
+@admin.register(models.Article)
+class ArticleAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'folder')
+    save_on_top = True
+
+
+admin.site.register(models.Tag)
 admin.site.register(models.Language)
 admin.site.register(models.User, UserAdmin)
 
