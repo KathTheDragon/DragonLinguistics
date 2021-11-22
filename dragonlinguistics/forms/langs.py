@@ -6,7 +6,7 @@ class Language(ModelForm):
     code = CharField(max_length=5, min_length=3)
     class Meta:
         model = models.Language
-        fields = ['name', 'code', 'hasgrammar', 'blurb']
+        fields = ['name', 'code', 'blurb']
         widgets = {'blurb': Textarea()}
 
 
