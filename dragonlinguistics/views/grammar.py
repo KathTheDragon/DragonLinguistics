@@ -59,7 +59,7 @@ class Edit(LoginRequiredMixin, LangMixin, GrammarMixin, TemplateView):
         return super().get_context_data(self, **kwargs)
 
     def post(self, request, lang, article):
-        articleform = forms.Article(request.POST, instance=article):
+        articleform = forms.Article(request.POST, instance=article)
         if articleform.is_valid():
             article = articleform.save(commit=False)
             article.slug = f'{lang.code.lower()}-grammar-{slugify(article.title)}'
