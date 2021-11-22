@@ -8,6 +8,9 @@ class Folder(models.Model):
     def name(self):
         return self.path.rsplit('/', maxsplit=1)[-1]
 
+    def __str__(self):
+        return self.path
+
 
 class Article(models.Model):
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
@@ -19,6 +22,9 @@ class Article(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.title
+
     def get_absolute_url(self):
         from django.urls import reverse
         return reverse('articles:view', kwargs={'slug': self.slug})
@@ -26,6 +32,9 @@ class Article(models.Model):
 
 class Tag(models.Model):
     text = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.text
 
 
 # Create default folders
