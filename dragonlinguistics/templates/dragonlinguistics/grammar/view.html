@@ -11,7 +11,7 @@
 {%block content%}
 <h1 class="article-title">{{article.title}}</h1>
 
-<h3 class="article-description">{{article.descrption}}</h3>
+<h3 class="article-description">{{article.description}}</h3>
 {%if article.created == article.edited%}
 <p class="article-written">This article was written on {{article.created|date:'j M Y, H:i'}}.</p>
 {%else%}
