@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import redirect
+from django.utils.text import slugify
 from django.views.generic import TemplateView
 
 from . import base
@@ -35,7 +36,6 @@ class New(LoginRequiredMixin, LangMixin, TemplateView):
         return super().get_context_data(**kwargs)
 
     def post(self, request, lang):
-        from django.utils.text import slugify
         articleform = forms.SpecialArticle(request.POST)
         if articleform.is_valid():
             article = articleform.save(commit=False)
@@ -55,13 +55,14 @@ class Edit(LoginRequiredMixin, LangMixin, GrammarMixin, TemplateView):
     template_name = 'dragonlinguistics/grammar/edit.html'
 
     def get_context_data(self, **kwargs):
-        kwargs.setdefault('articleform', forms.Article(instance=kwargs.get('article')))
+        kwargs.setdefault('articleform', forms.SpecialArticle(instance=kwargs.get('article')))
         return super().get_context_data(**kwargs)
 
     def post(self, request, lang, article):
-        articleform = forms.Article(request.POST, instance=article)
+        articleform = forms.SpecialArticle(request.POST, instance=article)
         if articleform.is_valid():
             article = articleform.save(commit=False)
+            article.folder = models.Folder.objects.get(path=f'langs/{lang.code}/grammar')
             article.slug = f'{lang.code.lower()}-grammar-{slugify(article.title)}'
             article.save()
             return redirect('langs:grammar:view', code=lang.code, slug=slugify(article.title))
