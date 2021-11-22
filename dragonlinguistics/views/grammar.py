@@ -11,7 +11,7 @@ from .. import forms, models
 class GrammarMixin:
     def dispatch(self, request, lang, slug, **kwargs):
         try:
-            article = models.Article.get(slug=f'{lang.code.lower()}-grammar-{slug}')
+            article = models.Article.objects.get(slug=f'{lang.code.lower()}-grammar-{slug}')
         except models.Article.DoesNotExist:
             return redirect('langs:grammar:list', code=lang.code)
         else:
@@ -56,7 +56,7 @@ class Edit(LoginRequiredMixin, LangMixin, GrammarMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         kwargs.setdefault('articleform', forms.Article(instance=kwargs.get('article')))
-        return super().get_context_data(self, **kwargs)
+        return super().get_context_data(**kwargs)
 
     def post(self, request, lang, article):
         articleform = forms.Article(request.POST, instance=article)
