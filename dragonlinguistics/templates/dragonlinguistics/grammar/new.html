@@ -1,0 +1,23 @@
+{%extends 'dragonlinguistics/grammar/base.html'%}
+
+{%block title%}Add grammar article{%endblock%}
+
+{%block breadcrumbs%}{{block.super}}
+<span><a href="{{lang.get_absolute_url}}" class="lang {{lang.code}}">{{lang.name}}</a></span>
+<span><a href="{%url 'langs:grammar:list' lang.code%}">Grammar</a></span>
+<span>Add grammar article</span>
+{%endblock%}
+
+{%block content%}
+<h1>Add Grammar Article</h1>
+
+<form method="post">
+    {%csrf_token%}
+    {{articleform.non_field_errors}}
+    <dl>
+        {%include 'dragonlinguistics/form-fields.html' with form=articleform%}
+    </dl>
+    <input type="submit" value="Add article" />
+</form><br /><br />
+<a href="{%url 'langs:grammar:list'%}">Cancel</a>
+{%endblock%}

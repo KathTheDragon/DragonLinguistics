@@ -1,0 +1,33 @@
+{%extends 'dragonlinguistics/grammar/base.html'%}
+
+{%block title%}{{article.title}}{%endblock%}
+
+{%block breadcrumbs%}{{block.super}}
+<span><a href="{{lang.get_absolute_url}}" class="lang {{lang.code}}">{{lang.name}}</a></span>
+<span><a href="{%url 'langs:grammar:list' lang.code%}">Grammar</a></span>
+<span>{{article.title}}</span>
+{%endblock%}
+
+{%block content%}
+<h1 class="article-title">{{article.title}}</h1>
+
+<h3 class="article-description">{{article.descrption}}</h3>
+{%if article.created == article.edited%}
+<p class="article-written">This article was written on {{article.created|date:'j M Y, H:i'}}.</p>
+{%else%}
+<p class="article-edited">This article was last updated on {{article.edited|date:'j M Y, H:i'}}.</p>
+{%endif%}
+
+<div id="article-tags">
+    {%for tag in article.tags.all%}<span>#{{tag.text}}</span>{%endfor%}
+</div>
+<article>
+    {# As of right now, this is raw HTML #}
+    {{article.content|safe}}
+</article>
+
+{%if user.is_authenticated%}
+<a href="{%url 'langs:grammar:edit' lang.code article.title|slugify%}">Edit</a><br />
+<a href="{%url 'langs:grammar:delete' lang.code article.title|slugify%}">Delete</a>
+{%endif%}
+{%endblock%}

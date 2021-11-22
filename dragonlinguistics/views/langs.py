@@ -50,6 +50,12 @@ class New(LoginRequiredMixin, TemplateView):
         langform = forms.Language(request.POST)
         if langform.is_valid():
             lang = langform.save()
+            langfolder = models.Folder(
+                parent=models.Folder.objects.get(path='langs'),
+                path=f'langs/{lang.code}'
+            )
+            langfolder.save()
+            models.Folder(parent=langfolder, path=f'langs/{lang.code}/grammar').save()
             return redirect(lang.get_absolute_url())
         else:
             return self.get(request, langform=langform)
@@ -67,9 +73,13 @@ class Edit(LoginRequiredMixin, LangMixin, TemplateView):
         return super().get_context_data(**kwargs)
 
     def post(self, request, lang):
+        oldcode = lang.code
         langform = forms.Language(request.POST, instance=lang)
         if langform.is_valid():
             lang = langform.save()
+            for folder in models.Folder.objects.filter(path__startswith=f'langs/{oldcode}'):
+                folder.path.replace(f'langs/{oldcode}', f'langs/{lang.code}')
+                folder.save()
             return redirect(lang.get_absolute_url())
         else:
             return self.get(request, lang=lang, langform=langform)
@@ -80,4 +90,5 @@ class Delete(LoginRequiredMixin, LangMixin, TemplateView):
 
     def post(self, request, lang):
         lang.delete()
+        models.Folder.objects.get(path=f'langs/{lang.code}').delete()
         return redirect('langs:list')

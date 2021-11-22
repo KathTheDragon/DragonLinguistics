@@ -38,6 +38,25 @@ def redirect_params(url, kwargs=None, params=None):
 
 
 ## Views
+class PageMixin(ContextMixin):
+    page_length = 100
+
+    def get_object_list(self, query, **kwargs):
+        return []
+
+    def get_context_data(self, **kwargs):
+        from django.core.paginator import Paginator, InvalidPage
+        query = self.request.GET.copy()
+        objectlist = self.get_object_list(query, **kwargs)
+        pages = Paginator(objectlist, self.page_length)
+        try:
+            page = pages.page(query.get('page', 1))
+        except InvalidPage:
+            raise Http404
+        kwargs.setdefault('page', page)
+        return super().get_context_data(**kwargs)
+
+
 class SearchMixin(ContextMixin):
     page_length = 100
     form = None

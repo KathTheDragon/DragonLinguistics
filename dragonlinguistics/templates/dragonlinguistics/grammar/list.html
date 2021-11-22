@@ -1,0 +1,30 @@
+{%extends 'dragonlinguistics/grammar/base.html'%}
+
+{%block title%}{{lang.name}} grammar{%endblock%}
+
+{%block breadcrumbs%}{{block.super}}
+<span><a href="{{lang.get_absolute_url}}" class="lang {{lang.code}}">{{lang.name}}</a></span>
+<span>Grammar</span>
+{%endblock%}
+
+{%block content%}
+{%if user.is_authenticated%}
+<div class="page-controls">
+    <a class="button" href="{%url 'langs:grammar:new' lang.code%}">Add pages</a>
+</div>
+{%endif%}
+
+{%if page.has_previous%}
+<p><a href="?page={{page.previous_page_number}}">Previous Page</a></p>
+{%endif%}
+<ul>
+{%for article in page.object_list%}
+    <li><a href="{%url 'langs:grammar:view' lang.code article.title|slugify%}" class="article">{{article.title}}</a></li>
+{%empty%}
+    <li>There are no grammar articles.</li>
+{%endfor%}
+</ul>
+{%if page.has_next%}
+<p><a href="?page={{page.next_page_number}}">Next Page</a></p>
+{%endif%}
+{%endblock%}
