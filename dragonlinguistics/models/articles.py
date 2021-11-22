@@ -1,7 +1,7 @@
 from django.db import models
 
 class Folder(models.Model):
-    parent = models.ForeignKey(Folder, on_delete=models.CASCADE, null=True)
+    parent = models.ForeignKey('Folder', on_delete=models.CASCADE, null=True)
     path = models.TextField()
 
     @property
