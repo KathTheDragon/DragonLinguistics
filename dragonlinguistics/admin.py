@@ -2,19 +2,17 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.forms import ModelForm, Textarea
 
-from .models.langs import Language
-from .models.user import User
-from .models.words import Word, Sense
+from . import models
 
 
-admin.site.register(Language)
-admin.site.register(User, UserAdmin)
+admin.site.register(models.Language)
+admin.site.register(models.User, UserAdmin)
 
 textarea_attrs = {'rows':5, 'cols':40}
 
 class SenseForm(ModelForm):
     class Meta:
-        model = Sense
+        model = models.Sense
         fields = '__all__'
         widgets = {
             'defin': Textarea(attrs=textarea_attrs),
@@ -23,21 +21,21 @@ class SenseForm(ModelForm):
 
 
 class SenseInline(admin.StackedInline):
-    model = Sense
+    model = models.Sense
     extra = 1
     form = SenseForm
 
 
 class WordForm(ModelForm):
     class Meta:
-        model = Word
+        model = models.Word
         fields = '__all__'
         widgets = {
             'notes': Textarea(attrs=textarea_attrs),
         }
 
 
-@admin.register(Word)
+@admin.register(models.Word)
 class WordAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'firstgloss', 'lang')
     list_filter = ('lang__name',)
