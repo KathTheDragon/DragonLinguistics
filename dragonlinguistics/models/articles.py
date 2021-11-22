@@ -26,3 +26,7 @@ class Article(models.Model):
 
 class Tag(models.Model):
     text = models.CharField(max_length=50)
+
+
+# Create default folders
+Folder(parent=None, path='langs').save()
