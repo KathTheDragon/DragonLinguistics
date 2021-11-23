@@ -56,13 +56,14 @@ class WordMixin:
             return super().dispatch(request, lang=lang, word=word, **kwargs)
 
 
-class List(LangMixin, base.SearchMixin, TemplateView):
+class List(LangMixin, base.PageMixin, base.SearchMixin, TemplateView):
     template_name = 'dragonlinguistics/words/list.html'
     form = forms.WordSearch
 
-    def get_object_list(self, query, **kwargs):
+    def get_object_list(self, lang):
+        query = self.request.GET
         return models.Word.objects.filter(
-            lang=kwargs['lang'],
+            lang=lang,
             # word-level search terms
             **base.fuzzysearch(lemma=query.get('lemma', '')),
             **base.strictsearch(type=query.get('type', ''))

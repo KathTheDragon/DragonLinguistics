@@ -20,11 +20,12 @@ class LangMixin:
             return super().dispatch(request, lang=lang, **kwargs)
 
 
-class List(base.SearchMixin, TemplateView):
+class List(base.PageMixin, base.SearchMixin, TemplateView):
     template_name = 'dragonlinguistics/langs/list.html'
     form = forms.LanguageSearch
 
-    def get_object_list(self, query):
+    def get_object_list(self):
+        query = self.request.GET
         return models.Language.objects.filter(
             **base.fuzzysearch(
                 name=query.get('name', ''),
