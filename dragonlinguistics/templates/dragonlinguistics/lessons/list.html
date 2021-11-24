@@ -1,0 +1,26 @@
+{%extends './base.html'%}
+
+{%block title%}{{lang.name}} lessons{%endblock%}
+
+{%block breadcrumbs%}
+{%include 'dragonlinguistics/langs/breadcrumbs.html'%}
+<span>Lessons</span>
+{%endblock%}
+
+{%block content%}
+{%if user.is_authenticated%}
+<div class="page-controls">
+    <a class="button" href="{%url 'langs:lessons:new' lang.code%}">Add pages</a>
+</div>
+{%endif%}
+
+{%include 'dragonlinguistics/prevpage.html'}
+<ul>
+{%for article in page.object_list%}
+    <li><a href="{%url 'langs:lessons:view' lang.code article.title|slugify%}" class="article">{{article.title}}</a></li>
+{%empty%}
+    <li>There are no lessons.</li>
+{%endfor%}
+</ul>
+{%include 'dragonlinguistics/nextpage.html'}
+{%endblock%}

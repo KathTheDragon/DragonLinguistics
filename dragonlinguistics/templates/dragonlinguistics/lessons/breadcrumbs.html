@@ -1,0 +1,3 @@
+{%include 'dragonlinguistics/langs/breadcrumbs.html'%}
+<span><a href="{%url 'langs:lessons:list' lang.code%}">Lessons</a></span>
+{%if article%}<span><a href="{%url 'langs:lessons:view' lang.code article.title|slugify%}">{{article.title}}</a></span>{%endif%}

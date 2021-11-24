@@ -1,0 +1,32 @@
+{%extends './base.html'%}
+
+{%block title%}{{article.title}}{%endblock%}
+
+{%block breadcrumbs%}
+{%include './breadcrumbs.html' with article=None%}
+<span>{{article.title}}</span>
+{%endblock%}
+
+{%block content%}
+<h1 class="article-title">{{article.title}}</h1>
+
+<h3 class="article-description">{{article.description}}</h3>
+{%if article.created == article.edited%}
+<p class="article-written">This text was written on {{article.created|date:'j M Y, H:i'}}.</p>
+{%else%}
+<p class="article-edited">This text was last updated on {{article.edited|date:'j M Y, H:i'}}.</p>
+{%endif%}
+
+<div id="article-tags">
+    {%for tag in article.tag_list%}<span>#{{tag}}</span>{%endfor%}
+</div>
+<article>
+    {# As of right now, this is raw HTML #}
+    {{article.content|safe}}
+</article>
+
+{%if user.is_authenticated%}
+<a href="{%url 'langs:texts:edit' lang.code article.title|slugify%}">Edit</a><br />
+<a href="{%url 'langs:texts:delete' lang.code article.title|slugify%}">Delete</a>
+{%endif%}
+{%endblock%}

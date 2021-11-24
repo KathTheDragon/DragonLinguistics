@@ -52,6 +52,8 @@ class New(LoginRequiredMixin, base.NewEdit):
         )
         langfolder.save()
         models.Folder(parent=langfolder, path=f'langs/{lang.code}/grammar').save()
+        models.Folder(parent=langfolder, path=f'langs/{lang.code}/lessons').save()
+        models.Folder(parent=langfolder, path=f'langs/{lang.code}/texts').save()
         return redirect(lang.get_absolute_url())
 
 

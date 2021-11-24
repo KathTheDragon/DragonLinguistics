@@ -16,6 +16,8 @@
 <ul>
     <li><a href="{%url 'langs:words:list' lang.code%}">View dictionary</a></li>
     <li><a href="{%url 'langs:grammar:list' lang.code%}">View grammar</a></li>
+    <li><a href="{%url 'langs:lessons:list' lang.code%}">View lessons</a></li>
+    <li><a href="{%url 'langs:texts:list' lang.code%}">View texts</a></li>
     {%if user.is_authenticated%}
     <li><a href="{%url 'langs:words:new' lang.code%}">Add a new word</a></li>
     <li><a href="{%url 'langs:edit' lang.code%}">Edit {{lang.name}}</a></li>
