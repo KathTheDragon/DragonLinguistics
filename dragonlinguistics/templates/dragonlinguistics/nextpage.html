@@ -1,3 +1,4 @@
+{%load query%}
 {%if page.has_next%}
-<p><a href="?{%if query%}{{query}}&{%endif%}page={{page.next_page_number}}">Next Page</a></p>
+<p><a href="?{%update_query query page=page.next_page_number%}">Next Page</a></p>
 {%endif%}

@@ -47,7 +47,7 @@ class PageMixin(ContextMixin):
     def get_context_data(self, **kwargs):
         from django.core.paginator import Paginator, InvalidPage
         objectlist = self.get_object_list(**kwargs)
-        pagenum = self.request.GET.pop('page', 1)
+        pagenum = self.request.GET.get('page', 1)
         try:
             page = Paginator(objectlist, self.page_length).page(pagenum)
         except InvalidPage:
@@ -66,11 +66,15 @@ class SearchMixin(ContextMixin):
         return self.form
 
     def get_context_data(self, **kwargs):
-        query = self.request.GET.copy()
+        query = self.request.GET
         searchform = self.get_form()(query)
         kwargs.setdefault('query', query)
         kwargs.setdefault('searchform', searchform)
         return super().get_context_data(**kwargs)
+
+
+class List(PageMixin, TemplateView):
+    pass
 
 
 class Search(TemplateView):

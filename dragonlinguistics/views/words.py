@@ -56,7 +56,7 @@ class WordMixin:
             return super().dispatch(request, lang=lang, word=word, **kwargs)
 
 
-class List(LangMixin, base.PageMixin, base.SearchMixin, TemplateView):
+class List(LangMixin, base.SearchMixin, base.List):
     template_name = 'dragonlinguistics/words/list.html'
     form = forms.WordSearch
 

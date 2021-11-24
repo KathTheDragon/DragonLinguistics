@@ -20,7 +20,7 @@ class LangMixin:
             return super().dispatch(request, lang=lang, **kwargs)
 
 
-class List(base.PageMixin, base.SearchMixin, TemplateView):
+class List(base.SearchMixin, base.List):
     template_name = 'dragonlinguistics/langs/list.html'
     form = forms.LanguageSearch
 

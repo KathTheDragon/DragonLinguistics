@@ -19,7 +19,7 @@ class TextsMixin:
             return super().dispatch(request, lang=lang, article=article, **kwargs)
 
 
-class List(LangMixin, base.PageMixin, TemplateView):
+class List(LangMixin, base.List):
     template_name = 'dragonlinguistics/texts/list.html'
 
     def get_object_list(self, lang):
