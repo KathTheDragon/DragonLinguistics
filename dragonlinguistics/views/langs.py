@@ -40,50 +40,36 @@ class Search(base.Search):
     form = forms.LanguageSearch
 
 
-class New(LoginRequiredMixin, TemplateView):
+class New(LoginRequiredMixin, base.NewEdit):
     template_name = 'dragonlinguistics/langs/new.html'
+    forms = {'langform': (forms.Language, 'lang')}
 
-    def get_context_data(self, **kwargs):
-        kwargs.setdefault('langform', forms.Language())
-        return super().get_context_data(**kwargs)
-
-    def post(self, request):
-        langform = forms.Language(request.POST)
-        if langform.is_valid():
-            lang = langform.save()
-            langfolder = models.Folder(
-                parent=models.Folder.objects.get(path='langs'),
-                path=f'langs/{lang.code}'
-            )
-            langfolder.save()
-            models.Folder(parent=langfolder, path=f'langs/{lang.code}/grammar').save()
-            return redirect(lang.get_absolute_url())
-        else:
-            return self.get(request, langform=langform)
+    def handle_forms(self, request, langform):
+        lang = langform.save()
+        langfolder = models.Folder(
+            parent=models.Folder.objects.get(path='langs'),
+            path=f'langs/{lang.code}'
+        )
+        langfolder.save()
+        models.Folder(parent=langfolder, path=f'langs/{lang.code}/grammar').save()
+        return redirect(lang.get_absolute_url())
 
 
 class View(LangMixin, TemplateView):
     template_name = 'dragonlinguistics/langs/view.html'
 
 
-class Edit(LoginRequiredMixin, LangMixin, TemplateView):
+class Edit(LoginRequiredMixin, LangMixin, base.NewEdit):
     template_name = 'dragonlinguistics/langs/edit.html'
+    forms = {'langform': (forms.Language, 'lang')}
 
-    def get_context_data(self, **kwargs):
-        kwargs.setdefault('langform', forms.Language(instance=kwargs.get('lang')))
-        return super().get_context_data(**kwargs)
-
-    def post(self, request, lang):
+    def handle_forms(self, request, lang, langform):
         oldcode = lang.code
-        langform = forms.Language(request.POST, instance=lang)
-        if langform.is_valid():
-            lang = langform.save()
-            for folder in models.Folder.objects.filter(path__startswith=f'langs/{oldcode}'):
-                folder.path.replace(f'langs/{oldcode}', f'langs/{lang.code}')
-                folder.save()
-            return redirect(lang.get_absolute_url())
-        else:
-            return self.get(request, lang=lang, langform=langform)
+        lang = langform.save()
+        for folder in models.Folder.objects.filter(path__startswith=f'langs/{oldcode}'):
+            folder.path.replace(f'langs/{oldcode}', f'langs/{lang.code}')
+            folder.save()
+        return redirect(lang.get_absolute_url())
 
 
 class Delete(LoginRequiredMixin, LangMixin, TemplateView):

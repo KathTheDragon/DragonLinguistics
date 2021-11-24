@@ -102,3 +102,30 @@ class Search(TemplateView):
             )
         else:
             return super().get(request, **kwargs)
+
+
+class NewEdit(TemplateView):
+    forms = None  # dict[str, (Form, str)]
+    extra_fields = []  # list[str]
+
+    def get_context_data(self, **kwargs):
+        if self.forms is None:
+            raise ValueError
+
+        for attr, (form, instance) in self.forms.items():
+            kwargs.setdefault(attr, form(instance=kwargs.get(instance)))
+        return super().get_context_data(**kwargs)
+
+    def post(self, request, **kwargs):
+        if self.forms is None:
+            raise ValueError
+
+        forms = {
+            attr: form(request.POST, instance=kwargs.get(instance))
+            for attr, (form, instance) in self.forms.items()
+        }
+        extra_fields = {attr: request.POST.get(attr) for attr in self.extra_fields}
+        if all(form.is_valid() for form in forms.values()):
+            return self.handle_forms(request, **kwargs, **forms, **extra_fields)
+        else:
+            return self.get(request, **kwargs, **forms, **extra_fields)

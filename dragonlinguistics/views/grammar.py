@@ -28,46 +28,32 @@ class List(LangMixin, base.PageMixin, TemplateView):
         )
 
 
-class New(LoginRequiredMixin, LangMixin, TemplateView):
+class New(LoginRequiredMixin, LangMixin, base.NewEdit):
     template_name = 'dragonlinguistics/grammar/new.html'
+    forms = {'articleform': (forms.SpecialArticle, 'article')}
 
-    def get_context_data(self, **kwargs):
-        kwargs.setdefault('articleform', forms.SpecialArticle())
-        return super().get_context_data(**kwargs)
-
-    def post(self, request, lang):
-        articleform = forms.SpecialArticle(request.POST)
-        if articleform.is_valid():
-            article = articleform.save(commit=False)
-            article.folder = models.Folder.objects.get(path=f'langs/{lang.code}/grammar')
-            article.slug = f'{lang.code.lower()}-grammar-{slugify(article.title)}'
-            article.save()
-            return redirect('langs:grammar:view', code=lang.code, slug=slugify(article.title))
-        else:
-            return self.get(request, lang=lang, articleform=articleform)
+    def handle_forms(self, request, lang, articleform):
+        article = articleform.save(commit=False)
+        article.folder = models.Folder.objects.get(path=f'langs/{lang.code}/grammar')
+        article.slug = f'{lang.code.lower()}-grammar-{slugify(article.title)}'
+        article.save()
+        return redirect('langs:grammar:view', code=lang.code, slug=slugify(article.title))
 
 
 class View(LangMixin, GrammarMixin, TemplateView):
     template_name = 'dragonlinguistics/grammar/view.html'
 
 
-class Edit(LoginRequiredMixin, LangMixin, GrammarMixin, TemplateView):
+class Edit(LoginRequiredMixin, LangMixin, GrammarMixin, base.NewEdit):
     template_name = 'dragonlinguistics/grammar/edit.html'
+    forms = {'articleform': (forms.SpecialArticle, 'article')}
 
-    def get_context_data(self, **kwargs):
-        kwargs.setdefault('articleform', forms.SpecialArticle(instance=kwargs.get('article')))
-        return super().get_context_data(**kwargs)
-
-    def post(self, request, lang, article):
-        articleform = forms.SpecialArticle(request.POST, instance=article)
-        if articleform.is_valid():
-            article = articleform.save(commit=False)
-            article.folder = models.Folder.objects.get(path=f'langs/{lang.code}/grammar')
-            article.slug = f'{lang.code.lower()}-grammar-{slugify(article.title)}'
-            article.save()
-            return redirect('langs:grammar:view', code=lang.code, slug=slugify(article.title))
-        else:
-            return self.get(request, lang=lang, article=article, articleform=articleform)
+    def handle_forms(self, request, lang, article, articleform):
+        article = articleform.save(commit=False)
+        article.folder = models.Folder.objects.get(path=f'langs/{lang.code}/grammar')
+        article.slug = f'{lang.code.lower()}-grammar-{slugify(article.title)}'
+        article.save()
+        return redirect('langs:grammar:view', code=lang.code, slug=slugify(article.title))
 
 
 class Delete(LoginRequiredMixin, LangMixin, GrammarMixin, TemplateView):

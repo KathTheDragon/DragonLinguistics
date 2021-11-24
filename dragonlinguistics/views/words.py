@@ -82,66 +82,42 @@ class Search(LangMixin, base.Search):
     form = forms.WordSearch
 
 
-class New(LoginRequiredMixin, LangMixin, TemplateView):
+class New(LoginRequiredMixin, LangMixin, base.NewEdit):
     template_name = 'dragonlinguistics/words/new.html'
+    forms = {'wordform': (forms.Word, 'word'), 'senseformset': (forms.Senses, 'word')}
+    extra_fields = ['addmore']
 
-    def get_context_data(self, **kwargs):
-        kwargs.setdefault('wordform', forms.Word())
-        kwargs.setdefault('senseformset', forms.Senses())
-        return super().get_context_data(**kwargs)
-
-    def post(self, request, lang):
-        addmore = request.POST.get('addmore')
-        wordform = forms.Word(request.POST)
-        senseformset = forms.Senses(request.POST)
-        if wordform.is_valid() and senseformset.is_valid():
-            newword = wordform.save(commit=False)
-            newword.lang = lang
-            setnewhomonym(lang, newword)
-            senses = senseformset.save(commit=False)
-            for sense in senses:
-                sense.word = newword
-                sense.save()
-            if addmore is not None:
-                return self.get(request, lang=lang, addmore=addmore)
-            else:
-                return redirect(newword.get_absolute_url())
+    def handle_forms(self, request, lang, wordform, senseformset, addmore):
+        newword = wordform.save(commit=False)
+        newword.lang = lang
+        setnewhomonym(lang, newword)
+        senses = senseformset.save(commit=False)
+        for sense in senses:
+            sense.word = newword
+            sense.save()
+        if addmore is not None:
+            return self.get(request, lang=lang, addmore=addmore)
         else:
-            return self.get(
-                request,
-                lang=lang,
-                addmore=addmore,
-                wordform=wordform,
-                senseformset=senseformset
-            )
+            return redirect(newword.get_absolute_url())
 
 
 class View(LangMixin, WordMixin, TemplateView):
     template_name = 'dragonlinguistics/words/view.html'
 
 
-class Edit(LoginRequiredMixin, LangMixin, WordMixin, TemplateView):
+class Edit(LoginRequiredMixin, LangMixin, WordMixin, base.NewEdit):
     template_name = 'dragonlinguistics/words/edit.html'
+    forms = {'wordform': (forms.Word, 'word'), 'senseformset': (forms.Senses, 'word')}
 
-    def get_context_data(self, **kwargs):
-        kwargs.setdefault('wordform', forms.Word(instance=kwargs.get('word')))
-        kwargs.setdefault('senseformset', forms.Senses(instance=kwargs.get('word')))
-        return super().get_context_data(**kwargs)
-
-    def post(self, request, lang, word):
-        wordform = forms.Word(request.POST, instance=word)
-        senseformset = forms.Senses(request.POST, instance=word)
-        if wordform.is_valid() and senseformset.is_valid():
-            newword = wordform.save(commit=False)
-            senseformset.save()
-            if word.lemma == newword.lemma:
-                newword.save()
-            else:
-                setnewhomonym(lang, newword)
-                correcthomonyms(lang, word.lemma)
-            return redirect(newword.get_absolute_url())
+    def handle_forms(self, request, lang, word, wordform, senseformset):
+        newword = wordform.save(commit=False)
+        senseformset.save()
+        if word.lemma == newword.lemma:
+            newword.save()
         else:
-            return self.get(request, lang=lang, word=word, wordform=wordform, senseformset=senseformset)
+            setnewhomonym(lang, newword)
+            correcthomonyms(lang, word.lemma)
+        return redirect(newword.get_absolute_url())
 
 
 class Delete(LoginRequiredMixin, LangMixin, WordMixin, TemplateView):
