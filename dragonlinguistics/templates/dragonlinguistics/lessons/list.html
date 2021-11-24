@@ -14,7 +14,7 @@
 </div>
 {%endif%}
 
-{%include 'dragonlinguistics/prevpage.html'}
+{%include 'dragonlinguistics/prevpage.html'%}
 <ul>
 {%for article in page.object_list%}
     <li><a href="{%url 'langs:lessons:view' lang.code article.title|slugify%}" class="article">{{article.title}}</a></li>
@@ -22,5 +22,5 @@
     <li>There are no lessons.</li>
 {%endfor%}
 </ul>
-{%include 'dragonlinguistics/nextpage.html'}
+{%include 'dragonlinguistics/nextpage.html'%}
 {%endblock%}
