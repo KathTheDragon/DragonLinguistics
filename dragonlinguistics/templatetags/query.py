@@ -4,7 +4,7 @@ from django.http import QueryDict
 register = template.Library()
 
 @register.simple_tag
-def update_query(query=None, *kwargs):
+def update_query(query=None, **kwargs):
     if query is None:
         query = QueryDict(mutable=True)
     else:
