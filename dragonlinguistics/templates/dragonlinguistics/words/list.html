@@ -27,23 +27,15 @@
 </div>
 {%endif%}
 
-<form class="search-form" method="get">
-    <h4>Quick-search:</h4>
-    {{searchform.lemma.label_tag}} {{searchform.lemma}}
-    <input type="submit" value="Search" />
-</form>
+{%include 'dragonlinguistics/quick-search.html' with field=searchform.lemma%}
 
-{%if page.has_previous%}
-<p><a href="?{%if query%}{{query}}&{%endif%}page={{page.previous_page_number}}">Previous Page</a></p>
-{%endif%}
+{%include 'dragonlinguistics/prevpage.html'}
 <ul id="lemmas">
 {%for word in page.object_list%}
     <li><a href="{{word.get_absolute_url}}"><span class="word {{lang.code}}">{{word}}</span> &quot;{{word.firstgloss}}&quot;</a></li>
 {%endfor%}
 </ul>
-{%if page.has_next%}
-<p><a href="?{%if query%}{{query}}&{%endif%}page={{page.next_page_number}}">Next Page</a></p>
-{%endif%}
+{%include 'dragonlinguistics/nextpage.html'}
 
 <!-- <hr class="divider" /> -->
 {%endblock%}

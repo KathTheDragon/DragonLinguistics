@@ -14,9 +14,7 @@
 </div>
 {%endif%}
 
-{%if page.has_previous%}
-<p><a href="?page={{page.previous_page_number}}">Previous Page</a></p>
-{%endif%}
+{%include 'dragonlinguistics/prevpage.html'}
 <ul>
 {%for article in page.object_list%}
     <li><a href="{%url 'langs:grammar:view' lang.code article.title|slugify%}" class="article">{{article.title}}</a></li>
@@ -24,7 +22,5 @@
     <li>There are no grammar articles.</li>
 {%endfor%}
 </ul>
-{%if page.has_next%}
-<p><a href="?page={{page.next_page_number}}">Next Page</a></p>
-{%endif%}
+{%include 'dragonlinguistics/nextpage.html'}
 {%endblock%}

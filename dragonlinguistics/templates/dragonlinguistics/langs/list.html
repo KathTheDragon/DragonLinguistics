@@ -14,15 +14,9 @@
 </div>
 {%endif%}
 
-<form class="search-form" method="get">
-    <h4>Quick-search:</h4>
-    {{searchform.code.label_tag}} {{searchform.code}}
-    <input type="submit" value="Search" />
-</form>
+{%include 'dragonlinguistics/quick-search.html' with field=searchform.code%}
 
-{%if page.has_previous%}
-<p><a href="?{%if query%}{{query}}&{%endif%}page={{page.previous_page_number}}">Previous Page</a></p>
-{%endif%}
+{%include 'dragonlinguistics/prevpage.html'}
 <ul>
 {%for lang in page.object_list%}
     <li><a href="{{lang.get_absolute_url}}" class="lang {{lang.code}}">{{lang.name}}</a></li>
@@ -30,7 +24,5 @@
     <li>There are no languages</li>
 {%endfor%}
 </ul>
-{%if page.has_next%}
-<p><a href="?{%if query%}{{query}}&{%endif%}page={{page.next_page_number}}">Next Page</a></p>
-{%endif%}
+{%include 'dragonlinguistics/nextpage.html'}
 {%endblock%}
