@@ -2,9 +2,8 @@
 
 {%block title%}Edit {{lang.name}}{%endblock%}
 
-{%block breadcrumbs%}{{block.super}}
-<span><a href="{%url 'langs:list'%}">Languages</a></span>
-<span><a href="{{lang.get_absolute_url}}" class="lang {{lang.code}}">{{lang.name}}</a></span>
+{%block breadcrumbs%}
+{%include './breadcrumbs.html'%}
 <span>Edit</span>
 {%endblock%}
 

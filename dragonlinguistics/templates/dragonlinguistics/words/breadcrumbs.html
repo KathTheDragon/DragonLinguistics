@@ -1,0 +1,3 @@
+{%include 'dragonlinguistics/langs/breadcrumbs.html'%}
+<span><a href="{%url 'langs:words:list' lang.code%}">Dictionary</a></span>
+{%if word%}<span><a href="{{word.get_absolute_url}}" class="word {{lang.code}}">{{word}}</a></span>{%endif%}

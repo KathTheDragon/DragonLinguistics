@@ -2,9 +2,8 @@
 
 {%block title%}Add word{%endblock%}
 
-{%block breadcrumbs%}{{block.super}}
-<span><a href="{{lang.get_absolute_url}}" class="lang {{lang.code}}">{{lang.name}}</a></span>
-<span><a href="{%url 'langs:words:list' lang.code%}">Dictionary</a></span>
+{%block breadcrumbs%}
+{%include './breadcrumbs.html'%}
 <span>Add Word</span>
 {%endblock%}
 

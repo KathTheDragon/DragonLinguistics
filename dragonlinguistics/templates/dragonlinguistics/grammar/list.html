@@ -2,8 +2,8 @@
 
 {%block title%}{{lang.name}} grammar{%endblock%}
 
-{%block breadcrumbs%}{{block.super}}
-<span><a href="{{lang.get_absolute_url}}" class="lang {{lang.code}}">{{lang.name}}</a></span>
+{%block breadcrumbs%}
+{%include 'dragonlinguistics/langs/breadcrumbs.html'%}
 <span>Grammar</span>
 {%endblock%}
 

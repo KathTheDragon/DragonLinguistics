@@ -2,8 +2,8 @@
 
 {%block title%}View {{lang.name}}{%endblock%}
 
-{%block breadcrumbs%}{{block.super}}
-<span><a href="{%url 'langs:list'%}">Languages</a></span>
+{%block breadcrumbs%}
+{%include './breadcrumbs.html' with lang=None%}
 <span>{{lang.name}}</span>
 {%endblock%}
 

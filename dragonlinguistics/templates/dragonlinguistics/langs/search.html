@@ -2,8 +2,8 @@
 
 {%block title%}Search{%endblock%}
 
-{%block breadcrumbs%}{{block.super}}
-<span><a href="{%url 'langs:list'%}">Languages</a></span>
+{%block breadcrumbs%}
+{%include './breadcrumbs.html'%}
 <span>Search</span>
 {%endblock%}
 

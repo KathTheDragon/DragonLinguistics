@@ -2,9 +2,8 @@
 
 {%block title%}{{article.title}}{%endblock%}
 
-{%block breadcrumbs%}{{block.super}}
-<span><a href="{{lang.get_absolute_url}}" class="lang {{lang.code}}">{{lang.name}}</a></span>
-<span><a href="{%url 'langs:grammar:list' lang.code%}">Grammar</a></span>
+{%block breadcrumbs%}
+{%include './breadcrumbs.html' with article=None%}
 <span>{{article.title}}</span>
 {%endblock%}
 

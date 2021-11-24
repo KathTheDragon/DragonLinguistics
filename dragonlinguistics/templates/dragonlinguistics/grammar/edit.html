@@ -2,10 +2,8 @@
 
 {%block title%}Edit '{{article.title}}'{%endblock%}
 
-{%block breadcrumbs%}{{block.super}}
-<span><a href="{{lang.get_absolute_url}}" class="lang {{lang.code}}">{{lang.name}}</a></span>
-<span><a href="{%url 'langs:grammar:list' lang.code%}">Grammar</a></span>
-<span><a href="{%url 'langs:grammar:view' lang.code article.title|slugify%}">{{article.title}}</a></span>
+{%block breadcrumbs%}
+{%include './breadcrumbs.html'%}
 <span>Edit</span>
 {%endblock%}
 
