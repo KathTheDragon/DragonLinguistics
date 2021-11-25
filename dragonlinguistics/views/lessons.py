@@ -12,7 +12,7 @@ from .. import forms, models
 class LessonsMixin:
     def dispatch(self, request, lang, slug, **kwargs):
         try:
-            article = models.Article.get(slug=f'{lang.code.lower()}-lesson-{slug}')
+            article = models.Article.objects.get(slug=f'{lang.code.lower()}-lesson-{slug}')
         except models.Article.DoesNotExist:
             return redirect('langs:lessons:list', code=lang.code)
         else:
