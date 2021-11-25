@@ -2,27 +2,32 @@
 
 {%block title%}{{article.title}}{%endblock%}
 
+{%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/article.css'%}" type="text/css" />{%endblock%}
+
 {%block breadcrumbs%}
 {%include './breadcrumbs.html' with article=None%}
 <span>{{article.title}}</span>
 {%endblock%}
 
 {%block content%}
-<h1 class="article-title">{{article.title}}</h1>
-
-<h3 class="article-description">{{article.description}}</h3>
-{%if article.created == article.edited%}
-<p class="article-written">This article was written on {{article.created|date:'j M Y, H:i'}}.</p>
-{%else%}
-<p class="article-edited">This article was last updated on {{article.edited|date:'j M Y, H:i'}}.</p>
-{%endif%}
-
-<div id="article-tags">
-    {%for tag in article.tag_list%}<span>#{{tag}}</span>{%endfor%}
-</div>
 <article>
+    <ul id="article-tags">
+        {%for tag in article.tag_list%}<li>#{{tag}}</li>{%endfor%}
+    </ul>
+    <div id="article-header">
+        <div id="article-heading">
+            <h1 id="article-title">{{article.title}}</h1>
+            <h3 id="article-subtitle">{{article.description}}</h3>
+        </div>
+        <div id="article-meta">
+            <p id="article-written">Written {{article.created|date:'j M Y, H:i'}}.</p>
+            {%if article.edited != article.created%}<p id="article-edited">Last updated {{article.edited|date:'j M Y, H:i'}}.</p>{%endif%}
+        </div>
+    </div>
     {# As of right now, this is raw HTML #}
-    {{article.content|safe}}
+    <div id="article-body">
+        {{article.content|safe}}
+    </div>
 </article>
 
 {%if user.is_authenticated%}

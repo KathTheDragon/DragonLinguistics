@@ -1,0 +1,86 @@
+:root {
+    --accent-color: #577590; /* site accent colour */
+    --border-radius: 3px; /* preferred border roundedness */
+    --spacing: 1rem; /* preferred spacing */
+}
+
+#article-tags {
+    list-style-type: none;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 0 var(--spacing) 0;
+    margin: 0 0 var(--spacing) 0;
+    border-bottom: 1px solid var(--accent-color);
+}
+
+#article-tags li {
+    display: block;
+    padding: .4rem .8rem;
+    margin: 0 var(--spacing) 0 0;
+    color: #ffffff;
+    border-radius: var(--border-radius);
+    background: var(--accent-color);
+    font-size: .875rem;
+}
+
+#article-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: var(--spacing);
+    align-items: center;
+}
+
+#article-title {
+    font-weight: 500;
+    font-size: 2rem;
+    margin: 0;
+}
+
+#article-subtitle {
+    font-weight: 400;
+    color: var(--accent-color);
+    font-size: 1.25rem;
+    margin: .5rem 0 0 0;
+}
+
+#article-meta {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    row-gap: .5rem;
+}
+
+#article-meta p {
+    margin: 0;
+    color: #444444;
+    font-size: .875rem;
+}
+
+#article-body {
+    margin: var(--spacing) 0 0 0;
+}
+
+#article-body h1 {
+    margin-top: 4rem;
+}
+
+#article-body h2 {
+    margin-top: 2rem;
+}
+
+#article-body h3,
+#article-body h4,
+#article-body h5,
+#article-body h6 {
+    margin-top: 1.5rem;
+}
+
+#article-body .hint {
+    color: #777;
+    font-style: italic;
+}
+
+#article-body table.phonology td {
+    text-align: center;
+}

@@ -11,7 +11,7 @@ body {
     word-wrap: break-word;
     border-collapse: collapse;
 }
-    
+
 #page {
     margin: 0 auto 60px auto;
     width: 70%;
@@ -37,8 +37,8 @@ body {
 /*
  *     HEADER
  */
- 
- 
+
+
 #page-header {
     position: relative;
     margin: 0 40px 0 40px;
@@ -78,7 +78,7 @@ body {
     margin: 0 0.5em;
     text-decoration: none;
 }
-    
+
 #page-header nav a:hover,
 #page-header nav a.active {
     color: #4f4f4f;
@@ -98,7 +98,7 @@ body {
         position: static;
         margin: 20px 0;
     }
-        
+
     #page-header nav a {
         float: none;
         width: 100%;
@@ -174,21 +174,6 @@ h5 { font-size: 0.875rem; }
 h6 {
     font-size: 0.85rem;
     color: #6a737d;
-}
-
-article h1 {
-    margin-top: 4rem;
-}
-
-article h2 {
-    margin-top: 2rem;
-}
-
-article h3,
-article h4,
-article h5,
-article h6 {
-    margin-top: 1.5rem;
 }
 
 strong {
@@ -408,50 +393,14 @@ table td {
     vertical-align: top;
 }
 
-.paradigm {
-    float: left;
-    padding-right: 1.5em;
-}
-
-.paradigm td {
-    vertical-align: middle;
-}
-
-.phonology td {
-    text-align: center;
-}
-
-.head_num {
-    display: inline-block;
-    padding-right: 0.75rem;
-    padding-left: 0.25rem;
-    text-decoration: none;
-}
-
-.head_num:hover {
-    text-decoration: underline;
-}
-
-.back-to-top {
-    display: inline-block;
-    font-size: small;
-    padding-left: 0.875rem;
-    vertical-align: middle;
-    opacity: .3;
-}
-
-.back-to-top:hover {
-    opacity: 1;
-}
-
 sup, sub {
     vertical-align: baseline;
     position: relative;
     top: -0.4em;
 }
 
-sub { 
-    top: 0.4em; 
+sub {
+    top: 0.4em;
 }
 
 section::after {
@@ -465,75 +414,6 @@ section::after {
 .word {
     font-style: italic;
 }
-
-/* Article styling */
-
-article #toc {
-    background: #f6f8fa;
-    padding: 18px;
-    display: inline-block;
-}
-
-article .toc-title {
-    margin: 0;
-}
-
-article .toc-toggle::before {
-    content: "[";
-}
-
-article .toc-toggle::after {
-    content: "]";
-}
-
-article .toc-ul {
-    display: none;
-    font-size: small;
-    list-style-type: none;
-    margin-top: 16px;
-}
-
-article .toc-ul li.cont-one {
-    padding-left: 20px;
-}
-
-article .toc-ul li.cont-two {
-    padding-left: 40px;
-}
-
-article .toc-ul li.cont-three {
-    padding-left: 60px;
-}
-
-article .toc-ul li.cont-four {
-    padding-left: 80px;
-}
-
-article .toc-ul li.cont-five {
-    padding-left: 100px;
-}
-
-article h1 {
-    margin-top: 4rem;
-}
-
-article h2 {
-    margin-top: 2rem;
-}
-
-article h3,
-article h4,
-article h5,
-article h6 {
-    margin-top: 1.5rem;
-}
-
-
-article .hint {
-    color: #777;
-    font-style: italic;
-}
-
 
 /*
  *     INPUT AND FORM STYLES
