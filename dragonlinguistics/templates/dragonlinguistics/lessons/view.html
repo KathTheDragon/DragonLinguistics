@@ -32,6 +32,7 @@
 </article>
 
 {%if user.is_authenticated%}
+<br />
 <a href="{%url 'langs:lessons:edit' lang.code article.title|slugify%}">Edit</a><br />
 <a href="{%url 'langs:lessons:delete' lang.code article.title|slugify%}">Delete</a>
 {%endif%}
