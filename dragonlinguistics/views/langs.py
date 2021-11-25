@@ -24,7 +24,7 @@ class List(base.SearchMixin, base.List):
     template_name = 'dragonlinguistics/langs/list.html'
     form = forms.LanguageSearch
 
-    def get_object_list(self):
+    def get_object_list(self, **kwargs):
         query = self.request.GET
         return models.Language.objects.filter(
             **base.fuzzysearch(

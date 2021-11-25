@@ -22,7 +22,7 @@ class TextsMixin:
 class List(LangMixin, base.List):
     template_name = 'dragonlinguistics/texts/list.html'
 
-    def get_object_list(self, lang):
+    def get_object_list(self, lang, **kwargs):
         return models.Article.objects.filter(
             folder=models.Folder.objects.get(path=f'langs/{lang.code}/texts')
         )

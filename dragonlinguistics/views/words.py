@@ -60,7 +60,7 @@ class List(LangMixin, base.SearchMixin, base.List):
     template_name = 'dragonlinguistics/words/list.html'
     form = forms.WordSearch
 
-    def get_object_list(self, lang):
+    def get_object_list(self, lang, **kwargs):
         query = self.request.GET
         return models.Word.objects.filter(
             lang=lang,
