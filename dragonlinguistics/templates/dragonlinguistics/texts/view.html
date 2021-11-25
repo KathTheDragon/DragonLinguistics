@@ -31,6 +31,7 @@
     </div>
 </article>
 {%if user.is_authenticated%}
+<br />
 <a href="{%url 'langs:texts:edit' lang.code article.title|slugify%}">Edit</a><br />
 <a href="{%url 'langs:texts:delete' lang.code article.title|slugify%}">Delete</a>
 {%endif%}
