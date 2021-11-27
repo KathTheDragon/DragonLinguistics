@@ -84,3 +84,8 @@
 #article-body table.phonology td {
     text-align: center;
 }
+
+#article-body ul.no-bullet,
+#article-body div.no-bullet ul {
+    list-style-type: none;
+}
