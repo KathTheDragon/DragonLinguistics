@@ -1,8 +1,10 @@
 :root {
     --accent-color: #577590; /* site accent colour */
-    --border-radius: 3px; /* preferred border roundedness */
+    /* --border-radius: 3px; preferred border roundedness */
     --spacing: 1rem; /* preferred spacing */
 }
+
+h1,h2 { border: none; }
 
 #article-tags {
     list-style-type: none;
@@ -12,7 +14,7 @@
     justify-content: flex-start;
     padding: 0 0 var(--spacing) 0;
     margin: 0 0 var(--spacing) 0;
-    border-bottom: 1px solid var(--accent-color);
+    /* border-bottom: 1px solid var(--accent-color); */
 }
 
 #article-tags li {
@@ -20,16 +22,17 @@
     padding: .1rem .4rem;
     margin: 0 var(--spacing) 0 0;
     color: #ffffff;
-    border-radius: var(--border-radius);
+    /* border-radius: var(--border-radius); */
     background: var(--accent-color);
     font-size: .875rem;
 }
 
 #article-header {
+    margin-top: 0.5rem;
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr auto auto;
     column-gap: var(--spacing);
-    align-items: center;
+    align-items: start;
 }
 
 #article-title {
@@ -46,12 +49,12 @@
 }
 
 #article-meta {
-    display: grid;
-    grid-template-rows: 1fr 1fr;
-    row-gap: .5rem;
+    padding: 5px 10px;
+    border: 1px solid #e6e6e6;
+    border-radius: 4px;
 }
 
-#article-meta p {
+#article-meta div {
     margin: 0;
     color: #444444;
     font-size: .875rem;
@@ -88,4 +91,52 @@
 #article-body ul.no-bullet,
 #article-body div.no-bullet ul {
     list-style-type: none;
+}
+
+.controls {
+    margin: 1px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.btn {
+    padding: 2px 4px;
+    margin: 0;
+    font-size: .875rem;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #e6e6e6;
+    border-bottom: none;
+}
+
+.controls .btn:first-child {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.controls .btn:last-child {
+    border-bottom: 1px solid #e6e6e6;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.btn.edit {
+    color: #1e74d7;
+}
+
+.btn.edit:hover {
+    color: white;
+    background-color: #1e74d7;
+    border-color: #175ba8;
+}
+
+.btn.delete {
+    color: #dc3545;
+}
+
+.btn.delete:hover {
+    color: white;
+    background-color: #dc3545;
+    border-color: #b02a37;
 }
