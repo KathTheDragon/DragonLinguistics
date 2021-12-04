@@ -13,11 +13,6 @@
 
 {%block content%}
 <article>
-    {%if article.tag_list%}
-    <ul id="article-tags">
-        {%for tag in article.tag_list%}<li>#{{tag}}</li>{%endfor%}
-    </ul>
-    {%endif%}
     <div id="article-header">
         <div id="article-heading">
             <h1 id="article-title">{{article.title}}</h1>
@@ -35,6 +30,11 @@
                 <div id="article-edited">Last updated {{article.edited|date:'j M Y, H:i'}}.</div>
             {%endif%}
         </div>
+        {%if article.tag_list%}
+        <ul id="article-tags">
+            {%for tag in article.tag_list%}<li>#{{tag}}</li>{%endfor%}
+        </ul>
+        {%endif%}
     </div>
     <div id="article-body">
         {{article.content|markup}}
