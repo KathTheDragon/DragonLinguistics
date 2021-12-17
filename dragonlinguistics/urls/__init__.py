@@ -6,6 +6,7 @@ register(converters.StrOrID, 'id')  # I hope I can get away with only doing it h
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('articles/', include('dragonlinguistics.urls.articles')),
     path('languages/', include('dragonlinguistics.urls.langs')),
     path('', include('dragonlinguistics.urls.static')),
 ]
