@@ -46,10 +46,12 @@ class New(LoginRequiredMixin, base.NewEdit):
 
     def handle_forms(self, request, langform):
         lang = langform.save()
-        langfolder = models.Folder(
-            parent=models.Folder.objects.get(path='langs'),
-            path=f'langs/{lang.code}'
-        )
+        try:
+            langparent = models.Folder.get(path='langs')
+        except models.Folder.DoesNotExist:
+            langparent = models.Folder(parent=None, path='langs')  # make sure this folder exists
+            langparent.save()
+        langfolder = models.Folder(parent=langparent, path=f'langs/{lang.code}')
         langfolder.save()
         models.Folder(parent=langfolder, path=f'langs/{lang.code}/grammar').save()
         models.Folder(parent=langfolder, path=f'langs/{lang.code}/lessons').save()

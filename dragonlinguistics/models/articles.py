@@ -32,10 +32,3 @@ class Article(models.Model):
     def get_absolute_url(self):
         from django.urls import reverse
         return reverse('articles:view', kwargs={'slug': self.slug})
-
-
-# Create default folders
-try:
-    Folder.objects.get(path='langs')
-except Folder.DoesNotExist:
-    Folder(parent=None, path='langs').save()
