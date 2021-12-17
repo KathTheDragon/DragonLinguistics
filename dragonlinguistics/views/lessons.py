@@ -2,7 +2,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import redirect
 from django.utils.text import slugify
-from django.views.generic import TemplateView
 
 from . import base
 from .langs import LangMixin
@@ -20,7 +19,7 @@ class LessonsMixin:
 
 
 class List(LangMixin, base.List):
-    template_name = 'dragonlinguistics/lessons/list.html'
+    folder = 'lessons'
 
     def get_object_list(self, lang, **kwargs):
         return models.Article.objects.filter(
@@ -29,7 +28,7 @@ class List(LangMixin, base.List):
 
 
 class New(LoginRequiredMixin, LangMixin, base.NewEdit):
-    template_name = 'dragonlinguistics/lessons/new.html'
+    folder = 'lessons'
     forms = {'articleform': (forms.SpecialArticle, 'article')}
 
     def handle_forms(self, request, lang, articleform):
@@ -40,12 +39,12 @@ class New(LoginRequiredMixin, LangMixin, base.NewEdit):
         return redirect('langs:lessons:view', code=lang.code, slug=slugify(article.title))
 
 
-class View(LangMixin, LessonsMixin, TemplateView):
-    template_name = 'dragonlinguistics/lessons/view.html'
+class View(LangMixin, LessonsMixin, base.Base):
+    folder = 'lessons'
 
 
 class Edit(LoginRequiredMixin, LangMixin, LessonsMixin, base.NewEdit):
-    template_name = 'dragonlinguistics/lessons/edit.html'
+    folder = 'lessons'
     forms = {'articleform': (forms.SpecialArticle, 'article')}
 
     def handle_forms(self, request, lang, article, articleform):
@@ -56,8 +55,8 @@ class Edit(LoginRequiredMixin, LangMixin, LessonsMixin, base.NewEdit):
         return redirect('langs:lessons:view', code=lang.code, slug=slugify(article.title))
 
 
-class Delete(LoginRequiredMixin, LangMixin, LessonsMixin, TemplateView):
-    template_name = 'dragonlinguistics/lessons/delete.html'
+class Delete(LoginRequiredMixin, LangMixin, LessonsMixin, base.Base):
+    folder = 'lessons'
 
     def post(self, request, lang, article):
         article.delete()

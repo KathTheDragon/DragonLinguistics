@@ -1,7 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import redirect
-from django.views.generic import TemplateView
 
 from . import base
 from .. import forms, models
@@ -21,7 +20,7 @@ class LangMixin:
 
 
 class List(base.SearchMixin, base.List):
-    template_name = 'dragonlinguistics/langs/list.html'
+    folder = 'langs'
     form = forms.LanguageSearch
 
     def get_object_list(self, **kwargs):
@@ -35,13 +34,13 @@ class List(base.SearchMixin, base.List):
 
 
 class Search(base.Search):
-    template_name = 'dragonlinguistics/langs/search.html'
+    folder = 'langs'
     target_url = 'langs:list'
     form = forms.LanguageSearch
 
 
 class New(LoginRequiredMixin, base.NewEdit):
-    template_name = 'dragonlinguistics/langs/new.html'
+    folder = 'langs'
     forms = {'langform': (forms.Language, 'lang')}
 
     def handle_forms(self, request, langform):
@@ -59,12 +58,12 @@ class New(LoginRequiredMixin, base.NewEdit):
         return redirect(lang.get_absolute_url())
 
 
-class View(LangMixin, TemplateView):
-    template_name = 'dragonlinguistics/langs/view.html'
+class View(LangMixin, base.Base):
+    folder = 'langs'
 
 
 class Edit(LoginRequiredMixin, LangMixin, base.NewEdit):
-    template_name = 'dragonlinguistics/langs/edit.html'
+    folder = 'langs'
     forms = {'langform': (forms.Language, 'lang')}
 
     def handle_forms(self, request, lang, langform):
@@ -76,8 +75,8 @@ class Edit(LoginRequiredMixin, LangMixin, base.NewEdit):
         return redirect(lang.get_absolute_url())
 
 
-class Delete(LoginRequiredMixin, LangMixin, TemplateView):
-    template_name = 'dragonlinguistics/langs/delete.html'
+class Delete(LoginRequiredMixin, LangMixin, base.Base):
+    folder = 'langs'
 
     def post(self, request, lang):
         lang.delete()

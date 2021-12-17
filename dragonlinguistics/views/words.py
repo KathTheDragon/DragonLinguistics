@@ -1,7 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import redirect
-from django.views.generic import TemplateView
 
 from . import base
 from .langs import LangMixin
@@ -57,7 +56,7 @@ class WordMixin:
 
 
 class List(LangMixin, base.SearchMixin, base.List):
-    template_name = 'dragonlinguistics/words/list.html'
+    folder = 'words'
     form = forms.WordSearch
 
     def get_object_list(self, lang, **kwargs):
@@ -77,13 +76,13 @@ class List(LangMixin, base.SearchMixin, base.List):
 
 
 class Search(LangMixin, base.Search):
-    template_name = 'dragonlinguistics/words/search.html'
+    folder = 'words'
     target_url = 'langs:words:list'
     form = forms.WordSearch
 
 
 class New(LoginRequiredMixin, LangMixin, base.NewEdit):
-    template_name = 'dragonlinguistics/words/new.html'
+    folder = 'words'
     forms = {'wordform': (forms.Word, 'word'), 'senseformset': (forms.Senses, 'word')}
     extra_fields = ['addmore']
 
@@ -101,12 +100,12 @@ class New(LoginRequiredMixin, LangMixin, base.NewEdit):
             return redirect(newword.get_absolute_url())
 
 
-class View(LangMixin, WordMixin, TemplateView):
-    template_name = 'dragonlinguistics/words/view.html'
+class View(LangMixin, WordMixin, base.Base):
+    folder = 'words'
 
 
 class Edit(LoginRequiredMixin, LangMixin, WordMixin, base.NewEdit):
-    template_name = 'dragonlinguistics/words/edit.html'
+    folder = 'words'
     forms = {'wordform': (forms.Word, 'word'), 'senseformset': (forms.Senses, 'word')}
 
     def handle_forms(self, request, lang, word, wordform, senseformset):
@@ -120,8 +119,8 @@ class Edit(LoginRequiredMixin, LangMixin, WordMixin, base.NewEdit):
         return redirect(newword.get_absolute_url())
 
 
-class Delete(LoginRequiredMixin, LangMixin, WordMixin, TemplateView):
-    template_name = 'dragonlinguistics/words/delete.html'
+class Delete(LoginRequiredMixin, LangMixin, WordMixin, base.Base):
+    folder = 'words'
 
     def post(self, request, lang, word):
         lemma = word.lemma
