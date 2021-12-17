@@ -8,27 +8,25 @@ from .langs import LangMixin
 from .. import forms, models
 
 # Views
-class GrammarMixin:
-    def dispatch(self, request, lang, slug, **kwargs):
-        try:
-            article = models.Article.objects.get(slug=f'{lang.code.lower()}-grammar-{slug}')
-        except models.Article.DoesNotExist:
-            return redirect('langs:grammar:list', code=lang.code)
-        else:
-            return super().dispatch(request, lang=lang, article=article, **kwargs)
-
-
-class List(LangMixin, base.List):
+class GrammarMixin(LangMixin):
     folder = 'grammar'
 
+    def get_kwargs(self, code, slug=None, **kwargs):
+        if slug is None:
+            return super().get_kwargs(code=code, **kwargs)
+        else:
+            article = models.Article.objects.get(slug=f'{code.lower()}-grammar-{slug}')
+            return super().get_kwargs(code=code, article=article, **kwargs)
+
+
+class List(GrammarMixin, base.List):
     def get_object_list(self, lang, **kwargs):
         return models.Article.objects.filter(
             folder=models.Folder.objects.get(path=f'langs/{lang.code}/grammar')
         )
 
 
-class New(LoginRequiredMixin, LangMixin, base.NewEdit):
-    folder = 'grammar'
+class New(LoginRequiredMixin, GrammarMixin, base.NewEdit):
     forms = {'articleform': (forms.SpecialArticle, 'article')}
 
     def handle_forms(self, request, lang, articleform):
@@ -39,12 +37,11 @@ class New(LoginRequiredMixin, LangMixin, base.NewEdit):
         return redirect('langs:grammar:view', code=lang.code, slug=slugify(article.title))
 
 
-class View(LangMixin, GrammarMixin, base.Base):
-    folder = 'grammar'
+class View(GrammarMixin, base.Base):
+    pass
 
 
-class Edit(LoginRequiredMixin, LangMixin, GrammarMixin, base.NewEdit):
-    folder = 'grammar'
+class Edit(LoginRequiredMixin, GrammarMixin, base.NewEdit):
     forms = {'articleform': (forms.SpecialArticle, 'article')}
 
     def handle_forms(self, request, lang, article, articleform):
@@ -55,9 +52,7 @@ class Edit(LoginRequiredMixin, LangMixin, GrammarMixin, base.NewEdit):
         return redirect('langs:grammar:view', code=lang.code, slug=slugify(article.title))
 
 
-class Delete(LoginRequiredMixin, LangMixin, GrammarMixin, base.Base):
-    folder = 'grammar'
-
+class Delete(LoginRequiredMixin, GrammarMixin, base.Base):
     def post(self, request, lang, article):
         article.delete()
         return redirect('langs:grammar:list', code=lang.code)

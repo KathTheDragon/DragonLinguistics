@@ -7,20 +7,16 @@ from .. import forms, models
 
 # Views
 class LangMixin:
-    def dispatch(self, request, code, **kwargs):
-        try:
-            lang = models.Language.objects.get(code=code)
-        except models.Language.DoesNotExist:
-            if request.method == 'GET':
-                return redirect('langs:list')
-            else:
-                raise Http404
-        else:
-            return super().dispatch(request, lang=lang, **kwargs)
-
-
-class List(base.SearchMixin, base.List):
     folder = 'langs'
+
+    def get_kwargs(self, code=None, **kwargs):
+        if code is None:
+            return super().get_kwargs(**kwargs)
+        else:
+            return super().get_kwargs(lang=models.Language.objects.get(code=code), **kwargs)
+
+
+class List(base.SearchMixin, LangMixin, base.List):
     form = forms.LanguageSearch
 
     def get_object_list(self, **kwargs):
@@ -33,14 +29,12 @@ class List(base.SearchMixin, base.List):
         )
 
 
-class Search(base.Search):
-    folder = 'langs'
+class Search(LangMixin, base.Search):
     target_url = 'langs:list'
     form = forms.LanguageSearch
 
 
-class New(LoginRequiredMixin, base.NewEdit):
-    folder = 'langs'
+class New(LoginRequiredMixin, LangMixin, base.NewEdit):
     forms = {'langform': (forms.Language, 'lang')}
 
     def handle_forms(self, request, langform):
@@ -59,11 +53,10 @@ class New(LoginRequiredMixin, base.NewEdit):
 
 
 class View(LangMixin, base.Base):
-    folder = 'langs'
+    pass
 
 
 class Edit(LoginRequiredMixin, LangMixin, base.NewEdit):
-    folder = 'langs'
     forms = {'langform': (forms.Language, 'lang')}
 
     def handle_forms(self, request, lang, langform):
@@ -76,8 +69,6 @@ class Edit(LoginRequiredMixin, LangMixin, base.NewEdit):
 
 
 class Delete(LoginRequiredMixin, LangMixin, base.Base):
-    folder = 'langs'
-
     def post(self, request, lang):
         lang.delete()
         models.Folder.objects.get(path=f'langs/{lang.code}').delete()

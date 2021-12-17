@@ -8,27 +8,25 @@ from .langs import LangMixin
 from .. import forms, models
 
 # Views
-class TextsMixin:
-    def dispatch(self, request, lang, slug, **kwargs):
-        try:
-            article = models.Article.objects.get(slug=f'{lang.code.lower()}-text-{slug}')
-        except models.Article.DoesNotExist:
-            return redirect('langs:texts:list', code=lang.code)
-        else:
-            return super().dispatch(request, lang=lang, article=article, **kwargs)
-
-
-class List(LangMixin, base.List):
+class TextsMixin(LangMixin):
     folder = 'texts'
 
+    def get_kwargs(self, code, slug=None, **kwargs):
+        if slug is None:
+            return super().get_kwargs(code=code, **kwargs)
+        else:
+            article = models.Article.objects.get(slug=f'{code.lower()}-text-{slug}')
+            return super().get_kwargs(code=code, article=article, **kwargs)
+
+
+class List(TextsMixin, base.List):
     def get_object_list(self, lang, **kwargs):
         return models.Article.objects.filter(
             folder=models.Folder.objects.get(path=f'langs/{lang.code}/texts')
         )
 
 
-class New(LoginRequiredMixin, LangMixin, base.NewEdit):
-    folder = 'texts'
+class New(LoginRequiredMixin, TextsMixin, base.NewEdit):
     forms = {'articleform': (forms.SpecialArticle, 'article')}
 
     def handle_forms(self, request, lang, articleform):
@@ -39,12 +37,11 @@ class New(LoginRequiredMixin, LangMixin, base.NewEdit):
         return redirect('langs:texts:view', code=lang.code, slug=slugify(article.title))
 
 
-class View(LangMixin, TextsMixin, base.Base):
-    folder = 'texts'
+class View(TextsMixin, base.Base):
+    pass
 
 
-class Edit(LoginRequiredMixin, LangMixin, TextsMixin, base.NewEdit):
-    folder = 'texts'
+class Edit(LoginRequiredMixin, TextsMixin, base.NewEdit):
     forms = {'articleform': (forms.SpecialArticle, 'article')}
 
     def handle_forms(self, request, lang, article, articleform):
@@ -55,9 +52,7 @@ class Edit(LoginRequiredMixin, LangMixin, TextsMixin, base.NewEdit):
         return redirect('langs:texts:view', code=lang.code, slug=slugify(article.title))
 
 
-class Delete(LoginRequiredMixin, LangMixin, TextsMixin, base.Base):
-    folder = 'texts'
-
+class Delete(LoginRequiredMixin, TextsMixin, base.Base):
     def post(self, request, lang, article):
         article.delete()
         return redirect('langs:texts:list', code=lang.code)

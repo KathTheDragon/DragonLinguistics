@@ -1,5 +1,6 @@
 from pathlib import PurePath
 
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.http import Http404
 from django.shortcuts import redirect
 from django.views.generic import TemplateView
@@ -88,6 +89,15 @@ class Base(TemplateView):
         else:
             name = self.__class__.__name__.lower().replace('_', '-')
         return [(BASE_PATH / self.folder / name).with_suffix('.html').as_posix()]
+
+    def get_kwargs(self, **kwargs):
+        return kwargs
+
+    def dispatch(self, request, **kwargs):
+        try:
+            return super().dispatch(request, **self.get_kwargs(**kwargs))
+        except (ObjectDoesNotExist, MultipleObjectsReturned):
+            raise Http404
 
 
 class List(PageMixin, Base):
