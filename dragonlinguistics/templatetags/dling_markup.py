@@ -1,8 +1,8 @@
 import re, string
+from html import escape
 from django.template import Library
 from django.template.defaultfilters import stringfilter
 from django.urls import reverse
-from django.utils.html import conditional_escape
 from django.utils.text import slugify
 from django.utils.safestring import mark_safe
 
@@ -14,12 +14,20 @@ register = Library()
 @stringfilter
 def markup(value, autoescape=True):
     if autoescape:
-        value = conditional_escape(value)
+        value = conditional_escape(value, quote=False)
     output = ''
     while value:
         chunk, value = parse_chunk(value)
         output += chunk
     return mark_safe(output)
+
+
+# Reimplement conditional_escape to be able to not escape quotes
+def conditional_escape(text, quote=True):
+    if hasattr(text, '__html__'):
+        return text.__html__()
+    else:
+        return mark_safe(escape(str(text), quote=quote))
 
 
 CONTROL_CHARS = '@$'
