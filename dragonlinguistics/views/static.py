@@ -1,4 +1,4 @@
-from . import Base
+from . import base
 
 class Home(base.Base):
     pass
