@@ -43,16 +43,16 @@ def parse_tag(value):
     # @-, $cmd#id.class.class[data]{text}
     control, value = value[0], value[1:]
 
-    command, value = parse_string(value, error='invalid command name')
+    command, value = parse_string(value, error_msg='Invalid command name')
 
     if value[0] == '#':
-        id, value = parse_string(value, start=1, error='invalid id')
+        id, value = parse_string(value, start=1, error_msg='Invalid id')
     else:
         id = None
 
     classes = []
     while value[0] == '.':
-        class_, value = parse_string(value, start=1, error='invalid class')
+        class_, value = parse_string(value, start=1, error_msg='Invalid class')
         classes.append(class_)
 
     data = []
@@ -65,10 +65,10 @@ def parse_tag(value):
             elif value[0] == '"':
                 arg, value = parse_string(value, start=1, alphabet='', exclude='\r\n]"', escape=True, no_escape='\r\n')
                 if value[0] != '"':
-                    raise ValueError('incomplete string')
+                    return error('Incomplete string'), value
                 value = value[1:]
             else:
-                arg, value = parse_string(value, alphabet='', exclude='\r\n]" ', escape=True, no_escape='\r\n', error='incomplete tag data')
+                arg, value = parse_string(value, alphabet='', exclude='\r\n]" ', escape=True, no_escape='\r\n', error_msg='Incomplete tag data')
             data.append(arg)
         value = value[1:]
 
@@ -90,14 +90,14 @@ def parse_tag(value):
 
 STRING_CHARS = string.ascii_letters + string.digits + '_-'
 
-def parse_string(value, *, start=0, alphabet=STRING_CHARS, exclude='', escape=False, no_escape='', error=''):
+def parse_string(value, *, start=0, alphabet=STRING_CHARS, exclude='', escape=False, no_escape='', error_msg=''):
     i = start
     while i < len(value):
         if escape and value[i] == '\\':
             if i >= len(value) - 1:
-                raise ValueError('incomplete escape sequence')
+                return error('Incomplete escape sequence'), value
             elif value[i+1] in no_escape:
-                raise ValueError('invalid escape sequence')
+                return error('Invalid escape sequence'), value
             else:
                 i += 2
         elif (not alphabet or value[i] in alphabet) and value[i] not in exclude:
@@ -107,7 +107,7 @@ def parse_string(value, *, start=0, alphabet=STRING_CHARS, exclude='', escape=Fa
     if i != start:
         return value[start:i], value[i:]
     else:
-        raise ValueError(error)
+        return error(error_msg), value
 
 
 def process_link(command, id, classes, data, text):
@@ -118,7 +118,7 @@ def process_link(command, id, classes, data, text):
         try:
             lang = Language.objects.get(code=code)
         except Language.DoesNotExist:
-            raise ValueError('invalid language code')
+            return error('Invalid language code')
 
         url = lang.get_absolute_url()
         classes.extend(['lang', code])
@@ -134,12 +134,12 @@ def process_link(command, id, classes, data, text):
         try:
             lang = Language.objects.get(code=code)
         except Language.DoesNotExist:
-            raise ValueError('invalid language code')
+            return error('Invalid language code')
 
         try:
             word = Word.objects.get(lang=lang, lemma=lemma, homonym=homonym)
         except Word.DoesNotExist:
-            raise ValueError('invalid lemma/homonym number')
+            return error('Invalid lemma/homonym number')
 
         url = word.get_absolute_url()
         classes.extend(['word', code])
@@ -160,7 +160,7 @@ def process_link(command, id, classes, data, text):
         try:
             article = Article.objects.get(slug=slugify(title))
         except Article.DoesNotExist:
-            raise ValueError('invalid article title')
+            return error('Invalid article title')
 
         url = article.get_absolute_url()
         if section:
@@ -177,17 +177,17 @@ def process_link(command, id, classes, data, text):
         try:
             article = Article.objects.get(slug=f'{code.lower()}-{command}-{slugify(title)}')
         except Article.DoesNotExist:
-            raise ValueError('invalid language code/article title')
+            return error('Invalid language code/article title')
 
         if command != 'grammar':
             command += 's'
-        url = reverse(f'langs:{command}:view', kwargs={'code': code, 'slug': slug})
+        url = reverse(f'langs:{command}:view', kwargs={'code': code, 'slug': slugify(title)})
         if section:
             url = f'{url}#sect-{slugify(section)}'
         if text is None:
             text = section or title
     else:
-        raise ValueError('invalid command')
+        return error('Invalid command')
 
     attributes['href'] = url
     if id is not None:
@@ -208,12 +208,12 @@ def process_format(command, id, classes, data, text):
 
     if command == 'word':
         if data:
-            raise ValueError('invalid tag data')
+            return error('Invalid tag data')
         command = 'span'
         classes.append('word')
     elif command in SIMPLE_TAGS:
         if data:
-            raise ValueError('invalid tag data')
+            return error('Invalid tag data')
     elif command == 'link':
         command = 'a'
         if '.' in data[0]:  # External url
@@ -237,7 +237,7 @@ def process_format(command, id, classes, data, text):
             elif attr.startswith('rows='):
                 attributes['rowspan'] = attr.removeprefix('rows=')
             else:
-                raise ValueError('invalid tag data')
+                return error('Invalid tag data')
     elif command == 'section':
         level, title = data
 
@@ -245,7 +245,7 @@ def process_format(command, id, classes, data, text):
             id = f'sect-{title.lower().replace(" ", "-")}'
 
         if level not in ('1', '2', '3', '4', '5', '6'):
-            raise ValueError('invalid level')
+            return error('Invalid level')
         heading = html(f'h{level}', {}, title)
         if text.startswith('\n'):
             indent = re.match(r'\n( *)', text).group(1)
@@ -253,7 +253,7 @@ def process_format(command, id, classes, data, text):
         else:
             text = f'{heading}{text}'
     else:
-        raise ValueError('invalid command')
+        return error('Invalid command')
 
     if id is not None:
         attributes['id'] = id
@@ -286,6 +286,5 @@ def format_attributes(attributes):
     return ' '.join(attrs)
 
 
-# Thinking about where to use this
 def error(msg):
-    return f'<span class="error">{msg}</span>'
+    return f'<span class="error">&lt;{msg}&gt;</span>'
