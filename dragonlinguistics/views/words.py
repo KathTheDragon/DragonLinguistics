@@ -95,7 +95,7 @@ class View(WordMixin, base.Base):
     pass
 
 
-class Edit(LoginRequiredMixin, LangMixin, WordMixin, base.NewEdit):
+class Edit(LoginRequiredMixin, WordMixin, base.NewEdit):
     forms = {'wordform': (forms.Word, 'word'), 'senseformset': (forms.Senses, 'word')}
 
     def handle_forms(self, request, lang, word, wordform, senseformset):
@@ -109,7 +109,7 @@ class Edit(LoginRequiredMixin, LangMixin, WordMixin, base.NewEdit):
         return redirect(newword.get_absolute_url())
 
 
-class Delete(LoginRequiredMixin, LangMixin, WordMixin, base.Base):
+class Delete(LoginRequiredMixin, WordMixin, base.Base):
     def post(self, request, lang, word):
         lemma = word.lemma
         word.delete()
