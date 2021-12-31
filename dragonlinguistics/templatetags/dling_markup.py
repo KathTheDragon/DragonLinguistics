@@ -216,7 +216,7 @@ def process_format(command, id, classes, data, text):
             return error('Invalid tag data')
     elif command == 'link':
         command = 'a'
-        if '.' in data[0]:  # External url
+        if data[0].startswith('#') or '.' in data[0]:  # In-page or external url
             url, = data
         else:  # Internal url
             name, *args = data
