@@ -29,7 +29,7 @@
         <dd>
             <dl>
                 {%if sense.notes%}<p><i>{{sense.notes|markup}}</i></p>{%endif%}
-                <dt>Definition:</dt><dd>{%if sense.defin%}{{sense.defin}}{%else%}{{sense.gloss}}{%endif%}</dd>
+                <dt>Definition:</dt><dd>{%if sense.defin%}{{sense.defin|markup}}{%else%}{{sense.gloss}}{%endif%}</dd>
                 {%if sense.grammclass%}<dt>Class:</dt><dd>{{sense.grammclass}}</dd>{%endif%}
             </dl>
         </dd>
