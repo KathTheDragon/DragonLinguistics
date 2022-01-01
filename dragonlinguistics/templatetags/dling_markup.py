@@ -45,18 +45,18 @@ def parse_tag(value):
 
     command, value = parse_string(value, error_msg='Invalid command name')
 
-    if value[0] == '#':
+    if value and value[0] == '#':
         id, value = parse_string(value, start=1, error_msg='Invalid id')
     else:
         id = None
 
     classes = []
-    while value[0] == '.':
+    while value and value[0] == '.':
         class_, value = parse_string(value, start=1, error_msg='Invalid class')
         classes.append(class_)
 
     data = []
-    if value[0] == '[':
+    if value and value[0] == '[':
         value = value[1:]
         while value[0] != ']':
             if value[0] == ' ':
@@ -72,7 +72,7 @@ def parse_tag(value):
             data.append(arg)
         value = value[1:]
 
-    if value[0] == '{':
+    if value and value[0] == '{':
         value = value[1:]
         text = ''
         while value[0] != '}':
