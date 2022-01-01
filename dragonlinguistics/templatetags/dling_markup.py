@@ -125,7 +125,7 @@ def process_link(command, id, classes, data, text):
         if text is None:
             text = str(lang)
     elif command in ('word', 'word-gloss', 'gloss'):
-        if len(args) == 2:
+        if len(data) == 2:
             code, lemma = data
             homonym = 0
         else:
