@@ -19,7 +19,7 @@
 {%block content%}
 <h1 class="word {{lang.code}}">{{word}}</h1>
 <dl>
-    {%if word.notes%}<p><i>{{word.notes|markup}}</i></p>{%endif%}
+    {%if word.notes%}<p>{{word.notes|markup}}</p>{%endif%}
     {%if word.etymology%}
     <dt><h3>Etymology</h3></dt>
     <dd>{{word.etymology|markup}}</dd>
@@ -28,7 +28,7 @@
         <dt><h3>{{sense.get_pos_display}}</h3></dt>
         <dd>
             <dl>
-                {%if sense.notes%}<p><i>{{sense.notes|markup}}</i></p>{%endif%}
+                {%if sense.notes%}<p>{{sense.notes|markup}}</p>{%endif%}
                 <dt>Definition:</dt><dd>{%if sense.defin%}{{sense.defin|markup}}{%else%}{{sense.gloss}}{%endif%}</dd>
                 {%if sense.grammclass%}<dt>Class:</dt><dd>{{sense.grammclass}}</dd>{%endif%}
             </dl>
