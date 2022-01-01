@@ -147,9 +147,9 @@ def process_link(command, id, classes, data, text):
             if command == 'word':
                 text = str(word)
             elif command == 'word-gloss':
-                text = f'{word} "{word.gloss}"'
+                text = f'{word} "{word.firstgloss()}"'
             else:
-                text = f'"{word.gloss}"'
+                text = f'"{word.firstgloss()}"'
     elif command == 'article':
         if len(data) == 2:
             title, section = data
