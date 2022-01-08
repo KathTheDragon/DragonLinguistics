@@ -14,7 +14,7 @@ class ArticleMixin:
         if slug is None:
             return super().get_kwargs(**kwargs)
         else:
-            return super().get_kwargs(article=models.Article.get(slug=slug), **kwargs)
+            return super().get_kwargs(article=models.Article.objects.get(slug=slug), **kwargs)
 
 
 class List(ArticleMixin, base.List):
