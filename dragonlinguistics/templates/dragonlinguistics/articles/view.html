@@ -1,0 +1,39 @@
+{%extends './base.html'%}
+{%load static%}
+{%load dling_markup%}
+
+{%block title%}{{article.title}}{%endblock%}
+
+{%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/article.css'%}" type="text/css" />{%endblock%}
+
+{%block breadcrumbs%}
+{%include './breadcrumbs.html' with article=None%}
+<span>{{article.title}}</span>
+{%endblock%}
+
+{%block content%}
+<article>
+    <ul id="article-tags">
+        {%for tag in article.tag_list%}<li>#{{tag}}</li>{%endfor%}
+    </ul>
+    <div id="article-header">
+        <div id="article-heading">
+            <h1 id="article-title">{{article.title}}</h1>
+            <h3 id="article-subtitle">{{article.description}}</h3>
+        </div>
+        <div id="article-meta">
+            <p id="article-written">Written {{article.created|date:'j M Y, H:i'}}.</p>
+            {%if article.edited != article.created%}<p id="article-edited">Last updated {{article.edited|date:'j M Y, H:i'}}.</p>{%endif%}
+        </div>
+    </div>
+    <div id="article-body">
+        {{article.content|markup}}
+    </div>
+</article>
+
+{%if user.is_authenticated%}
+<br />
+<a href="{%url 'articles:edit' article.slug%}">Edit</a><br />
+<a href="{%url 'articles:delete' article.slug%}">Delete</a>
+{%endif%}
+{%endblock%}
