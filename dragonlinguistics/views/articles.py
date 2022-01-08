@@ -39,7 +39,7 @@ class View(ArticleMixin, base.Base):
 class Edit(LoginRequiredMixin, ArticleMixin, base.NewEdit):
     forms = {'articleform': (forms.Article, 'article')}
 
-    def handle_forms(self, request, articleform):
+    def handle_forms(self, request, article, articleform):
         article = articleform.save(commit=False)
         article.slug = slugify(article.title)
         article.save()
