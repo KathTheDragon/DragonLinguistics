@@ -1,7 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import redirect
-from django.views.generic import TemplateView
 
 from . import base
 from .langs import LangMixin
@@ -39,25 +38,18 @@ def setnewhomonym(lang, word):
 
 
 # Views
-class WordMixin:
-    def dispatch(self, request, lang, lemma, homonym=0, **kwargs):
-        try:
-            word = models.Word.objects.get(lang=lang, lemma=lemma, homonym=homonym)
-        except models.Word.DoesNotExist:
-            if request.method == 'GET':
-                return base.redirect_params(
-                    'langs:words:list',
-                    kwargs={'code': lang.code},
-                    params={'lemma': lemma}
-                )
-            else:
-                raise Http404
+class WordMixin(LangMixin):
+    folder = 'words'
+
+    def get_kwargs(self, code, lemma=None, homonym=0, **kwargs):
+        if lemma is None:
+            return super().get_kwargs(code=code, **kwargs)
         else:
-            return super().dispatch(request, lang=lang, word=word, **kwargs)
+            word = models.Word.objects.get(lang__code=code, lemma=lemma, homonym=homonym)
+            return super().get_kwargs(code=code, word=word, **kwargs)
 
 
-class List(LangMixin, base.SearchMixin, base.List):
-    template_name = 'dragonlinguistics/words/list.html'
+class List(WordMixin, base.SearchMixin, base.List):
     form = forms.WordSearch
 
     def get_object_list(self, lang, **kwargs):
@@ -76,14 +68,12 @@ class List(LangMixin, base.SearchMixin, base.List):
         )
 
 
-class Search(LangMixin, base.Search):
-    template_name = 'dragonlinguistics/words/search.html'
+class Search(WordMixin, base.Search):
     target_url = 'langs:words:list'
     form = forms.WordSearch
 
 
-class New(LoginRequiredMixin, LangMixin, base.NewEdit):
-    template_name = 'dragonlinguistics/words/new.html'
+class New(LoginRequiredMixin, WordMixin, base.NewEdit):
     forms = {'wordform': (forms.Word, 'word'), 'senseformset': (forms.Senses, 'word')}
     extra_fields = ['addmore']
 
@@ -101,12 +91,11 @@ class New(LoginRequiredMixin, LangMixin, base.NewEdit):
             return redirect(newword.get_absolute_url())
 
 
-class View(LangMixin, WordMixin, TemplateView):
-    template_name = 'dragonlinguistics/words/view.html'
+class View(WordMixin, base.Base):
+    pass
 
 
-class Edit(LoginRequiredMixin, LangMixin, WordMixin, base.NewEdit):
-    template_name = 'dragonlinguistics/words/edit.html'
+class Edit(LoginRequiredMixin, WordMixin, base.NewEdit):
     forms = {'wordform': (forms.Word, 'word'), 'senseformset': (forms.Senses, 'word')}
 
     def handle_forms(self, request, lang, word, wordform, senseformset):
@@ -120,9 +109,7 @@ class Edit(LoginRequiredMixin, LangMixin, WordMixin, base.NewEdit):
         return redirect(newword.get_absolute_url())
 
 
-class Delete(LoginRequiredMixin, LangMixin, WordMixin, TemplateView):
-    template_name = 'dragonlinguistics/words/delete.html'
-
+class Delete(LoginRequiredMixin, WordMixin, base.Base):
     def post(self, request, lang, word):
         lemma = word.lemma
         word.delete()

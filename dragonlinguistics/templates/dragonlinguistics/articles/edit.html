@@ -1,0 +1,22 @@
+{%extends './base.html'%}
+
+{%block title%}Edit '{{article.title}}'{%endblock%}
+
+{%block breadcrumbs%}
+{%include './breadcrumbs.html'%}
+<span>Edit</span>
+{%endblock%}
+
+{%block content%}
+<h1>Editing '{{article.title}}'</h1>
+
+<form method="post">
+    {%csrf_token%}
+    {{articleform.non_field_errors}}
+    <dl>
+        {%include 'dragonlinguistics/form-fields.html' with form=articleform%}
+    </dl>
+    <input type="submit" value="Save changes" />
+</form><br /><br />
+<a href="{{article.get_absolute_url}}">Cancel</a>
+{%endblock%}

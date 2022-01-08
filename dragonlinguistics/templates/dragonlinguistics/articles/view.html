@@ -33,7 +33,7 @@
 
 {%if user.is_authenticated%}
 <br />
-<a href="{%url 'langs:lessons:edit' lang.code article.title|slugify%}">Edit</a><br />
-<a href="{%url 'langs:lessons:delete' lang.code article.title|slugify%}">Delete</a>
+<a href="{%url 'articles:edit' article.slug%}">Edit</a><br />
+<a href="{%url 'articles:delete' article.slug%}">Delete</a>
 {%endif%}
 {%endblock%}

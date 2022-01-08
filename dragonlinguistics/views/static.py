@@ -1,4 +1,4 @@
-from django.views.generic import TemplateView
+from . import base
 
-class Home(TemplateView):
-    template_name = 'dragonlinguistics/home.html'
+class Home(base.Base):
+    pass

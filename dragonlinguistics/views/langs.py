@@ -1,27 +1,22 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import redirect
-from django.views.generic import TemplateView
 
 from . import base
 from .. import forms, models
 
 # Views
 class LangMixin:
-    def dispatch(self, request, code, **kwargs):
-        try:
-            lang = models.Language.objects.get(code=code)
-        except models.Language.DoesNotExist:
-            if request.method == 'GET':
-                return redirect('langs:list')
-            else:
-                raise Http404
+    folder = 'langs'
+
+    def get_kwargs(self, code=None, **kwargs):
+        if code is None:
+            return super().get_kwargs(**kwargs)
         else:
-            return super().dispatch(request, lang=lang, **kwargs)
+            return super().get_kwargs(lang=models.Language.objects.get(code=code), **kwargs)
 
 
-class List(base.SearchMixin, base.List):
-    template_name = 'dragonlinguistics/langs/list.html'
+class List(base.SearchMixin, LangMixin, base.List):
     form = forms.LanguageSearch
 
     def get_object_list(self, **kwargs):
@@ -34,22 +29,22 @@ class List(base.SearchMixin, base.List):
         )
 
 
-class Search(base.Search):
-    template_name = 'dragonlinguistics/langs/search.html'
+class Search(LangMixin, base.Search):
     target_url = 'langs:list'
     form = forms.LanguageSearch
 
 
-class New(LoginRequiredMixin, base.NewEdit):
-    template_name = 'dragonlinguistics/langs/new.html'
+class New(LoginRequiredMixin, LangMixin, base.NewEdit):
     forms = {'langform': (forms.Language, 'lang')}
 
     def handle_forms(self, request, langform):
         lang = langform.save()
-        langfolder = models.Folder(
-            parent=models.Folder.objects.get(path='langs'),
-            path=f'langs/{lang.code}'
-        )
+        try:
+            langparent = models.Folder.get(path='langs')
+        except models.Folder.DoesNotExist:
+            langparent = models.Folder(parent=None, path='langs')  # make sure this folder exists
+            langparent.save()
+        langfolder = models.Folder(parent=langparent, path=f'langs/{lang.code}')
         langfolder.save()
         models.Folder(parent=langfolder, path=f'langs/{lang.code}/grammar').save()
         models.Folder(parent=langfolder, path=f'langs/{lang.code}/lessons').save()
@@ -57,12 +52,11 @@ class New(LoginRequiredMixin, base.NewEdit):
         return redirect(lang.get_absolute_url())
 
 
-class View(LangMixin, TemplateView):
-    template_name = 'dragonlinguistics/langs/view.html'
+class View(LangMixin, base.Base):
+    pass
 
 
 class Edit(LoginRequiredMixin, LangMixin, base.NewEdit):
-    template_name = 'dragonlinguistics/langs/edit.html'
     forms = {'langform': (forms.Language, 'lang')}
 
     def handle_forms(self, request, lang, langform):
@@ -74,9 +68,7 @@ class Edit(LoginRequiredMixin, LangMixin, base.NewEdit):
         return redirect(lang.get_absolute_url())
 
 
-class Delete(LoginRequiredMixin, LangMixin, TemplateView):
-    template_name = 'dragonlinguistics/langs/delete.html'
-
+class Delete(LoginRequiredMixin, LangMixin, base.Base):
     def post(self, request, lang):
         lang.delete()
         models.Folder.objects.get(path=f'langs/{lang.code}').delete()

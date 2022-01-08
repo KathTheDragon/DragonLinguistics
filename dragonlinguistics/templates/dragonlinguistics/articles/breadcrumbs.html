@@ -1,0 +1,3 @@
+{%include 'dragonlinguistics/breadcrumbs.html'%}
+<span><a href="{%url 'articles:list'%}">Articles</a></span>
+{%if article%}<span><a href="{{article.get_absolute_url}}">{{article.title}}</a></span>{%endif%}

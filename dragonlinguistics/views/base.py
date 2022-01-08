@@ -1,3 +1,6 @@
+from pathlib import PurePath
+
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.http import Http404
 from django.shortcuts import redirect
 from django.views.generic import TemplateView
@@ -73,11 +76,35 @@ class SearchMixin(ContextMixin):
         return super().get_context_data(**kwargs)
 
 
-class List(PageMixin, TemplateView):
+BASE_PATH = PurePath('dragonlinguistics')
+
+
+class Base(TemplateView):
+    folder = ''
+    name = None
+
+    def get_template_names(self):
+        if self.name is not None:
+            name = self.name
+        else:
+            name = self.__class__.__name__.lower().replace('_', '-')
+        return [(BASE_PATH / self.folder / name).with_suffix('.html').as_posix()]
+
+    def get_kwargs(self, **kwargs):
+        return kwargs
+
+    def dispatch(self, request, **kwargs):
+        try:
+            return super().dispatch(request, **self.get_kwargs(**kwargs))
+        except (ObjectDoesNotExist, MultipleObjectsReturned):
+            raise Http404
+
+
+class List(PageMixin, Base):
     pass
 
 
-class Search(TemplateView):
+class Search(Base):
     target_url = None
     form = None
 
@@ -108,7 +135,7 @@ class Search(TemplateView):
             return super().get(request, **kwargs)
 
 
-class NewEdit(TemplateView):
+class NewEdit(Base):
     forms = None  # dict[str, (Form, str)]
     extra_fields = []  # list[str]
 

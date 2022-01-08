@@ -2,34 +2,31 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import redirect
 from django.utils.text import slugify
-from django.views.generic import TemplateView
 
 from . import base
 from .langs import LangMixin
 from .. import forms, models
 
 # Views
-class LessonsMixin:
-    def dispatch(self, request, lang, slug, **kwargs):
-        try:
-            article = models.Article.objects.get(slug=f'{lang.code.lower()}-lesson-{slug}')
-        except models.Article.DoesNotExist:
-            return redirect('langs:lessons:list', code=lang.code)
+class LessonsMixin(LangMixin):
+    folder = 'lessons'
+
+    def get_kwargs(self, code, slug=None, **kwargs):
+        if slug is None:
+            return super().get_kwargs(code=code, **kwargs)
         else:
-            return super().dispatch(request, lang=lang, article=article, **kwargs)
+            article = models.Article.objects.get(slug=f'{code.lower()}-lesson-{slug}')
+            return super().get_kwargs(code=code, article=article, **kwargs)
 
 
-class List(LangMixin, base.List):
-    template_name = 'dragonlinguistics/lessons/list.html'
-
+class List(LessonsMixin, base.List):
     def get_object_list(self, lang, **kwargs):
         return models.Article.objects.filter(
             folder=models.Folder.objects.get(path=f'langs/{lang.code}/lessons')
         )
 
 
-class New(LoginRequiredMixin, LangMixin, base.NewEdit):
-    template_name = 'dragonlinguistics/lessons/new.html'
+class New(LoginRequiredMixin, LessonsMixin, base.NewEdit):
     forms = {'articleform': (forms.SpecialArticle, 'article')}
 
     def handle_forms(self, request, lang, articleform):
@@ -40,12 +37,11 @@ class New(LoginRequiredMixin, LangMixin, base.NewEdit):
         return redirect('langs:lessons:view', code=lang.code, slug=slugify(article.title))
 
 
-class View(LangMixin, LessonsMixin, TemplateView):
-    template_name = 'dragonlinguistics/lessons/view.html'
+class View(LessonsMixin, base.Base):
+    pass
 
 
-class Edit(LoginRequiredMixin, LangMixin, LessonsMixin, base.NewEdit):
-    template_name = 'dragonlinguistics/lessons/edit.html'
+class Edit(LoginRequiredMixin, LessonsMixin, base.NewEdit):
     forms = {'articleform': (forms.SpecialArticle, 'article')}
 
     def handle_forms(self, request, lang, article, articleform):
@@ -56,9 +52,7 @@ class Edit(LoginRequiredMixin, LangMixin, LessonsMixin, base.NewEdit):
         return redirect('langs:lessons:view', code=lang.code, slug=slugify(article.title))
 
 
-class Delete(LoginRequiredMixin, LangMixin, LessonsMixin, TemplateView):
-    template_name = 'dragonlinguistics/lessons/delete.html'
-
+class Delete(LoginRequiredMixin, LessonsMixin, base.Base):
     def post(self, request, lang, article):
         article.delete()
         return redirect('langs:lessons:list', code=lang.code)
