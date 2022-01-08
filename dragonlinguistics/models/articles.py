@@ -1,7 +1,7 @@
 from django.db import models
 
 class Folder(models.Model):
-    parent = models.ForeignKey('Folder', on_delete=models.CASCADE, null=True)
+    parent = models.ForeignKey('Folder', on_delete=models.CASCADE, null=True, blank=True)
     path = models.TextField()
 
     @property
@@ -13,7 +13,7 @@ class Folder(models.Model):
 
 
 class Article(models.Model):
-    folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
+    folder = models.ForeignKey(Folder, on_delete=models.CASCADE, null=True, blank=True)
     slug = models.SlugField()
     title = models.CharField(max_length=255)
     description = models.CharField(blank=True, max_length=255)
