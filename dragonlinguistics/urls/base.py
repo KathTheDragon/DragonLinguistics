@@ -1,5 +1,5 @@
-class StrOrID:
-    regex = '@\d{9}|[^/@][^/]*'
+class ID:
+    regex = r'@\d{1,9}'
 
     def to_python(self, value):
         if value.startswith('@'):

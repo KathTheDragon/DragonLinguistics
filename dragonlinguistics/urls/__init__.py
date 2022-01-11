@@ -1,8 +1,5 @@
 from django.contrib import admin
-from django.urls import include, path, register_converter as register
-from .. import converters
-
-register(converters.StrOrID, 'id')  # I hope I can get away with only doing it here
+from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
