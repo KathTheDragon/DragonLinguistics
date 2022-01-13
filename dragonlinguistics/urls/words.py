@@ -22,5 +22,6 @@ urlpatterns = [
             path('edit/', words.Edit.as_view(), name='edit-homonym'),
             path('delete/', words.Delete.as_view(), name='delete-homonym'),
         ]))
-    ]))
+    ])),
+    path('import/', words.Import.as_view(), name='import'),
 ]

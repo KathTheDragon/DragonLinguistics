@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from . import base
 from .langs import LangMixin
 from .. import forms, models
+from ..utils.words import parse_csv
 
 # Helper functions
 def correcthomonyms(lang, lemma):
@@ -115,3 +116,34 @@ class Delete(LoginRequiredMixin, WordMixin, base.Base):
         word.delete()
         correcthomonyms(lang, lemma)
         return redirect('langs:words:list', code=lang.code)
+
+
+class Import(LoginRequiredMixin, WordMixin, base.Base):
+    def get_context_data(self, **kwargs):
+        kwargs.setdefault('importform', forms.Import(initial={'delimiter': ',', 'quotechar': '"'}))
+        return super().get_context_data(**kwargs)
+
+    def post(self, request, lang):
+        importform = forms.Import(request.POST, request.FILES)
+        if importform.is_valid():
+            try:
+                entries = parse_csv(
+                    file=importform.cleaned_data['file'],
+                    delimiter=importform.cleaned_data['delimiter'],
+                    quotechar=importform.cleaned_data['quotechar']
+                )
+            except csv.Error:
+                return self.get(request, lang=lang, importform=importform)
+
+            if importform.cleaned_data['action'] == 'replace':
+                Word.objects.delete()
+            for entry in entries:
+                count = Word.objects.filter(lemma=entry['word']['lemma']).count()
+                if count:
+                    entry['word']['homonym'] = count + 1
+                word = Word(**entry['word'])
+                word.save()
+                for sense in entry['senses']:
+                    Sense(word=word, **sense).save()
+        else:
+            return self.get(request, lang=lang, importform=importform)

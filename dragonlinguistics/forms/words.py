@@ -1,6 +1,7 @@
 from django.forms import (
     CharField,
     ChoiceField,
+    FileField,
     Textarea,
     Form,
     ModelForm,
@@ -31,3 +32,10 @@ class Search(Form):
     gloss = CharField(required=False, max_length=20)
     pos = ChoiceField(required=False, choices=[('','Any'), *models.Sense.POS])
     classes = CharField(required=False, label='Class', max_length=20)
+
+
+class Import(Form):
+    file = FileField()
+    delimiter = CharField(min_length=1, max_length=1)
+    quotechar = CharField(min_length=1, max_length=1, label='Quote Character')
+    action = ChoiceField(choices=[('append', 'Append'), ('replace', 'Replace')])
