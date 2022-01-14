@@ -8,15 +8,13 @@
 {%endblock%}
 
 {%block content%}
-<h1>Editing '{{article.title}}'</h1>
+<h1>Editing &lsquo;{{article.title}}&rsquo;</h1>
 
-<form method="post">
+<form class="edit-article" method="post">
     {%csrf_token%}
     {{articleform.non_field_errors}}
-    <dl>
-        {%include 'dragonlinguistics/form-fields.html' with form=articleform%}
-    </dl>
+    {%include 'dragonlinguistics/form-fields.html' with form=articleform%}
     <input type="submit" value="Save changes" />
-</form><br /><br />
-<a href="{%url 'langs:lessons:view' lang.code article.title|slugify%}">Cancel</a>
+    <a class="button" href="{%url 'langs:lessons:view' lang.code article.title|slugify%}">Cancel</a>
+</form>
 {%endblock%}

@@ -2,8 +2,6 @@
 {%load static%}
 {%load util%}
 
-{%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/article.css'%}" type="text/css" />{%endblock%}
-
 {%block title%}Editing &lsquo;{{article.title}}&rsquo;'{%endblock%}
 
 {%block breadcrumbs%}
@@ -17,20 +15,7 @@
 <form class="edit-article" method="post">
     {%csrf_token%}
     {{articleform.non_field_errors}}
-    <div class="form-row">
-        <label for="id_title">Title</label>
-        <input type="text" name="title" value="{{article.title}}" maxlength="255" required id="id_title">
-    </div>
-    <div class="form-row">
-        <label for="id_description">Description</label>
-        <input type="text" name="description" value="{{article.description}}" maxlength="255" id="id_description">
-    </div>
-    <label for="id_content">Content</label><br>
-    <textarea name="content" cols="40" rows="10" required id="id_content">{{article.content}}</textarea>
-    <br>
-    <label for="id_tags">Tags</label><br>
-    <textarea name="tags" cols="40" rows={{article.tags|splitlines|length|min:1}} id="id_tags">{{article.tags}}</textarea>
-    <br>
+    {%include 'dragonlinguistics/form-fields.html' with form=articleform%}
     <input type="submit" value="Save changes" />
     <a class="button" href="{%url 'langs:grammar:view' lang.code article.title|slugify%}">Cancel</a>
 </form>

@@ -1,7 +1,9 @@
 {%for field in form.visible_fields%}
-<dt>{{field.label_tag}}</dt>
-<dd>{{field}}</dd>
-{%if field.errors%}<dd>{{field.errors}}</dd>{%endif%}
+<div>
+    {{field.label_tag}}
+    {{field}}
+    {%if field.errors%}{{field.errors}}{%endif%}
+</div>
 {%endfor%}
 {%for field in form.hidden_fields%}
 {{field}}
