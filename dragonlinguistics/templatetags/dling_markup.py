@@ -175,7 +175,7 @@ def process_link(command, id, classes, data, text):
             section = ''
 
         try:
-            article = Article.objects.get(slug=f'{code.lower()}-{command}-{slugify(title)}')
+            article = Article.objects.get(folder__path=f'langs/{code}/{section}', slug=slugify(title)')
         except Article.DoesNotExist:
             return error('Invalid language code/article title')
 
