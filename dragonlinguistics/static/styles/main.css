@@ -23,11 +23,6 @@ body {
 .body-section {
     margin: 0 40px;
     padding: 10px 0;
-    border-bottom: 2px solid #f4f4f4;
-}
-
-.body-section:first-of-type {
-    border-top: 2px solid #f4f4f4;
 }
 
 .page-controls {
@@ -70,18 +65,18 @@ body {
 #page-header nav a {
     display: block;
     float: left;
-    color: #4f4f4f;
+    color: #404040;
     background: #f4f4f4;
     border-radius: 0 0 4px 4px;
     text-align: center;
-    padding: 10px 1.2em 0.5em 1.2em;
-    margin: 0 0.5em;
+    padding: 10px 1em 0.5em 1em;
+    margin: 0 0.2em;
     text-decoration: none;
 }
 
 #page-header nav a:hover,
 #page-header nav a.active {
-    color: #4f4f4f;
+    color: #404040;
     background: #e4e4e4;
 }
 
@@ -136,6 +131,10 @@ body {
  */
 
 
+p {
+    text-align: justify;
+}
+
 a {
     color: #1e74d7;
     text-decoration: none;
@@ -162,7 +161,7 @@ h1,
 h2 {
     margin-top: 1rem;
     padding-bottom: 0.3rem;
-    border-bottom: 1px solid #f4f4f4;
+    border-bottom: 2px solid #f4f4f4;
 }
 
 h1 { font-size: 2rem; }
@@ -272,14 +271,14 @@ hr {
     background: transparent;
     background-color: #e1e4e8;
     height: 0.25em;
+    margin: 0;
     padding: 0;
-    margin: 1.5em 0;
     border: 0;
 }
 
 hr.divider {
-    margin: 1.3em 0 1em;
-    height: 1px;
+    height: 4px;
+    margin: 2px 0;
     background-color: #eaecef;
 }
 
@@ -419,12 +418,16 @@ section::after {
  *     INPUT AND FORM STYLES
  */
 
-input {
+input, textarea {
     padding: 4px 8px;
     margin: 4px 0;
     font-size: 0.9rem;
     border-radius: 4px;
     border: 1px solid #e6e6e6;
+}
+
+textarea {
+    resize: vertical;
 }
 
 .button {
@@ -459,6 +462,11 @@ input[type=submit]:hover, .button:hover {
     background: #ededed;
 }
 
+input[type=submit].search {
+    padding: 0 2px 0 4px;
+    height: var(line-height);
+}
+
 select {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -473,8 +481,13 @@ select {
     background-position: top 50% right 0px;
 }
 
+textarea {
+    width: 100%;
+}
+
 label {
     margin: 8px 8px 8px 4px;
+    font-size: 1.05rem;
 }
 
 /* label:not(:first-child) {
@@ -482,9 +495,16 @@ label {
 } */
 
 .search-form {
-    border-top: 1px solid #ebebeb;
-    border-bottom: 1px solid #ebebeb;
-    padding: 12px 6px;
+    /* border-top: 1px solid #ebebeb;
+    border-bottom: 1px solid #ebebeb; */
+    padding: 6px;
+    /* border: 2px solid #ebebeb;
+    border-radius: 2px; */
+}
+
+.search-form h4 {
+    display: inline-block;
+    margin: 0;
 }
 
 
