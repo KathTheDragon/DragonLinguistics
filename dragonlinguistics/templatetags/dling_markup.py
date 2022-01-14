@@ -158,7 +158,7 @@ def process_link(command, id, classes, data, text):
             section = ''
 
         try:
-            article = Article.objects.get(slug=slugify(title))
+            article = Article.objects.get(folder=None, slug=slugify(title))
         except Article.DoesNotExist:
             return error('Invalid article title')
 
@@ -168,6 +168,9 @@ def process_link(command, id, classes, data, text):
         if text is None:
             text = section or title
     elif command in ('grammar', 'lesson', 'text'):
+        if command != 'grammar':
+            command += 's'
+
         if len(data) == 3:
             code, title, section = data
         else:
@@ -175,13 +178,11 @@ def process_link(command, id, classes, data, text):
             section = ''
 
         try:
-            article = Article.objects.get(folder__path=f'langs/{code}/{section}', slug=slugify(title))
+            article = Article.objects.get(folder__path=f'langs/{code}/{command}', slug=slugify(title))
         except Article.DoesNotExist:
             return error('Invalid language code/article title')
 
-        if command != 'grammar':
-            command += 's'
-        url = reverse(f'langs:{command}:view', kwargs={'code': code, 'slug': slugify(title)})
+        url = article.get_absolute_url()
         if section:
             url = f'{url}#sect-{slugify(section)}'
         if text is None:
