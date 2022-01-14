@@ -44,7 +44,6 @@ class Edit(LoginRequiredMixin, LessonsMixin, base.NewEdit):
 
     def handle_forms(self, request, lang, article, articleform):
         article = articleform.save(commit=False)
-        article.folder = models.Folder.objects.get(path=f'langs/{lang.code}/lessons')
         article.slug = slugify(article.title)
         article.save()
         return redirect('langs:lessons:view', code=lang.code, slug=article.slug)
