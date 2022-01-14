@@ -17,7 +17,7 @@
 {%include 'dragonlinguistics/prevpage.html'%}
 <ul>
 {%for article in page.object_list%}
-    <li><a href="{%url 'langs:grammar:view' lang.code article.title|slugify%}" class="article">{{article.title}}</a></li>
+    <li><a href="{{article.get_absolute_url}}" class="article">{{article.title}}</a></li>
 {%empty%}
     <li>There are no grammar articles.</li>
 {%endfor%}

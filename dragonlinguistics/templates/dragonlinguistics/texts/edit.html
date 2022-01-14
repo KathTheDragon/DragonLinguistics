@@ -7,14 +7,4 @@
 <span>Edit</span>
 {%endblock%}
 
-{%block content%}
-<h1>Editing &lsquo;{{article.title}}&rsquo;</h1>
-
-<form class="edit-article" method="post">
-    {%csrf_token%}
-    {{articleform.non_field_errors}}
-    {%include 'dragonlinguistics/form-fields.html' with form=articleform%}
-    <input type="submit" value="Save changes" />
-    <a class="button" href="{%url 'langs:texts:view' lang.code article.title|slugify%}">Cancel</a>
-</form>
-{%endblock%}
+{%block content%}{%inclide 'dragonlinguistics/snippets/articles/edit.html'}{%endblock%}

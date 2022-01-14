@@ -11,9 +11,4 @@ class Folder(ModelForm):
 class Article(ModelForm):
     class Meta:
         model = models.Article
-        fields = ['folder', 'title', 'description', 'content', 'tags']
-
-
-class SpecialArticle(Article):
-    class Meta(Article.Meta):
         fields = ['title', 'description', 'content', 'tags']

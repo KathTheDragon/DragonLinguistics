@@ -11,31 +11,4 @@
 <span>{{article.title}}</span>
 {%endblock%}
 
-{%block content%}
-<article>
-    <div id="article-header">
-        <div id="article-heading">
-            <h1 id="article-title">{{article.title}}</h1>
-            <h3 id="article-subtitle">{{article.description}}</h3>
-        </div>
-        {%if user.is_authenticated%}
-        <div class="controls">
-            <a class="btn edit" href="{%url 'langs:texts:edit' lang.code article.title|slugify%}">Edit</a>
-            <a class="btn delete" href="{%url 'langs:texts:delete' lang.code article.title|slugify%}">Delete</a>
-        </div>
-        {%endif%}
-        <div id="article-meta">
-            <p id="article-written">Created {{article.created|date:'j M Y, H:i'}}.</p>
-            {%if article.edited != article.created%}<p id="article-edited">Last updated {{article.edited|date:'j M Y, H:i'}}.</p>{%endif%}
-        </div>
-        {%if article.tag_list%}
-        <ul id="article-tags">
-            {%for tag in article.tag_list%}<li>#{{tag}}</li>{%endfor%}
-        </ul>
-        {%endif%}
-    </div>
-    <div id="article-body">
-        {{article.content|markup}}
-    </div>
-</article>
-{%endblock%}
+{%block content%}{%include 'dragonlinguistics/snippets/articles/view.html'%}{%endblock%}

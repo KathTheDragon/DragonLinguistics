@@ -15,26 +15,24 @@ class LessonsMixin(LangMixin):
         if slug is None:
             return super().get_kwargs(code=code, **kwargs)
         else:
-            article = models.Article.objects.get(slug=f'{code.lower()}-lesson-{slug}')
+            article = models.Article.objects.get(folder__path=f'langs/{code}/lessons', slug=slug)
             return super().get_kwargs(code=code, article=article, **kwargs)
 
 
 class List(LessonsMixin, base.List):
     def get_object_list(self, lang, **kwargs):
-        return models.Article.objects.filter(
-            folder=models.Folder.objects.get(path=f'langs/{lang.code}/lessons')
-        )
+        return models.Article.objects.filter(folder__path=f'langs/{lang.code}/lessons')
 
 
 class New(LoginRequiredMixin, LessonsMixin, base.NewEdit):
-    forms = {'articleform': (forms.SpecialArticle, 'article')}
+    forms = {'articleform': (forms.Article, 'article')}
 
     def handle_forms(self, request, lang, articleform):
         article = articleform.save(commit=False)
         article.folder = models.Folder.objects.get(path=f'langs/{lang.code}/lessons')
-        article.slug = f'{lang.code.lower()}-lesson-{slugify(article.title)}'
+        article.slug = slugify(article.title)
         article.save()
-        return redirect('langs:lessons:view', code=lang.code, slug=slugify(article.title))
+        return redirect('langs:lessons:view', code=lang.code, slug=article.slug)
 
 
 class View(LessonsMixin, base.Base):
@@ -42,14 +40,14 @@ class View(LessonsMixin, base.Base):
 
 
 class Edit(LoginRequiredMixin, LessonsMixin, base.NewEdit):
-    forms = {'articleform': (forms.SpecialArticle, 'article')}
+    forms = {'articleform': (forms.Article, 'article')}
 
     def handle_forms(self, request, lang, article, articleform):
         article = articleform.save(commit=False)
         article.folder = models.Folder.objects.get(path=f'langs/{lang.code}/lessons')
-        article.slug = f'{lang.code.lower()}-lesson-{slugify(article.title)}'
+        article.slug = slugify(article.title)
         article.save()
-        return redirect('langs:lessons:view', code=lang.code, slug=slugify(article.title))
+        return redirect('langs:lessons:view', code=lang.code, slug=article.slug)
 
 
 class Delete(LoginRequiredMixin, LessonsMixin, base.Base):

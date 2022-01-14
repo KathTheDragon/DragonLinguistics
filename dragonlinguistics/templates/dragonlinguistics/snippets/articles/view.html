@@ -1,0 +1,26 @@
+<article>
+    <div id="article-header">
+        <div id="article-heading">
+            <h1 id="article-title">{{article.title}}</h1>
+            <h3 id="article-subtitle">{{article.description}}</h3>
+        </div>
+        {%if user.is_authenticated%}
+        <div class="controls">
+            <a class="btn edit" href="{{article.get_edit_url}}">Edit</a>
+            <a class="btn delete" href="{{article.get_delete_url}}">Delete</a>
+        </div>
+        {%endif%}
+        <div id="article-meta">
+            <div id="article-written">Created {{article.created|date:'j M Y, H:i'}}.</div>
+            {%if article.edited != article.created%}<div id="article-edited">Last updated {{article.edited|date:'j M Y, H:i'}}.</div>{%endif%}
+        </div>
+        {%if article.tag_list%}
+        <ul id="article-tags">
+            {%for tag in article.tag_list%}<li>#{{tag}}</li>{%endfor%}
+        </ul>
+        {%endif%}
+    </div>
+    <div id="article-body">
+        {{article.content|markup}}
+    </div>
+</article>

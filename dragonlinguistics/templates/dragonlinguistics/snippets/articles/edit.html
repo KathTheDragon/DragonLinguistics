@@ -1,0 +1,9 @@
+<h1>Editing &lsquo;{{article.title}}&rsquo;</h1>
+
+<form class="edit-article" method="post">
+    {%csrf_token%}
+    {{articleform.non_field_errors}}
+    {%include 'dragonlinguistics/form-fields.html' with form=articleform%}
+    <input type="submit" value="Save changes" />
+    <a class="button" href="{{article.get_absolute_url}}">Cancel</a>
+</form><br /><br />

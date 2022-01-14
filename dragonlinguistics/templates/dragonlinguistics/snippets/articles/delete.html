@@ -1,0 +1,9 @@
+<h1 class="article-title">{{article.title}}</h1>
+
+Are you <i>sure</i> you want to delete this article?
+
+<form method='post'>
+    {%csrf_token%}
+    <input type='submit' value='Delete'/>
+</form><br/><br/>
+<a href="{{article.get_absolute_url}}">Cancel</a>

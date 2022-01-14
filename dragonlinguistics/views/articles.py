@@ -14,12 +14,12 @@ class ArticleMixin:
         if slug is None:
             return super().get_kwargs(**kwargs)
         else:
-            return super().get_kwargs(article=models.Article.objects.get(slug=slug), **kwargs)
+            return super().get_kwargs(article=models.Article.objects.get(folder=None, slug=slug), **kwargs)
 
 
 class List(ArticleMixin, base.List):
     def get_object_list(self, **kwargs):
-        return models.Article.objects.all()
+        return models.Article.objects.filter(folder=None)
 
 
 class New(LoginRequiredMixin, ArticleMixin, base.NewEdit):

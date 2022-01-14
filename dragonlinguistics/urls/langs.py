@@ -17,6 +17,7 @@ urlpatterns = [
         path('', langs.View.as_view(), name='view'),
         path('edit/', langs.Edit.as_view(), name='edit'),
         path('delete/', langs.Delete.as_view(), name='delete'),
+        path('articles/', include('dragonlinguistics.urls.lang_articles')),
         path('grammar/', include('dragonlinguistics.urls.grammar')),
         path('lessons/', include('dragonlinguistics.urls.lessons')),
         path('texts/', include('dragonlinguistics.urls.texts')),

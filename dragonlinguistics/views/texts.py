@@ -15,26 +15,24 @@ class TextsMixin(LangMixin):
         if slug is None:
             return super().get_kwargs(code=code, **kwargs)
         else:
-            article = models.Article.objects.get(slug=f'{code.lower()}-text-{slug}')
+            article = models.Article.objects.get(folder__path=f'langs/{code}/texts', slug=slug)
             return super().get_kwargs(code=code, article=article, **kwargs)
 
 
 class List(TextsMixin, base.List):
     def get_object_list(self, lang, **kwargs):
-        return models.Article.objects.filter(
-            folder=models.Folder.objects.get(path=f'langs/{lang.code}/texts')
-        )
+        return models.Article.objects.filter(folder__path=f'langs/{lang.code}/texts')
 
 
 class New(LoginRequiredMixin, TextsMixin, base.NewEdit):
-    forms = {'articleform': (forms.SpecialArticle, 'article')}
+    forms = {'articleform': (forms.Article, 'article')}
 
     def handle_forms(self, request, lang, articleform):
         article = articleform.save(commit=False)
         article.folder = models.Folder.objects.get(path=f'langs/{lang.code}/texts')
-        article.slug = f'{lang.code.lower()}-text-{slugify(article.title)}'
+        article.slug = slugify(article.title)
         article.save()
-        return redirect('langs:texts:view', code=lang.code, slug=slugify(article.title))
+        return redirect('langs:texts:view', code=lang.code, slug=article.slug)
 
 
 class View(TextsMixin, base.Base):
@@ -42,14 +40,13 @@ class View(TextsMixin, base.Base):
 
 
 class Edit(LoginRequiredMixin, TextsMixin, base.NewEdit):
-    forms = {'articleform': (forms.SpecialArticle, 'article')}
+    forms = {'articleform': (forms.Article, 'article')}
 
     def handle_forms(self, request, lang, article, articleform):
         article = articleform.save(commit=False)
-        article.folder = models.Folder.objects.get(path=f'langs/{lang.code}/texts')
-        article.slug = f'{lang.code.lower()}-text-{slugify(article.title)}'
+        article.slug = slugify(article.title)
         article.save()
-        return redirect('langs:texts:view', code=lang.code, slug=slugify(article.title))
+        return redirect('langs:texts:view', code=lang.code, slug=article.slug)
 
 
 class Delete(LoginRequiredMixin, TextsMixin, base.Base):
