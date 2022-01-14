@@ -18,7 +18,7 @@ class Article(models.Model):
     title = models.CharField(max_length=255)
     description = models.CharField(blank=True, max_length=255)
     content = models.TextField()
-    tags = models.TextField(blank=True)
+    tags = models.CharField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True)
 
@@ -27,7 +27,7 @@ class Article(models.Model):
 
     @property
     def tag_list(self):
-        return list(filter(None, self.tags.split('\n')))
+        return list(filter(None, map(lambda t: t.strip(), self.tags.split(','))))
 
     def urls(self, action):
         from django.urls import reverse
