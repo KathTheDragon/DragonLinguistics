@@ -18,7 +18,7 @@ class Article(models.Model):
     title = models.CharField(max_length=255)
     description = models.CharField(blank=True, max_length=255)
     content = models.TextField()
-    tags = models.CharField(blank=True)
+    tags = models.TextField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True)
 
