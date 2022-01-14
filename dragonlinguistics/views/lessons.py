@@ -11,12 +11,13 @@ from .. import forms, models
 class LessonsMixin(LangMixin):
     folder = 'lessons'
 
-    def get_kwargs(self, code, slug=None, **kwargs):
+    def get_kwargs(self, slug=None, **kwargs):
         if slug is None:
-            return super().get_kwargs(code=code, **kwargs)
+            return super().get_kwargs(**kwargs)
         else:
+            code = kwargs['code']
             article = models.Article.objects.get(folder__path=f'langs/{code}/lessons', slug=slug)
-            return super().get_kwargs(code=code, article=article, **kwargs)
+            return super().get_kwargs(article=article, **kwargs)
 
 
 class List(LessonsMixin, base.List):
