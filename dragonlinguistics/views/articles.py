@@ -11,22 +11,25 @@ class ArticleMixin:
     folder = 'articles'
 
     def get_kwargs(self, slug=None, **kwargs):
+        folder, _ = models.Folder.objects.get_or_create(path='')
         if slug is None:
-            return super().get_kwargs(**kwargs)
+            return super().get_kwargs(folder=folder, **kwargs)
         else:
-            return super().get_kwargs(article=models.Article.objects.get(folder=None, slug=slug), **kwargs)
+            article = models.Article.objects.get(folder=folder, slug=slug)
+            return super().get_kwargs(folder=folder, article=article, **kwargs)
 
 
 class List(ArticleMixin, base.List):
-    def get_object_list(self, **kwargs):
-        return models.Article.objects.filter(folder=None)
+    def get_object_list(self, folder, **kwargs):
+        return models.Article.objects.filter(folder=folder)
 
 
 class New(LoginRequiredMixin, ArticleMixin, base.NewEdit):
     forms = {'articleform': (forms.Article, 'article')}
 
-    def handle_forms(self, request, articleform):
+    def handle_forms(self, request, folder, articleform):
         article = articleform.save(commit=False)
+        article.folder = folder
         article.slug = slugify(article.title)
         article.save()
         return redirect(article)
@@ -39,7 +42,7 @@ class View(ArticleMixin, base.Base):
 class Edit(LoginRequiredMixin, ArticleMixin, base.NewEdit):
     forms = {'articleform': (forms.Article, 'article')}
 
-    def handle_forms(self, request, article, articleform):
+    def handle_forms(self, request, folder, article, articleform):
         article = articleform.save(commit=False)
         article.slug = slugify(article.title)
         article.save()
@@ -47,6 +50,6 @@ class Edit(LoginRequiredMixin, ArticleMixin, base.NewEdit):
 
 
 class Delete(LoginRequiredMixin, ArticleMixin, base.Base):
-    def post(self, request, article):
+    def post(self, request, folder, article):
         article.delete()
-        return redirect('articles:list')
+        return redirect(folder)

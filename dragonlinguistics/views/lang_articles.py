@@ -59,4 +59,4 @@ class Edit(LoginRequiredMixin, LangArticleMixin, base.NewEdit):
 class Delete(LoginRequiredMixin, LangArticleMixin, base.Base):
     def post(self, request, lang, folder, type, article):
         article.delete()
-        return redirect('langs:articles:list', code=lang.code, type=type)
+        return redirect(folder)

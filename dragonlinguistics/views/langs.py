@@ -39,17 +39,11 @@ class New(LoginRequiredMixin, LangMixin, base.NewEdit):
 
     def handle_forms(self, request, langform):
         lang = langform.save()
-        try:
-            langparent = models.Folder.get(path='langs')
-        except models.Folder.DoesNotExist:
-            langparent = models.Folder(parent=None, path='langs')  # make sure this folder exists
-            langparent.save()
-        langfolder = models.Folder(parent=langparent, path=f'langs/{lang.code}')
-        langfolder.save()
-        models.Folder(parent=langfolder, path=f'langs/{lang.code}/grammar').save()
-        models.Folder(parent=langfolder, path=f'langs/{lang.code}/lessons').save()
-        models.Folder(parent=langfolder, path=f'langs/{lang.code}/texts').save()
-        return redirect(lang.get_absolute_url())
+        models.Folder.objects.get_or_create(path=f'langs/{lang.code}')
+        models.Folder.objects.get_or_create(path=f'langs/{lang.code}/grammar')
+        models.Folder.objects.get_or_create(path=f'langs/{lang.code}/lessons')
+        models.Folder.objects.get_or_create(path=f'langs/{lang.code}/texts')
+        return redirect(lang)
 
 
 class View(LangMixin, base.Base):
@@ -65,11 +59,11 @@ class Edit(LoginRequiredMixin, LangMixin, base.NewEdit):
         for folder in models.Folder.objects.filter(path__startswith=f'langs/{oldcode}'):
             folder.path.replace(f'langs/{oldcode}', f'langs/{lang.code}')
             folder.save()
-        return redirect(lang.get_absolute_url())
+        return redirect(lang)
 
 
 class Delete(LoginRequiredMixin, LangMixin, base.Base):
     def post(self, request, lang):
         lang.delete()
-        models.Folder.objects.get(path=f'langs/{lang.code}').delete()
+        models.Folder.objects.filter(path__startswith=f'langs/{lang.code}').delete()
         return redirect('langs:list')

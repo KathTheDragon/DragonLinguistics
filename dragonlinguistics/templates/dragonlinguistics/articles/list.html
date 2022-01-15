@@ -3,14 +3,14 @@
 {%block title%}Articles{%endblock%}
 
 {%block breadcrumbs%}
-{%include 'dragonlinguistics/langs/breadcrumbs.html'%}
+{%include 'dragonlinguistics/breadcrumbs.html'%}
 <span>Articles</span>
 {%endblock%}
 
 {%block content%}
 {%if user.is_authenticated%}
 <div class="page-controls">
-    <a class="button" href="{%url 'articles:new'%}">Add article</a>
+    <a class="button" href="{{folder.get_new_url}}">Add article</a>
 </div>
 {%endif%}
 
