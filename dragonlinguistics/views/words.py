@@ -38,7 +38,7 @@ def setnewhomonym(lang, word):
 
 # Views
 class WordMixin(LangMixin):
-    folder = 'words'
+    folder = 'langs/words'
 
     def get_kwargs(self, code, lemma=None, homonym=0, **kwargs):
         if lemma is None:
