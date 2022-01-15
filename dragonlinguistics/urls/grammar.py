@@ -2,7 +2,7 @@ from django.urls import include, path
 from ..views import lang_articles as articles
 
 app_name = 'grammar'
-kwargs = {'folder': 'grammar', 'path': 'langs/{code}/grammar', 'namespace': 'langs:grammar'}
+kwargs = {'folder': 'langs/grammar'}
 urlpatterns = [
     path('', articles.List.as_view(**kwargs), name='list'),
     # path('search', articles.Search.as_view(), name='search'),
