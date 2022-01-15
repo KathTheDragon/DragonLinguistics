@@ -12,7 +12,7 @@ class LangArticleMixin(LangMixin):
     folder = 'langs/articles'
 
     def path(self, code, type):
-        path = 'langs/{code}/{type}'.format(**kwargs)
+        path = 'langs/{code}/{type}'.format(code=code, type=type)
         if path.endswith('articles'):
             path = path[:-9]
         return path.rstrip('/')
