@@ -13,23 +13,22 @@
 <form method="post">
     {%csrf_token%}
     {{wordform.non_field_errors}}
-    <dl>
-        <dt>Keep adding words?</dt>
-        <dd><input id="addmore" type="checkbox" name="addmore" {%if addmore%}checked{%endif%} /></dd>
-        {%include 'dragonlinguistics/snippets/form-fields.html' with form=wordform%}
-
+    <div>
+        <label for="id_addmore">Keep adding words?</label>
+        <input id="id_addmore" type="checkbox" name="addmore" {%if addmore%}checked{%endif%} />
+    </div>
+    {%include 'dragonlinguistics/snippets/form-fields.html' with form=wordform%}
+    <div>
         {{senseformset.management_form}}
-        {%for senseform in senseformset%}
-        <dt><h2>Sense {{forloop.counter}}</h2></dt>
-        <dd>
-            {{senseform.non_field_errors}}
-            <dl>
-                {%include 'dragonlinguistics/snippets/form-fields.html' with form=senseform%}
-            </dl>
-        </dd>
-        {%endfor%}
-    </dl>
+    </div>
+    {%for senseform in senseformset%}
+    <div>
+        <h2>Sense {{forloop.counter}}</h2>
+        {{senseform.non_field_errors}}
+        {%include 'dragonlinguistics/snippets/form-fields.html' with form=senseform%}
+    </div>
+    {%endfor%}
     <input type="submit" value="Add word" />
+    <a class="button" href="{%url 'langs:words:list' lang.code%}">Cancel</a>
 </form><br /><br />
-<a href="{%url 'langs:words:list' lang.code%}">Cancel</a>
 {%endblock%}

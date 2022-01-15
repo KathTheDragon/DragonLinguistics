@@ -13,10 +13,8 @@
 <form method="post">
     {%csrf_token%}
     {{langform.non_field_errors}}
-    <dl>
-        {%include 'dragonlinguistics/snippets/form-fields.html' with form=langform%}
-    </dl>
+    {%include 'dragonlinguistics/snippets/form-fields.html' with form=langform%}
     <input type="submit" value="Add language" />
+    <a class="button" href="{%url 'langs:list'%}">Cancel</a>
 </form><br /><br />
-<a href="{%url 'langs:list'%}">Cancel</a>
 {%endblock%}

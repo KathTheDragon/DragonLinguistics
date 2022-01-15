@@ -14,21 +14,18 @@
     {%csrf_token%}
     <input type="submit" value="Save changes" />
     {{wordform.non_field_errors}}
-    <dl>
-        {%include 'dragonlinguistics/snippets/form-fields.html' with form=wordform%}
-
+    {%include 'dragonlinguistics/snippets/form-fields.html' with form=wordform%}
+    <div>
         {{senseformset.management_form}}
-        {%for senseform in senseformset%}
-        <dt><h2>Sense {{forloop.counter}}</h2></dt>
-        <dd>
-            {{senseform.non_field_errors}}
-            <dl>
-                {%include 'dragonlinguistics/snippets/form-fields.html' with form=senseform%}
-            </dl>
-        </dd>
-        {%endfor%}
-    </dl>
+    </div>
+    {%for senseform in senseformset%}
+    <div>
+        <h2>Sense {{forloop.counter}}</h2>
+        {{senseform.non_field_errors}}
+        {%include 'dragonlinguistics/snippets/form-fields.html' with form=senseform%}
+    </div>
+    {%endfor%}
     <input type="submit" value="Save changes" />
+    <a class="button" href="{{word.get_absolute_url}}">Cancel</a>
 </form><br /><br />
-<a href="{{word.get_absolute_url}}">Cancel</a>
 {%endblock%}
