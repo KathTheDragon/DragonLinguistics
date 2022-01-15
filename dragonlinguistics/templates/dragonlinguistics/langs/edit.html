@@ -1,6 +1,6 @@
 {%extends './base.html'%}
 
-{%block title%}Edit {{lang.name}}{%endblock%}
+{%block title%}Edit &lsquo;{{lang}}&rsquo;{%endblock%}
 
 {%block breadcrumbs%}
 {%include './breadcrumbs.html'%}
@@ -8,13 +8,5 @@
 {%endblock%}
 
 {%block content%}
-<h1>Editing <span class="lang {{lang.code}}">{{lang.name}}</span></h1>
-
-<form method="post">
-    {%csrf_token%}
-    {{langform.non_field_errors}}
-    {%include 'dragonlinguistics/snippets/form-fields.html' with form=langform%}
-    <input type="submit" value="Save changes" />
-    <a class="button" href="{{lang.get_absolute_url}}">Cancel</a>
-</form><br /><br />
+{%include 'dragonlinguistics/snippets/edit.html' with object=lang form=langform%}
 {%endblock%}

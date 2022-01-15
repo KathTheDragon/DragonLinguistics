@@ -1,21 +1,21 @@
 {%extends './base.html'%}
 {%load util%}
 
-{%block title%}Add {%if type|endswith:'s'%}{{type|slice:'-1'}}{%else%}{{type}} article{%endif%}{%endblock%}
+{%block title%}Add {{type|singular:'article'}}{%endblock%}
 
 {%block breadcrumbs%}
 {%include './breadcrumbs.html'%}
-<span>Add {%if type|endswith:'s'%}{{type|slice:'-1'}}{%else%}{{type}} article{%endif%}</span>
+<span>Add {{type|singular:'article'}}</span>
 {%endblock%}
 
 {%block content%}
-<h1>Add {%if type|endswith:'s'%}{{type|capfirst|slice:'-1'}}{%else%}{{type|capfirst}} Article{%endif%}</h1>
+<h1>Add {{type|singular:'article'|title}}</h1>
 
 <form method="post">
     {%csrf_token%}
     {{articleform.non_field_errors}}
     {%include 'dragonlinguistics/snippets/form-fields.html' with form=articleform%}
-    <input type="submit" value="Add article" />
-</form><br /><br />
-<a href="{{folder.get_absolute_url}}">Cancel</a>
+    <input type="submit" value="Add {{type|singular:'article'}}" />
+    <a class="button" href="{{folder.get_absolute_url}}">Cancel</a>
+</form>
 {%endblock%}

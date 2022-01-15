@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.safestring import mark_safe
 
 class Folder(models.Model):
     path = models.TextField(blank=True)
@@ -56,6 +57,9 @@ class Article(models.Model):
 
     def get_delete_url(self):
         return self.urls('delete')
+
+    def get_classes(self):
+        return mark_safe(f'"article"')
 
 
 def parse_path(path, kwargs=None):

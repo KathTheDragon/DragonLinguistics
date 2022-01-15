@@ -17,13 +17,5 @@
 
 {%include 'dragonlinguistics/snippets/quick-search.html' with field=searchform.code%}
 
-{%include 'dragonlinguistics/snippets/prevpage.html'%}
-<ul>
-{%for lang in page.object_list%}
-    <li><a href="{{lang.get_absolute_url}}" class="lang {{lang.code}}">{{lang.name}}</a></li>
-{%empty%}
-    <li>There are no languages</li>
-{%endfor%}
-</ul>
-{%include 'dragonlinguistics/snippets/nextpage.html'%}
+{%include 'dragonlinguistics/snippets/list.html' with types='languages'%}
 {%endblock%}

@@ -7,4 +7,6 @@
 <span>Delete</span>
 {%endblock%}
 
-{%block content%}{%include 'dragonlinguistics/snippets/articles/delete.html'%}{%endblock%}
+{%block content%}
+{%include 'dragonlinguistics/snippets/delete.html' with object=article type='article'%}
+{%endblock%}

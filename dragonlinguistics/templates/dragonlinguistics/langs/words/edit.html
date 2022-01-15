@@ -1,6 +1,6 @@
 {%extends './base.html'%}
 
-{%block title%}Edit {{word.lemma}}{%endblock%}
+{%block title%}Edit &lsquo;{{word}}&rsquo;{%endblock%}
 
 {%block breadcrumbs%}
 {%include './breadcrumbs.html'%}
@@ -8,24 +8,5 @@
 {%endblock%}
 
 {%block content%}
-<h1>Editing <span class="word {{lang.code}}">{{word}}</span></h1>
-
-<form method="post">
-    {%csrf_token%}
-    <input type="submit" value="Save changes" />
-    {{wordform.non_field_errors}}
-    {%include 'dragonlinguistics/snippets/form-fields.html' with form=wordform%}
-    <div>
-        {{senseformset.management_form}}
-    </div>
-    {%for senseform in senseformset%}
-    <div>
-        <h2>Sense {{forloop.counter}}</h2>
-        {{senseform.non_field_errors}}
-        {%include 'dragonlinguistics/snippets/form-fields.html' with form=senseform%}
-    </div>
-    {%endfor%}
-    <input type="submit" value="Save changes" />
-    <a class="button" href="{{word.get_absolute_url}}">Cancel</a>
-</form><br /><br />
+{%include 'dragonlinguistics/snippets/edit.html' with object=word form=wordform formset=senseformset formsetname='Sense'}
 {%endblock%}

@@ -1,0 +1,10 @@
+<div>
+    {{formset.management_form}}
+</div>
+{%for form in formset%}
+<div>
+    <h2>{{formsetname}} {{forloop.counter}}</h2>
+    {{form.non_field_errors}}
+    {%include './form-fields.html'%}
+</div>
+{%endfor%}

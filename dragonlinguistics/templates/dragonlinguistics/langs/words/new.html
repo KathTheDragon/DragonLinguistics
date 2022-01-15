@@ -18,17 +18,8 @@
         <input id="id_addmore" type="checkbox" name="addmore" {%if addmore%}checked{%endif%} />
     </div>
     {%include 'dragonlinguistics/snippets/form-fields.html' with form=wordform%}
-    <div>
-        {{senseformset.management_form}}
-    </div>
-    {%for senseform in senseformset%}
-    <div>
-        <h2>Sense {{forloop.counter}}</h2>
-        {{senseform.non_field_errors}}
-        {%include 'dragonlinguistics/snippets/form-fields.html' with form=senseform%}
-    </div>
-    {%endfor%}
+    {%include 'dragonlinguistics/snippets/formset-fields.html' with formset=senseformset formsetname='Sense'}
     <input type="submit" value="Add word" />
     <a class="button" href="{%url 'langs:words:list' lang.code%}">Cancel</a>
-</form><br /><br />
+</form>
 {%endblock%}

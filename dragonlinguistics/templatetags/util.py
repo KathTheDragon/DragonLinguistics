@@ -19,3 +19,19 @@ def max(m, n):
 @template.defaultfilters.stringfilter
 def endswith(string, suffix):
     return string.endswith(suffix)
+
+@register.filter
+@template.defaultfilters.stringfilter
+def singular(string, countnoun):
+    if string.endswith('s'):
+        return string[:-1]
+    else:
+        return f'{string} {countnoun}'
+
+@register.filter
+@template.defaultfilters.stringfilter
+def plural(string, countnouns):
+    if string.endswith('s'):
+        return string
+    else:
+        return f'{string} {countnouns}'

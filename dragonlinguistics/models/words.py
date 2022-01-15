@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.safestring import mark_safe
 
 from .langs import Language
 
@@ -21,6 +22,12 @@ class Word(models.Model):
     notes = models.TextField(blank=True)
     etymology = models.TextField(blank=True)
 
+    class Meta:
+        ordering = ['lemma', 'homonym']
+        constraints = [
+            models.UniqueConstraint(fields=['lang', 'lemma', 'homonym'], name='unique-homonym')
+        ]
+
     def __str__(self):
         from django.utils.html import format_html
         citation = {
@@ -39,6 +46,14 @@ class Word(models.Model):
             )
         else:
             return citation
+
+    def firstgloss(self):
+        senses = self.sense_set.all()
+        if senses:
+            return senses[0].gloss
+        else:
+            return ''
+    firstgloss.short_description = 'Gloss'
 
     def urls(self, action):
         from django.urls import reverse
@@ -62,19 +77,8 @@ class Word(models.Model):
     def get_delete_url(self):
         return self.urls('delete')
 
-    def firstgloss(self):
-        senses = self.sense_set.all()
-        if senses:
-            return senses[0].gloss
-        else:
-            return ''
-    firstgloss.short_description = 'Gloss'
-
-    class Meta:
-        ordering = ['lemma', 'homonym']
-        constraints = [
-            models.UniqueConstraint(fields=['lang', 'lemma', 'homonym'], name='unique-homonym')
-        ]
+    def get_classes(self):
+        return mark_safe(f'"word {word.lang.code}"')
 
 
 class Sense(models.Model):

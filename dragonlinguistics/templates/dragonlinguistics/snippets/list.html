@@ -1,0 +1,9 @@
+{%include './prevpage.html'%}
+<ul>
+    {%for object in page.object_list%}
+    <li><a class="{{object.get_classes}}" href="{{object.get_absolute_url}}">{{object}}</a></li>
+    {%empty%}
+    <li>There are no {{types}}</li>
+    {%endfor%}
+</ul>
+{%include './nextpage.html'%}

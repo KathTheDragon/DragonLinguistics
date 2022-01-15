@@ -1,0 +1,11 @@
+<h1>Editing &lsquo;<span class="{{object.get_classes}}">{{object}}</span>&rsquo;</h1>
+
+<form method="post">
+    {%csrf_token%}
+    <input type="submit" value="Save changes" />
+    {{form.non_field_errors}}
+    {%include './form-fields.html'%}
+    {%if formset%}{%include './formset-fields.html'%}{%endif%}
+    <input type="submit" value="Save changes" />
+    <a class="button" href="{{object.get_absolute_url}}">Cancel</a>
+</form>

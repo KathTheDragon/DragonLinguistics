@@ -1,10 +1,12 @@
 {%extends './base.html'%}
 
-{%block title%}Edit '{{article.title}}'{%endblock%}
+{%block title%}Edit &lsquo;{{article}}&rsquo;{%endblock%}
 
 {%block breadcrumbs%}
 {%include './breadcrumbs.html'%}
 <span>Edit</span>
 {%endblock%}
 
-{%block content%}{%include 'dragonlinguistics/snippets/articles/edit.html'%}{%endblock%}
+{%block content%}
+{%include 'dragonlinguistics/snippets/edit.html' with object=article form=articleform%}
+{%endblock%}
