@@ -37,10 +37,12 @@ class Article(models.Model):
         else:
             parts = list(self.folder.path.split('/'))
             if parts[0] == 'langs':
-                kwargs['code'] = parts.pop(1)
-                if len(parts) == 1:
-                    parts.append('articles')
-            namespace = ':'.join(parts)
+                kwargs['code'] = parts[1]
+                if len(parts) == 2:
+                    kwargs['type'] = 'articles'
+                else:
+                    kwargs['type'] = parts[3]
+                namespace = 'langs:articles'
         return reverse(f'{namespace}:{action}', kwargs=kwargs)
 
     def get_absolute_url(self):
