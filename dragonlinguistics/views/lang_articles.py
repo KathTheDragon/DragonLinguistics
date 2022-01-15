@@ -11,37 +11,31 @@ from .. import forms, models
 class LangArticleMixin(LangMixin):
     folder = 'langs/articles'
 
-    @property
-    def path(self):
-        path = self.folder.replace('langs/', 'langs/{code}/')
-        if path.endswith('/articles'):
-            return path[:-9]
-        else:
-            return path
-
-    @property
-    def namespace(self):
-        return self.folder.replace('/', ':')
+    def path(self, code, type):
+        path = 'langs/{code}/{type}'.format(**kwargs)
+        if path.endswith('articles'):
+            path = path[:-9]
+        return path.rstrip('/')
 
     def get_kwargs(self, slug=None, **kwargs):
         if slug is None:
             return super().get_kwargs(**kwargs)
         else:
-            article = models.Article.objects.get(folder__path=self.path.format(**kwargs), slug=slug)
+            article = models.Article.objects.get(folder__path=self.path(**kwargs), slug=slug)
             return super().get_kwargs(article=article, **kwargs)
 
 
 class List(LangArticleMixin, base.List):
-    def get_object_list(self, lang, **kwargs):
-        return models.Article.objects.filter(folder__path=self.path.format(code=lang.code))
+    def get_object_list(self, lang, type, **kwargs):
+        return models.Article.objects.filter(folder__path=self.path(code=lang.code, type=type))
 
 
 class New(LoginRequiredMixin, LangArticleMixin, base.NewEdit):
     forms = {'articleform': (forms.Article, 'article')}
 
-    def handle_forms(self, request, lang, articleform):
+    def handle_forms(self, request, lang, type, articleform):
         article = articleform.save(commit=False)
-        article.folder = models.Folder.objects.get(path=self.path.format(code=lang.code))
+        article.folder = models.Folder.objects.get(path=self.path(code=lang.code, type=type))
         article.slug = slugify(article.title)
         article.save()
         return redirect(article)
@@ -54,7 +48,7 @@ class View(LangArticleMixin, base.Base):
 class Edit(LoginRequiredMixin, LangArticleMixin, base.NewEdit):
     forms = {'articleform': (forms.Article, 'article')}
 
-    def handle_forms(self, request, lang, article, articleform):
+    def handle_forms(self, request, lang, type, article, articleform):
         article = articleform.save(commit=False)
         article.slug = slugify(article.title)
         article.save()
@@ -62,6 +56,6 @@ class Edit(LoginRequiredMixin, LangArticleMixin, base.NewEdit):
 
 
 class Delete(LoginRequiredMixin, LangArticleMixin, base.Base):
-    def post(self, request, lang, article):
+    def post(self, request, lang, type, article):
         article.delete()
-        return redirect(f'{self.namespace}:list', code=lang.code)
+        return redirect('langs:articles:list', code=lang.code, type=type)

@@ -1,22 +1,20 @@
 {%extends './base.html'%}
 
-{%block title%}Add article{%endblock%}
+{%block title%}Add {%if type|endswith:'s'%}{{type|slice:'-1'}}{%else%}{{type}} article{%endif%}{%endblock%}
 
 {%block breadcrumbs%}
 {%include './breadcrumbs.html'%}
-<span>Add article</span>
+<span>Add {%if type|endswith:'s'%}{{type|slice:'-1'}}{%else%}{{type}} article{%endif%}</span>
 {%endblock%}
 
 {%block content%}
-<h1>Add Article</h1>
+<h1>Add {%if type|endswith:'s'%}{{type|capfirst|slice:'-1'}}{%else%}{{type|capfirst}} Article{%endif%}</h1>
 
 <form method="post">
     {%csrf_token%}
     {{articleform.non_field_errors}}
-    <dl>
-        {%include 'dragonlinguistics/form-fields.html' with form=articleform%}
-    </dl>
+    {%include 'dragonlinguistics/form-fields.html' with form=articleform%}
     <input type="submit" value="Add article" />
 </form><br /><br />
-<a href="{%url 'langs:articles:list' lang.code%}">Cancel</a>
+<a href="{%url 'langs:articles:list' lang.code type%}">Cancel</a>
 {%endblock%}

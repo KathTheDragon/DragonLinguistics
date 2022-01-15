@@ -1,16 +1,17 @@
 {%extends './base.html'%}
+{%load util%}
 
-{%block title%}{{lang.name}} articles{%endblock%}
+{%block title%}{{lang.name}} {{type}}{%endblock%}
 
 {%block breadcrumbs%}
 {%include 'dragonlinguistics/langs/breadcrumbs.html'%}
-<span>Articles</span>
+<span>{{type|capfirst}}</span>
 {%endblock%}
 
 {%block content%}
 {%if user.is_authenticated%}
 <div class="page-controls">
-    <a class="button" href="{%url 'langs:articles:new' lang.code%}">Add pages</a>
+    <a class="button" href="{%url 'langs:articles:new' lang.code type%}">Add pages</a>
 </div>
 {%endif%}
 
@@ -19,7 +20,7 @@
 {%for article in page.object_list%}
     <li><a href="{{article.get_absolute_url}}" class="article">{{article.title}}</a></li>
 {%empty%}
-    <li>There are no articles.</li>
+    <li>There are no {{type}}{%if not type|endswith:'s'%} articles{%endif%}.</li>
 {%endfor%}
 </ul>
 {%include 'dragonlinguistics/nextpage.html'%}

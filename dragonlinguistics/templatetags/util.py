@@ -14,3 +14,8 @@ def min(m, n):
 @register.filter
 def max(m, n):
     return n if m > n else m
+
+@register.filter
+@template.defaultfilters.stringfilter
+def endswith(string, suffix):
+    return string.endswith(suffix)
