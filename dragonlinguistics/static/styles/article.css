@@ -92,55 +92,6 @@ h1,h2 { border: none; }
     list-style-type: none;
 }
 
-.controls {
-    margin: 1px;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-.btn {
-    padding: 2px 6px;
-    margin: 0;
-    font-size: .875rem;
-    text-align: center;
-    width: 100%;
-    height: 100%;
-    border: 1px solid #e6e6e6;
-    border-bottom: none;
-}
-
-.controls .btn:first-child {
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-}
-
-.controls .btn:last-child {
-    border-bottom: 1px solid #e6e6e6;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-}
-
-.btn.edit {
-    color: #1e74d7;
-}
-
-.btn.edit:hover {
-    color: white;
-    background-color: #1e74d7;
-    border-color: #175ba8;
-}
-
-.btn.delete {
-    color: #dc3545;
-}
-
-.btn.delete:hover {
-    color: white;
-    background-color: #dc3545;
-    border-color: #b02a37;
-}
-
 .edit-article input[type=text] {
     display: inline-block;
     width: 100%;
