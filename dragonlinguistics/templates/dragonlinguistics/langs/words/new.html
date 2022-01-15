@@ -18,7 +18,7 @@
         <input id="id_addmore" type="checkbox" name="addmore" {%if addmore%}checked{%endif%} />
     </div>
     {%include 'dragonlinguistics/snippets/form-fields.html' with form=wordform%}
-    {%include 'dragonlinguistics/snippets/formset-fields.html' with formset=senseformset formsetname='Sense'}
+    {%include 'dragonlinguistics/snippets/formset-fields.html' with formset=senseformset formsetname='Sense'%}
     <input type="submit" value="Add word" />
     <a class="button" href="{%url 'langs:words:list' lang.code%}">Cancel</a>
 </form>
