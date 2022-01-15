@@ -41,7 +41,7 @@ class Article(models.Model):
                 if len(parts) == 2:
                     kwargs['type'] = 'articles'
                 else:
-                    kwargs['type'] = parts[3]
+                    kwargs['type'] = parts[2]
                 namespace = 'langs:articles'
         return reverse(f'{namespace}:{action}', kwargs=kwargs)
 
