@@ -1,4 +1,5 @@
 {%extends './base.html'%}
+{%load util%}
 
 {%block title%}Add {%if type|endswith:'s'%}{{type|slice:'-1'}}{%else%}{{type}} article{%endif%}{%endblock%}
 
