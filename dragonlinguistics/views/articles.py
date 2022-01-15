@@ -1,5 +1,3 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
 from django.shortcuts import redirect
 from django.utils.text import slugify
 
@@ -24,7 +22,7 @@ class List(ArticleMixin, base.List):
         return models.Article.objects.filter(folder=folder)
 
 
-class New(LoginRequiredMixin, ArticleMixin, base.NewEdit):
+class New(ArticleMixin, base.NewEdit):
     forms = {'articleform': (forms.Article, 'article')}
 
     def handle_forms(self, request, folder, articleform):
@@ -39,7 +37,7 @@ class View(ArticleMixin, base.Base):
     pass
 
 
-class Edit(LoginRequiredMixin, ArticleMixin, base.NewEdit):
+class Edit(ArticleMixin, base.NewEdit):
     forms = {'articleform': (forms.Article, 'article')}
 
     def handle_forms(self, request, folder, article, articleform):
@@ -49,7 +47,7 @@ class Edit(LoginRequiredMixin, ArticleMixin, base.NewEdit):
         return redirect(article)
 
 
-class Delete(LoginRequiredMixin, ArticleMixin, base.Base):
+class Delete(ArticleMixin, base.SecureBase):
     def post(self, request, folder, article):
         article.delete()
         return redirect(folder)

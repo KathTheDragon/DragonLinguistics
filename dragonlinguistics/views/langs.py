@@ -1,5 +1,3 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
 from django.shortcuts import redirect
 
 from . import base
@@ -34,7 +32,7 @@ class Search(LangMixin, base.Search):
     form = forms.LanguageSearch
 
 
-class New(LoginRequiredMixin, LangMixin, base.NewEdit):
+class New(LangMixin, base.NewEdit):
     forms = {'langform': (forms.Language, 'lang')}
 
     def handle_forms(self, request, langform):
@@ -50,7 +48,7 @@ class View(LangMixin, base.Base):
     pass
 
 
-class Edit(LoginRequiredMixin, LangMixin, base.NewEdit):
+class Edit(LangMixin, base.NewEdit):
     forms = {'langform': (forms.Language, 'lang')}
 
     def handle_forms(self, request, lang, langform):
@@ -62,7 +60,7 @@ class Edit(LoginRequiredMixin, LangMixin, base.NewEdit):
         return redirect(lang)
 
 
-class Delete(LoginRequiredMixin, LangMixin, base.Base):
+class Delete(LangMixin, base.SecureBase):
     def post(self, request, lang):
         lang.delete()
         models.Folder.objects.filter(path__startswith=f'langs/{lang.code}').delete()

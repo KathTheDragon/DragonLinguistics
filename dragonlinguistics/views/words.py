@@ -1,5 +1,3 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
 from django.shortcuts import redirect
 
 from . import base
@@ -74,7 +72,7 @@ class Search(WordMixin, base.Search):
     form = forms.WordSearch
 
 
-class New(LoginRequiredMixin, WordMixin, base.NewEdit):
+class New(WordMixin, base.NewEdit):
     forms = {'wordform': (forms.Word, 'word'), 'senseformset': (forms.Senses, 'word')}
     extra_fields = ['addmore']
 
@@ -96,7 +94,7 @@ class View(WordMixin, base.Base):
     pass
 
 
-class Edit(LoginRequiredMixin, WordMixin, base.NewEdit):
+class Edit(WordMixin, base.NewEdit):
     forms = {'wordform': (forms.Word, 'word'), 'senseformset': (forms.Senses, 'word')}
 
     def handle_forms(self, request, lang, word, wordform, senseformset):
@@ -110,7 +108,7 @@ class Edit(LoginRequiredMixin, WordMixin, base.NewEdit):
         return redirect(newword.get_absolute_url())
 
 
-class Delete(LoginRequiredMixin, WordMixin, base.Base):
+class Delete(WordMixin, base.SecureBase):
     def post(self, request, lang, word):
         lemma = word.lemma
         word.delete()
@@ -118,7 +116,7 @@ class Delete(LoginRequiredMixin, WordMixin, base.Base):
         return redirect('langs:words:list', code=lang.code)
 
 
-class Import(LoginRequiredMixin, WordMixin, base.Base):
+class Import(WordMixin, base.SecureBase):
     def get_context_data(self, **kwargs):
         kwargs.setdefault('importform', forms.Import(initial={'delimiter': ',', 'quotechar': '"'}))
         return super().get_context_data(**kwargs)

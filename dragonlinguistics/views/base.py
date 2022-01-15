@@ -1,5 +1,6 @@
 from pathlib import PurePath
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.http import Http404
 from django.shortcuts import redirect
@@ -100,6 +101,10 @@ class Base(TemplateView):
             raise Http404
 
 
+class SecureBase(LoginRequiredMixin, Base):
+    pass
+
+
 class List(PageMixin, Base):
     pass
 
@@ -135,7 +140,7 @@ class Search(Base):
             return super().get(request, **kwargs)
 
 
-class NewEdit(Base):
+class NewEdit(SecureBase):
     forms = None  # dict[str, (Form, str)]
     extra_fields = []  # list[str]
 
