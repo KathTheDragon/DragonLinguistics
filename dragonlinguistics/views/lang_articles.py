@@ -13,7 +13,7 @@ class LangArticleMixin(LangMixin):
 
     @property
     def path(self):
-        path = self.folder.replace('langs/', 'langs/{code}')
+        path = self.folder.replace('langs/', 'langs/{code}/')
         if path.endswith('/articles'):
             return path[:-9]
         else:
