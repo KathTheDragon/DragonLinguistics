@@ -29,6 +29,14 @@ body {
     margin: 0.3em 0 1em 0;
 }
 
+#content-header {
+    margin-top: 0.5rem;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    column-gap: var(--spacing);
+    align-items: start;
+}
+
 .controls {
     margin: 1px;
     padding: 0;
