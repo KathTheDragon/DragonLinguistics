@@ -13,11 +13,11 @@ class LangArticleMixin(LangMixin):
 
     @property
     def path(self):
-        return folder.replace('langs/', 'langs/{code}').removesuffix('/articles')
+        return self.folder.replace('langs/', 'langs/{code}').removesuffix('/articles')
 
     @property
     def namespace(self):
-        return folder.replace('/', ':')
+        return self.folder.replace('/', ':')
 
     def get_kwargs(self, slug=None, **kwargs):
         if slug is None:
