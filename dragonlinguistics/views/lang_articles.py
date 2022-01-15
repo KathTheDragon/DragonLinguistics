@@ -1,8 +1,7 @@
-from . import articles
-from .langs import LangMixin
+from . import articles, langs
 
 # Views
-class LangArticleMixin(ArticleMixin, LangMixin):
+class LangArticleMixin(articles.ArticleMixin, langs.LangMixin):
     folder = 'langs/articles'
     path_fmt = 'langs/{code}/{type}'
 
