@@ -13,7 +13,11 @@ class LangArticleMixin(LangMixin):
 
     @property
     def path(self):
-        return self.folder.replace('langs/', 'langs/{code}').removesuffix('/articles')
+        path = self.folder.replace('langs/', 'langs/{code}')
+        if path.endswith('/articles'):
+            return path[:-9]
+        else:
+            return path
 
     @property
     def namespace(self):
