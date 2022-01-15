@@ -18,6 +18,12 @@
 
 {%block content%}
 <h1 class="word {{lang.code}}">{{word}}</h1>
+{%if user.is_authenticated%}
+<div class="controls">
+    <a class="btn edit" href="{{word.get_edit_url}}">Edit</a>
+    <a class="btn delete" href="{{word.get_delete_url}}">Delete</a>
+</div>
+{%endif%}
 <dl>
     {%if word.notes%}<p>{{word.notes|markup}}</p>{%endif%}
     {%if word.etymology%}
@@ -37,8 +43,4 @@
         <h2>No known meanings</h2>
     {%endfor%}
 </dl>
-{%if user.is_authenticated%}
-<a href="{{word.get_edit_url}}">Edit</a><br />
-<a href="{{word.get_delete_url}}">Delete</a>
-{%endif%}
 {%endblock%}
