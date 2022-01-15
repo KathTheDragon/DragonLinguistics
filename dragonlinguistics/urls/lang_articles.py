@@ -1,13 +1,14 @@
 from django.urls import include, path
-from ..views import lang_articles
+from ..views import lang_articles as articles
 
 app_name = 'articles'
 urlpatterns = [
-    path('', lang_articles.List.as_view(), name='list'),
-    path('new', lang_articles.New.as_view(), name='new'),
+    path('', articles.List.as_view(), name='list'),
+    # path('search', articles.Search.as_view(), name='search'),
+    path('new', articles.New.as_view(), name='new'),
     path('<slug:slug>/', include([
-        path('', lang_articles.View.as_view(), name='view'),
-        path('edit', lang_articles.Edit.as_view(), name='edit'),
-        path('delete', lang_articles.Delete.as_view(), name='delete'),
+        path('', articles.View.as_view(), name='view'),
+        path('edit', articles.Edit.as_view(), name='edit'),
+        path('delete', articles.Delete.as_view(), name='delete'),
     ])),
 ]

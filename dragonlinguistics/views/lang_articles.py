@@ -10,19 +10,20 @@ from .. import forms, models
 # Views
 class LangArticleMixin(LangMixin):
     folder = 'lang_articles'
+    path = 'langs/{code}'
+    namespace = 'langs:articles'
 
     def get_kwargs(self, slug=None, **kwargs):
         if slug is None:
             return super().get_kwargs(**kwargs)
         else:
-            code = kwargs['code']
-            article = models.Article.objects.get(folder__path=f'langs/{code}', slug=slug)
+            article = models.Article.objects.get(folder__path=self.path.format(**kwargs), slug=slug)
             return super().get_kwargs(article=article, **kwargs)
 
 
 class List(LangArticleMixin, base.List):
     def get_object_list(self, lang, **kwargs):
-        return models.Article.objects.filter(folder_path=f'langs/{lang.code}')
+        return models.Article.objects.filter(folder__path=self.path.format(code=lang.code))
 
 
 class New(LoginRequiredMixin, LangArticleMixin, base.NewEdit):
@@ -30,10 +31,10 @@ class New(LoginRequiredMixin, LangArticleMixin, base.NewEdit):
 
     def handle_forms(self, request, lang, articleform):
         article = articleform.save(commit=False)
-        article.folder = models.Folder.objects.get(path=f'langs/{lang.code}')
+        article.folder = models.Folder.objects.get(path=self.path.format(code=lang.code))
         article.slug = slugify(article.title)
         article.save()
-        return redirect('langs:articles:view', code=lang.code, slug=article.slug)
+        return redirect(article)
 
 
 class View(LangArticleMixin, base.Base):
@@ -47,10 +48,10 @@ class Edit(LoginRequiredMixin, LangArticleMixin, base.NewEdit):
         article = articleform.save(commit=False)
         article.slug = slugify(article.title)
         article.save()
-        return redirect('langs:articles:view', code=lang.code, slug=article.slug)
+        return redirect(article)
 
 
 class Delete(LoginRequiredMixin, LangArticleMixin, base.Base):
     def post(self, request, lang, article):
         article.delete()
-        return redirect('langs:articles:list', code=lang.code)
+        return redirect(f'{self.namespace}:list', code=lang.code)

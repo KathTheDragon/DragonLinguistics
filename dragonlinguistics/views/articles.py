@@ -29,7 +29,7 @@ class New(LoginRequiredMixin, ArticleMixin, base.NewEdit):
         article = articleform.save(commit=False)
         article.slug = slugify(article.title)
         article.save()
-        return redirect('articles:view', slug=article.slug)
+        return redirect(article)
 
 
 class View(ArticleMixin, base.Base):
@@ -43,7 +43,7 @@ class Edit(LoginRequiredMixin, ArticleMixin, base.NewEdit):
         article = articleform.save(commit=False)
         article.slug = slugify(article.title)
         article.save()
-        return redirect('articles:view', slug=article.slug)
+        return redirect(article)
 
 
 class Delete(LoginRequiredMixin, ArticleMixin, base.Base):
