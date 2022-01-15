@@ -11,7 +11,7 @@
 {%block content%}
 {%if user.is_authenticated%}
 <div class="page-controls">
-    <a class="button" href="{%url 'langs:articles:new' lang.code type%}">Add pages</a>
+    <a class="button" href="{{folder.get_new_url}}">Add pages</a>
 </div>
 {%endif%}
 

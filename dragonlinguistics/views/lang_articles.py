@@ -18,24 +18,25 @@ class LangArticleMixin(LangMixin):
         return path.rstrip('/')
 
     def get_kwargs(self, slug=None, **kwargs):
+        folder = models.Folder.objects.get(path=self.path(**kwargs))
         if slug is None:
-            return super().get_kwargs(**kwargs)
+            return super().get_kwargs(folder=folder, **kwargs)
         else:
-            article = models.Article.objects.get(folder__path=self.path(**kwargs), slug=slug)
-            return super().get_kwargs(article=article, **kwargs)
+            article = models.Article.objects.get(folder=folder, slug=slug)
+            return super().get_kwargs(folder=folder, article=article, **kwargs)
 
 
 class List(LangArticleMixin, base.List):
-    def get_object_list(self, lang, type, **kwargs):
-        return models.Article.objects.filter(folder__path=self.path(code=lang.code, type=type))
+    def get_object_list(self, lang, folder, type, **kwargs):
+        return models.Article.objects.filter(folder=folder)
 
 
 class New(LoginRequiredMixin, LangArticleMixin, base.NewEdit):
     forms = {'articleform': (forms.Article, 'article')}
 
-    def handle_forms(self, request, lang, type, articleform):
+    def handle_forms(self, request, lang, folder, type, articleform):
         article = articleform.save(commit=False)
-        article.folder = models.Folder.objects.get(path=self.path(code=lang.code, type=type))
+        article.folder = folder
         article.slug = slugify(article.title)
         article.save()
         return redirect(article)
@@ -48,7 +49,7 @@ class View(LangArticleMixin, base.Base):
 class Edit(LoginRequiredMixin, LangArticleMixin, base.NewEdit):
     forms = {'articleform': (forms.Article, 'article')}
 
-    def handle_forms(self, request, lang, type, article, articleform):
+    def handle_forms(self, request, lang, folder, type, article, articleform):
         article = articleform.save(commit=False)
         article.slug = slugify(article.title)
         article.save()
@@ -56,6 +57,6 @@ class Edit(LoginRequiredMixin, LangArticleMixin, base.NewEdit):
 
 
 class Delete(LoginRequiredMixin, LangArticleMixin, base.Base):
-    def post(self, request, lang, type, article):
+    def post(self, request, lang, folder, type, article):
         article.delete()
         return redirect('langs:articles:list', code=lang.code, type=type)

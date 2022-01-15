@@ -16,5 +16,5 @@
     {%include 'dragonlinguistics/form-fields.html' with form=articleform%}
     <input type="submit" value="Add article" />
 </form><br /><br />
-<a href="{%url 'langs:articles:list' lang.code type%}">Cancel</a>
+<a href="{{folder.get_absolute_url}}">Cancel</a>
 {%endblock%}
