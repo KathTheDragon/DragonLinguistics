@@ -7,9 +7,16 @@ from .. import forms, models
 # Views
 class ArticleMixin:
     folder = 'articles'
+    path_fmt = ''
+
+    def path(self, **kwargs):
+        path = self.path_fmt.format(**kwargs)
+        if path.endswith('articles'):
+            path = path[:9]
+        return path.rstrip('/')
 
     def get_kwargs(self, slug=None, **kwargs):
-        folder, _ = models.Folder.objects.get_or_create(path='')
+        folder, _ = models.Folder.objects.get(path=self.path(**kwargs))
         if slug is None:
             return super().get_kwargs(folder=folder, **kwargs)
         else:
@@ -25,7 +32,7 @@ class List(ArticleMixin, base.List):
 class New(ArticleMixin, base.NewEdit):
     forms = {'articleform': (forms.Article, 'article')}
 
-    def handle_forms(self, request, folder, articleform):
+    def handle_forms(self, request, folder, articleform, **kwargs):
         article = articleform.save(commit=False)
         article.folder = folder
         article.slug = slugify(article.title)
@@ -40,7 +47,7 @@ class View(ArticleMixin, base.Base):
 class Edit(ArticleMixin, base.NewEdit):
     forms = {'articleform': (forms.Article, 'article')}
 
-    def handle_forms(self, request, folder, article, articleform):
+    def handle_forms(self, request, folder, article, articleform, **kwargs):
         article = articleform.save(commit=False)
         article.slug = slugify(article.title)
         article.save()
@@ -48,6 +55,6 @@ class Edit(ArticleMixin, base.NewEdit):
 
 
 class Delete(ArticleMixin, base.SecureBase):
-    def post(self, request, folder, article):
+    def post(self, request, folder, article, **kwargs):
         article.delete()
         return redirect(folder)
