@@ -16,7 +16,7 @@ class ArticleMixin:
         return path.rstrip('/')
 
     def get_kwargs(self, slug=None, **kwargs):
-        folder, _ = models.Folder.objects.get(path=self.path(**kwargs))
+        folder = models.Folder.objects.get(path=self.path(**kwargs))
         if slug is None:
             return super().get_kwargs(folder=folder, **kwargs)
         else:
