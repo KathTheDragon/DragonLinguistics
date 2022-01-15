@@ -1,7 +1,7 @@
 from django.db import models
 
 class Folder(models.Model):
-    path = models.TextField()
+    path = models.TextField(blank=True)
 
     @property
     def name(self):
