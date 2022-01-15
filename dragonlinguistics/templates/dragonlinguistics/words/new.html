@@ -16,7 +16,7 @@
     <dl>
         <dt>Keep adding words?</dt>
         <dd><input id="addmore" type="checkbox" name="addmore" {%if addmore%}checked{%endif%} /></dd>
-        {%include 'dragonlinguistics/form-fields.html' with form=wordform%}
+        {%include 'dragonlinguistics/snippets/form-fields.html' with form=wordform%}
 
         {{senseformset.management_form}}
         {%for senseform in senseformset%}
@@ -24,7 +24,7 @@
         <dd>
             {{senseform.non_field_errors}}
             <dl>
-                {%include 'dragonlinguistics/form-fields.html' with form=senseform%}
+                {%include 'dragonlinguistics/snippets/form-fields.html' with form=senseform%}
             </dl>
         </dd>
         {%endfor%}

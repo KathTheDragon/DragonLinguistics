@@ -27,15 +27,15 @@
 </div>
 {%endif%}
 
-{%include 'dragonlinguistics/quick-search.html' with field=searchform.lemma%}
+{%include 'dragonlinguistics/snippets/quick-search.html' with field=searchform.lemma%}
 
-{%include 'dragonlinguistics/prevpage.html'%}
+{%include 'dragonlinguistics/snippets/prevpage.html'%}
 <ul id="lemmas">
 {%for word in page.object_list%}
     <li><a href="{{word.get_absolute_url}}"><span class="word {{lang.code}}">{{word}}</span> &quot;{{word.firstgloss}}&quot;</a></li>
 {%endfor%}
 </ul>
-{%include 'dragonlinguistics/nextpage.html'%}
+{%include 'dragonlinguistics/snippets/nextpage.html'%}
 
 <!-- <hr class="divider" /> -->
 {%endblock%}

@@ -15,7 +15,7 @@
 </div>
 {%endif%}
 
-{%include 'dragonlinguistics/prevpage.html'%}
+{%include 'dragonlinguistics/snippets/prevpage.html'%}
 <ul>
 {%for article in page.object_list%}
     <li><a href="{{article.get_absolute_url}}" class="article">{{article.title}}</a></li>
@@ -23,5 +23,5 @@
     <li>There are no {{type}}{%if not type|endswith:'s'%} articles{%endif%}.</li>
 {%endfor%}
 </ul>
-{%include 'dragonlinguistics/nextpage.html'%}
+{%include 'dragonlinguistics/snippets/nextpage.html'%}
 {%endblock%}

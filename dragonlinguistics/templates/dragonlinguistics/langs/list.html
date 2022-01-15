@@ -15,9 +15,9 @@
 </div>
 {%endif%}
 
-{%include 'dragonlinguistics/quick-search.html' with field=searchform.code%}
+{%include 'dragonlinguistics/snippets/quick-search.html' with field=searchform.code%}
 
-{%include 'dragonlinguistics/prevpage.html'%}
+{%include 'dragonlinguistics/snippets/prevpage.html'%}
 <ul>
 {%for lang in page.object_list%}
     <li><a href="{{lang.get_absolute_url}}" class="lang {{lang.code}}">{{lang.name}}</a></li>
@@ -25,5 +25,5 @@
     <li>There are no languages</li>
 {%endfor%}
 </ul>
-{%include 'dragonlinguistics/nextpage.html'%}
+{%include 'dragonlinguistics/snippets/nextpage.html'%}
 {%endblock%}

@@ -14,7 +14,7 @@
     {%csrf_token%}
     {{importform.non_field_errors}}
     <dl>
-        {%include 'dragonlinguistics/form-fields.html' with form=importform%}
+        {%include 'dragonlinguistics/snippets/form-fields.html' with form=importform%}
     </dl>
     <input type="submit" value="Import words" />
 </form>
