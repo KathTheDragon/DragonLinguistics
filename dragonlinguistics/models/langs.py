@@ -17,4 +17,4 @@ class Language(models.Model):
         return reverse('langs:view', kwargs={'code': self.code})
 
     def get_classes(self):
-        return mark_safe(f'"lang {lang.code}"')
+        return mark_safe(f'"lang {self.code}"')

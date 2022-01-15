@@ -78,7 +78,7 @@ class Word(models.Model):
         return self.urls('delete')
 
     def get_classes(self):
-        return mark_safe(f'"word {word.lang.code}"')
+        return mark_safe(f'"word {self.lang.code}"')
 
 
 class Sense(models.Model):
