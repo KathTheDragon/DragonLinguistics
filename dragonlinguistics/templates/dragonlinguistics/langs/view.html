@@ -9,7 +9,15 @@
 {%endblock%}
 
 {%block content%}
-<h1 class="lang {{lang.code}}">{{lang.name}}</h1>
+<div id="content-header">
+    <h1 class="lang {{lang.code}}">{{lang}}</h1>
+    {%if user.is_authenticated%}
+    <div class="controls">
+        <a class="btn edit" href="{{lang.get_edit_url}}">Edit</a>
+        <a class="btn delete" href="{{lang.get_delete_url}}">Delete</a>
+    </div>
+    {%endif%}
+</div>
 
 <p>{{lang.blurb|markup}}</p>
 
@@ -20,10 +28,5 @@
     <li><a href="{%url 'langs:articles:list' lang.code 'grammar'%}">View grammar</a></li>
     <li><a href="{%url 'langs:articles:list' lang.code 'lessons'%}">View lessons</a></li>
     <li><a href="{%url 'langs:articles:list' lang.code 'texts'%}">View texts</a></li>
-    {%if user.is_authenticated%}
-    <li><a href="{%url 'langs:words:new' lang.code%}">Add a new word</a></li>
-    <li><a href="{%url 'langs:edit' lang.code%}">Edit {{lang.name}}</a></li>
-    <li><a href="{%url 'langs:delete' lang.code%}">Delete {{lang.name}}</a></li>
-    {%endif%}
 </ul>
 {%endblock%}
