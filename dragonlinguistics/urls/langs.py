@@ -17,7 +17,6 @@ class ArticleType:
 register(LangCode, 'code')
 register(ArticleType, 'type')
 
-
 app_name = 'langs'
 urlpatterns = [
     path('', langs.List.as_view(), name='list'),
