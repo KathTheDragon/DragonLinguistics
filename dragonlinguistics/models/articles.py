@@ -62,7 +62,7 @@ class Article(models.Model):
 def parse_path(path, kwargs=None):
     if kwargs is None:
         kwargs = {}
-    parts = self.path.split('/')
+    parts = path.split('/')
     if parts[0] == 'langs':
         kwargs['code'] = parts[1]
         if len(parts) == 2:
