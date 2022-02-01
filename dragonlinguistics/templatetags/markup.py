@@ -201,7 +201,7 @@ def process_link(command, id, classes, data, text):
 
 SIMPLE_TAGS = [
     'br', 'dl', 'dt', 'dd', 'div', 'em', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    'p', 'table', 'tr', 'th',
+    'p', 'table', 'tr', 'th', 'blockquote',
 ]
 
 def process_format(command, id, classes, data, text):
