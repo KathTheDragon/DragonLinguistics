@@ -253,6 +253,12 @@ def process_format(command, id, classes, data, text):
             text = f'\n{indent}{heading}\n{text}'
         else:
             text = f'{heading}{text}'
+    elif command == 'footnote':
+        command = 'p'
+        number, = data
+        classes.append('footnote')
+        prefix = html('sup', {}, '1')
+        text = f'{prefix}{text}'
     else:
         return error('Invalid command')
 

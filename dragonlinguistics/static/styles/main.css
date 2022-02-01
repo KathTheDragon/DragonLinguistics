@@ -577,3 +577,12 @@ label {
 .low-opacity {
     opacity: .3;
 }
+
+
+/*
+ *     MARKUP STYLES
+ */
+
+.footnote {
+    font-size: x-small;
+}
