@@ -30,7 +30,7 @@ class Article(models.Model):
     description = models.CharField(blank=True, max_length=255)
     content = models.TextField()
     tags = models.TextField(blank=True)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField()
     edited = models.DateTimeField(auto_now=True)
 
     def __str__(self):

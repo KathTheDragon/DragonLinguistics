@@ -1,4 +1,5 @@
-from django.forms import ModelForm, TextInput
+from datetime import datetime
+from django.forms import DateTimeField, ModelForm, TextInput
 
 from .. import models
 
@@ -8,7 +9,16 @@ class Folder(ModelForm):
         fields = '__all__'
 
 
-class Article(ModelForm):
+class NewArticle(ModelForm):
+    created = DateTimeField(initial=datetime.now)
+
+    class Meta:
+        model = models.Article
+        fields = ['title', 'description', 'content', 'tags', 'created']
+        widgets = {'tags': TextInput()}
+
+
+class EditArticle(ModelForm):
     class Meta:
         model = models.Article
         fields = ['title', 'description', 'content', 'tags']

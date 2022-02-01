@@ -30,7 +30,7 @@ class List(ArticleMixin, base.List):
 
 
 class New(ArticleMixin, base.NewEdit):
-    forms = {'articleform': (forms.Article, 'article')}
+    forms = {'articleform': (forms.NewArticle, 'article')}
 
     def handle_forms(self, request, folder, articleform, **kwargs):
         article = articleform.save(commit=False)
@@ -45,7 +45,7 @@ class View(ArticleMixin, base.Base):
 
 
 class Edit(ArticleMixin, base.NewEdit):
-    forms = {'articleform': (forms.Article, 'article')}
+    forms = {'articleform': (forms.EditArticle, 'article')}
 
     def handle_forms(self, request, folder, article, articleform, **kwargs):
         article = articleform.save(commit=False)
