@@ -28,7 +28,7 @@ class Reference(models.Model):
         return mark_safe(html)
 
     def short_str(self):
-        author = author.split(',', maxsplit=1)[0]
+        author = self.author.split(',', maxsplit=1)[0]
         index = chr(self.index + ord('a'))
         return f'{author} ({self.year}{index})'
 
