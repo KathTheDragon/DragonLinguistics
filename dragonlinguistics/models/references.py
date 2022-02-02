@@ -10,3 +10,20 @@ class Reference(models.Model):
 
     class Meta:
         ordering = ['author', 'year', 'id']
+
+    def urls(self, action):
+        from django.urls import reverse
+        titles = [
+            title for (title,) in
+            self.objects.filter(author=self.author, year=self.year).values_list('titles')
+        ]
+        return reverse(
+            f'references:{action}',
+            kwargs={'author': self.author, 'year': self.year, 'index': titles.index(self.title)}
+        )
+
+    def get_edit_url(self):
+        return self.urls('edit')
+
+    def get_delete_url(self):
+        return self.urls('delete')
