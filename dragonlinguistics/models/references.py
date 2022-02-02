@@ -24,7 +24,7 @@ class Reference(models.Model):
     def long_str(self):
         html = f'{self.year} - <a href="{self.link}" target="_blank"><em>{self.title}</em></a>'
         if self.comment:
-            html += f' ({comment})'
+            html += f' ({self.comment})'
         return mark_safe(html)
 
     def short_str(self):
