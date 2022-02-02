@@ -40,7 +40,7 @@ class New(ReferenceMixin, base.NewEdit):
     forms = {'referenceform': (forms.Reference, 'reference')}
     extra_fields = ['addmore']
 
-    def handle_forms(self, request, referenceform):
+    def handle_forms(self, request, referenceform, addmore):
         reference = referenceform.save()
         if addmore is not None:
             return self.get(request, addmore=addmore)
