@@ -38,10 +38,14 @@ class Search(ReferenceMixin, base.Search):
 
 class New(ReferenceMixin, base.NewEdit):
     forms = {'referenceform': (forms.Reference, 'reference')}
+    extra_fields = ['addmore']
 
     def handle_forms(self, request, referenceform):
         reference = referenceform.save()
-        return redirect('references:list')
+        if addmore is not None:
+            return self.get(request, addmore=addmore)
+        else:
+            return redirect('references:list')
 
 
 class Edit(ReferenceMixin, base.NewEdit):
