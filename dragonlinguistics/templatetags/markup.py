@@ -158,7 +158,7 @@ def process_link(command, id, classes, data, text):
             section = ''
 
         try:
-            article = Article.objects.get(folder=None, slug=slugify(title))
+            article = Article.objects.get(folder__path='', slug=slugify(title))
         except Article.DoesNotExist:
             return error('Invalid article title')
 
