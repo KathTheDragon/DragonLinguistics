@@ -25,7 +25,7 @@ class List(base.SearchMixin, ReferenceMixin, base.Base):
         )
         authors = objectlist.values_list('author').distinct()
         author_references = {}
-        for author in authors:
+        for (author,) in authors:
             author_references[author] = objectlist.filter(author=author)
         kwargs.setdefault('authors', authors)
         kwargs.setdefault('author_references', author_references)
