@@ -53,3 +53,11 @@ class WordAdmin(admin.ModelAdmin):
     inlines = (SenseInline,)
     form = WordForm
     save_on_top = True
+
+
+@admin.register(models.Reference)
+class ReferenceAdmin(admin.ModelAdmin):
+    list_display = ('author', 'year', 'title')
+    list_filter = ('author',)
+    search_fields = ('author', 'year', 'title')
+    save_on_top = True
