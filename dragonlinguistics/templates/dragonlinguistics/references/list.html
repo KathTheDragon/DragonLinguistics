@@ -23,7 +23,7 @@
 <h3>{{author}}</h3>
 <ul>
     {%for reference in references%}
-    <li>{{reference.year}} - <a href="{{reference.link}}" target="_blank"><em>{{reference.title}}</em></a>{%if user.is_authenticated%}<a class="button" href="{{reference.get_edit_url}}">Edit</a><a class="button" href="{{reference.get_delete_url}}">Delete</a>{%endif%}</li>
+    <li id="{{reference.short_str|slugify}}">{{reference.long_str}}{%if user.is_authenticated%}<a class="button" href="{{reference.get_edit_url}}">Edit</a><a class="button" href="{{reference.get_delete_url}}">Delete</a>{%endif%}</li>
     {%endfor%}
 </ul>
 
