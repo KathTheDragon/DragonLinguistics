@@ -17,10 +17,10 @@
 
 {%include 'dragonlinguistics/snippets/quick-search.html' with field=searchform.author%}
 
-{%for author in authors%}
+{%for author, references in author_references.items%}
 <h3>{{author}}</h3>
 <ul>
-    {%for reference in author_references.author%}
+    {%for reference in references%}
     <li>{{reference.year}} - <a href="{{reference.link}}" target="_blank"><em>{{reference.title}}</em></a></li>
     {%endfor%}
 </ul>
