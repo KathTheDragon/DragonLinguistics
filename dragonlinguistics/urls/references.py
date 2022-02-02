@@ -8,7 +8,7 @@ class Char:
         return ord(value) - ord('a')
 
     def to_url(self, value):
-        return char(value + ord('a'))
+        return chr(value + ord('a'))
 
 register(Char, 'char')
 
