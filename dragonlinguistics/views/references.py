@@ -14,15 +14,22 @@ class ReferenceMixin:
             return super().get_kwargs(reference=reference, **kwargs)
 
 
-class List(base.SearchMixin, ReferenceMixin, base.List):
+class List(base.SearchMixin, ReferenceMixin, base.Base):
     form = forms.ReferenceSearch
 
-    def get_object_list(self, **kwargs):
+    def get_context_data(self, **kwargs):
         query = self.request.GET
-        return models.Reference.objects.filter(
+        objectlist = models.Reference.objects.filter(
             **base.fuzzysearch(author=query.get('author', ''), title=query.get('title', '')),
             **base.strictsearch(year=int(query.get('year', '0'))),
         )
+        authors = objectlist.values_list('author').distinct()
+        author_references = {}
+        for author in authors:
+            author_references[author] = objectlist.filter(author=author)
+        kwargs.setdefault('authors', authors)
+        kwargs.setdefault('author_references', author_references)
+        return super().get_context_data(**kwargs)
 
 
 class Search(ReferenceMixin, base.Search):

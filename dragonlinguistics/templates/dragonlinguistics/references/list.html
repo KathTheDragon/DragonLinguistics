@@ -17,5 +17,15 @@
 
 {%include 'dragonlinguistics/snippets/quick-search.html' with field=searchform.author%}
 
-{%include 'dragonlinguistics/snippets/list.html' with types='references'%}
+{%for author in authors%}
+<h3>{{author}}</h3>
+<ul>
+    {%for reference in author_references.author%}
+    <li>{{reference.year}} - <a href="{{reference.link}}" target="_blank"><em>{{reference.title}}</em></a></li>
+    {%endfor%}
+</ul>
+
+{%empty%}
+<p>There are no {{references}}.</p>
+{%endfor%}
 {%endblock%}
