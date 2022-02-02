@@ -1,0 +1,21 @@
+{%extends './base.html'%}
+
+{%block title%}Bibliography{%endblock%}
+
+{%block breadcrumbs%}
+{%include '../breadcrumbs.html'%}
+<span>Bibliography</span>
+{%endblock%}
+
+{%block content%}
+{%if user.is_authenticated%}
+<div class="page-controls">
+    <a class="button" href="{%url 'references:new'%}">Add reference</a>
+    <a class="button" href="{%url 'references:search'%}">Search references</a>
+</div>
+{%endif%}
+
+{%include 'dragonlinguistics/snippets/quick-search.html' with field=searchform.author%}
+
+{%include 'dragonlinguistics/snippets/list.html' with types='references'%}
+{%endblock%}

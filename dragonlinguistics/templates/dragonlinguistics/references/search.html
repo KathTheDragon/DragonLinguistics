@@ -1,0 +1,10 @@
+{%extends './base.html'%}
+
+{%block title%}Search{%endblock%}
+
+{%block breadcrumbs%}
+{%include './breadcrumbs.html'%}
+<span>Search</span>
+{%endblock%}
+
+{%block content%}{%include 'dragonlinguistics/snippets/search.html' with form=searchform%}{%endblock%}

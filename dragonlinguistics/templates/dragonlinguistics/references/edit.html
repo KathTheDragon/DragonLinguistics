@@ -1,0 +1,12 @@
+{%extends './base.html'%}
+
+{%block title%}Edit {{reference.author}} ({{reference.year}}){%endblock%}
+
+{%block breadcrumbs%}
+{%include './breadcrumbs.html'%}
+<span>Edit</span>
+{%endblock%}
+
+{%block content%}
+{%include 'dragonlinguistics/snippets/edit.html' with object=reference form=referenceform%}
+{%endblock%}
