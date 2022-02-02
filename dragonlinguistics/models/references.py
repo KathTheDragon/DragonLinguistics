@@ -15,7 +15,7 @@ class Reference(models.Model):
         from django.urls import reverse
         titles = [
             title for (title,) in
-            self.objects.filter(author=self.author, year=self.year).values_list('titles')
+            Reference.objects.filter(author=self.author, year=self.year).values_list('titles')
         ]
         return reverse(
             f'references:{action}',
