@@ -585,4 +585,5 @@ label {
 
 .footnote {
     font-size: x-small;
+    line-height: 1.5em;  /* Needed to get the correct spacing */
 }
