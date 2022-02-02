@@ -14,7 +14,7 @@
     {%csrf_token%}
     {{referenceform.non_field_errors}}
     <div>
-        <label for="id_addmore">Keep adding words?</label>
+        <label for="id_addmore">Keep adding references?</label>
         <input id="id_addmore" type="checkbox" name="addmore" {%if addmore%}checked{%endif%} />
     </div>
     {%include 'dragonlinguistics/snippets/form-fields.html' with form=referenceform%}
