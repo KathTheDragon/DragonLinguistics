@@ -51,8 +51,8 @@ class New(ReferenceMixin, base.NewEdit):
 class Edit(ReferenceMixin, base.NewEdit):
     forms = {'referenceform': (forms.Reference, 'reference')}
 
-    def handle_forms(self, request, referenceform):
-        reference = referenceform.save()
+    def handle_forms(self, request, reference, referenceform):
+        referenceform.save()
         return redirect('references:list')
 
 
