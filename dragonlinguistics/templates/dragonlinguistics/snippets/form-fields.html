@@ -1,5 +1,5 @@
 {%for field in form.visible_fields%}
-<div>
+<div class="form-field">
     {{field.label_tag}}
     {{field}}
     {%if field.errors%}{{field.errors}}{%endif%}

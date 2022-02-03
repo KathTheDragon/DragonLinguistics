@@ -1,0 +1,12 @@
+div.form-field {
+    display: grid;
+    grid-template-columns: min-content;
+}
+
+div.form-field > input {
+    grid-column: 2
+}
+
+div.form-field > textarea {
+    grid-column: 1 / span 2;
+}
