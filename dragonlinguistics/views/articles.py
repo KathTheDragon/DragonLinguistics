@@ -1,12 +1,12 @@
 from django.shortcuts import redirect
-from django.utils.text import slugify
 
 from . import base
 from .. import forms, models
 
 # Views
 class ArticleMixin:
-    folder = 'articles'
+    parts = ['articles']
+    instance = 'article'
     path_fmt = ''
 
     def path(self, **kwargs):
@@ -30,14 +30,13 @@ class List(ArticleMixin, base.List):
 
 
 class New(ArticleMixin, base.NewEdit):
-    forms = {'articleform': (forms.NewArticle, 'article')}
+    forms = {'articleform': forms.EditArticle}
 
     def handle_forms(self, request, folder, articleform, **kwargs):
         article = articleform.save(commit=False)
         article.folder = folder
-        article.slug = slugify(article.title)
         article.save()
-        return redirect(article)
+        return article
 
 
 class View(ArticleMixin, base.Base):
@@ -45,16 +44,12 @@ class View(ArticleMixin, base.Base):
 
 
 class Edit(ArticleMixin, base.NewEdit):
-    forms = {'articleform': (forms.EditArticle, 'article')}
+    forms = {'articleform': forms.EditArticle}
 
     def handle_forms(self, request, folder, article, articleform, **kwargs):
-        article = articleform.save(commit=False)
-        article.slug = slugify(article.title)
-        article.save()
-        return redirect(article)
+        return articleform.save()
 
 
-class Delete(ArticleMixin, base.SecureBase):
-    def post(self, request, folder, article, **kwargs):
-        article.delete()
-        return redirect(folder)
+class Delete(ArticleMixin, base.Delete):
+    def get_redirect_to(self, folder):
+        return folder

@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.safestring import mark_safe
+from django.utils.text import slugify
 
 class Folder(models.Model):
     path = models.TextField(blank=True)
@@ -39,6 +40,10 @@ class Article(models.Model):
     @property
     def tag_list(self):
         return list(filter(None, map(lambda t: t.strip(), self.tags.split(','))))
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
     def urls(self, action):
         from django.urls import reverse

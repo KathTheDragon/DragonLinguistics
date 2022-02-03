@@ -81,15 +81,22 @@ BASE_PATH = PurePath('dragonlinguistics')
 
 
 class Base(TemplateView):
-    folder = ''
+    parts = []
     name = None
+    instance = None
+
+    def get_folder(self):
+        return '/'.join(self.parts)
+
+    def get_namespace(self):
+        return ':'.join(self.parts)
 
     def get_template_names(self):
         if self.name is not None:
             name = self.name
         else:
             name = self.__class__.__name__.lower().replace('_', '-')
-        return [(BASE_PATH / self.folder / name).with_suffix('.html').as_posix()]
+        return [(BASE_PATH / self.get_folder() / name).with_suffix('.html').as_posix()]
 
     def get_kwargs(self, **kwargs):
         return kwargs
@@ -110,7 +117,6 @@ class List(PageMixin, Base):
 
 
 class Search(Base):
-    target_url = None
     form = None
 
     def get_form(self):
@@ -124,10 +130,7 @@ class Search(Base):
         return super().get_context_data(**kwargs)
 
     def get_target_url(self):
-        if self.target_url is None:
-            raise ValueError
-        else:
-            return self.target_url
+        return f'{self.get_namespace()}:list'
 
     def get(self, request, **kwargs):
         if request.GET:
@@ -141,15 +144,17 @@ class Search(Base):
 
 
 class NewEdit(SecureBase):
-    forms = None  # dict[str, (Form, str)]
+    forms = None  # dict[str, Form]
     extra_fields = []  # list[str]
+    use_addmore = False  # bool
 
     def get_context_data(self, **kwargs):
         if self.forms is None:
             raise ValueError
 
-        for attr, (form, instance) in self.forms.items():
-            kwargs.setdefault(attr, form(instance=kwargs.get(instance)))
+        instance = kwargs.get(self.instance)
+        for attr, form in self.forms.items():
+            kwargs.setdefault(attr, form(instance=instance))
         return super().get_context_data(**kwargs)
 
     def post(self, request, **kwargs):
@@ -162,6 +167,27 @@ class NewEdit(SecureBase):
         }
         extra_fields = {attr: request.POST.get(attr) for attr in self.extra_fields}
         if all(form.is_valid() for form in forms.values()):
-            return self.handle_forms(request, **kwargs, **forms, **extra_fields)
+            obj = self.handle_forms(request, **kwargs, **forms, **extra_fields)
+            addmore = request.POST.get('addmore', False)
+            if addmore:
+                return self.get(request, **kwargs, addmore=addmore)
+            else:
+                return redirect(obj)
         else:
             return self.get(request, **kwargs, **forms, **extra_fields)
+
+
+class Delete(SecureBase):
+    def cleanup(self, **kwargs):
+        pass
+
+    def get_redirect_to(self, **kwargs):
+        return f'{self.get_namespace()}:list'
+
+    def get_redirect_kwargs(self, **kwargs):
+        return {}
+
+    def post(self, request, **kwargs):
+        kwargs.pop(self.instance).delete()
+        self.cleanup(**kwargs)
+        return redirect(self.get_redirect_to(**kwargs), **self.get_redirect_kwargs(**kwargs))

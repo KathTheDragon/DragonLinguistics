@@ -5,7 +5,8 @@ from .. import forms, models
 
 # Views
 class LangMixin:
-    folder = 'langs'
+    parts = ['langs']
+    instance = 'lang'
 
     def get_kwargs(self, code=None, **kwargs):
         if code is None:
@@ -28,12 +29,11 @@ class List(base.SearchMixin, LangMixin, base.List):
 
 
 class Search(LangMixin, base.Search):
-    target_url = 'langs:list'
     form = forms.LanguageSearch
 
 
 class New(LangMixin, base.NewEdit):
-    forms = {'langform': (forms.Language, 'lang')}
+    forms = {'langform': forms.Language}
 
     def handle_forms(self, request, langform):
         lang = langform.save()
@@ -41,7 +41,7 @@ class New(LangMixin, base.NewEdit):
         models.Folder.objects.get_or_create(path=f'langs/{lang.code}/grammar')
         models.Folder.objects.get_or_create(path=f'langs/{lang.code}/lessons')
         models.Folder.objects.get_or_create(path=f'langs/{lang.code}/texts')
-        return redirect(lang)
+        return lang
 
 
 class View(LangMixin, base.Base):
@@ -49,19 +49,16 @@ class View(LangMixin, base.Base):
 
 
 class Edit(LangMixin, base.NewEdit):
-    forms = {'langform': (forms.Language, 'lang')}
+    forms = {'langform': forms.Language}
 
     def handle_forms(self, request, lang, langform):
         oldcode = lang.code
         lang = langform.save()
         for folder in models.Folder.objects.filter(path__startswith=f'langs/{oldcode}'):
-            folder.path.replace(f'langs/{oldcode}', f'langs/{lang.code}')
+            folder.path = folder.path.replace(f'langs/{oldcode}', f'langs/{lang.code}')
             folder.save()
-        return redirect(lang)
+        return lang
 
 
 class Delete(LangMixin, base.SecureBase):
-    def post(self, request, lang):
-        lang.delete()
-        models.Folder.objects.filter(path__startswith=f'langs/{lang.code}').delete()
-        return redirect('langs:list')
+    pass

@@ -2,7 +2,7 @@ from . import articles, langs
 
 # Views
 class LangArticleMixin(articles.ArticleMixin, langs.LangMixin):
-    folder = 'langs/articles'
+    parts = ['langs', 'articles']
     path_fmt = 'langs/{code}/{type}'
 
 

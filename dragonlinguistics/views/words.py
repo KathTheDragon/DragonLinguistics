@@ -38,7 +38,8 @@ def setnewhomonym(lang, word):
 
 # Views
 class WordMixin(LangMixin):
-    folder = 'langs/words'
+    parts = ['langs', 'words']
+    instance = 'word'
 
     def get_kwargs(self, code, lemma=None, homonym=1, **kwargs):
         if lemma is None:
@@ -68,15 +69,13 @@ class List(WordMixin, base.SearchMixin, base.List):
 
 
 class Search(WordMixin, base.Search):
-    target_url = 'langs:words:list'
     form = forms.WordSearch
 
 
 class New(WordMixin, base.NewEdit):
-    forms = {'wordform': (forms.Word, 'word'), 'senseformset': (forms.Senses, 'word')}
-    extra_fields = ['addmore']
+    forms = {'wordform': forms.Word, 'senseformset': forms.Senses}
 
-    def handle_forms(self, request, lang, wordform, senseformset, addmore):
+    def handle_forms(self, request, lang, wordform, senseformset):
         newword = wordform.save(commit=False)
         newword.lang = lang
         newword.save()
@@ -84,10 +83,7 @@ class New(WordMixin, base.NewEdit):
         for sense in senses:
             sense.word = newword
             sense.save()
-        if addmore is not None:
-            return self.get(request, lang=lang, addmore=addmore)
-        else:
-            return redirect(newword)
+        return newword
 
 
 class View(WordMixin, base.Base):
@@ -95,19 +91,17 @@ class View(WordMixin, base.Base):
 
 
 class Edit(WordMixin, base.NewEdit):
-    forms = {'wordform': (forms.Word, 'word'), 'senseformset': (forms.Senses, 'word')}
+    forms = {'wordform': forms.Word, 'senseformset': forms.Senses}
 
     def handle_forms(self, request, lang, word, wordform, senseformset):
         newword = wordform.save()
         senseformset.save()
-        return redirect(newword)
+        return newword
 
 
-class Delete(WordMixin, base.SecureBase):
-    def post(self, request, lang, word):
-        lemma = word.lemma
-        word.delete()
-        return redirect('langs:words:list', code=lang.code)
+class Delete(WordMixin, base.Delete):
+    def get_redirect_kwargs(self, lang):
+        return {'code': lang.code}
 
 
 class Import(WordMixin, base.SecureBase):

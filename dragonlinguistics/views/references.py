@@ -4,7 +4,8 @@ from . import base
 from .. import forms, models
 
 class ReferenceMixin:
-    folder = 'references'
+    parts = ['references']
+    instance = 'reference'
 
     def get_kwargs(self, author=None, year=None, index=None, **kwargs):
         if author is None:
@@ -32,31 +33,22 @@ class List(base.SearchMixin, ReferenceMixin, base.Base):
 
 
 class Search(ReferenceMixin, base.Search):
-    target_url = 'references:list'
     form = forms.LanguageSearch
 
 
 class New(ReferenceMixin, base.NewEdit):
-    forms = {'referenceform': (forms.Reference, 'reference')}
-    extra_fields = ['addmore']
+    forms = {'referenceform': forms.Reference}
 
-    def handle_forms(self, request, referenceform, addmore):
-        reference = referenceform.save()
-        if addmore is not None:
-            return self.get(request, addmore=addmore)
-        else:
-            return redirect(reference)
+    def handle_forms(self, request, referenceform):
+        return referenceform.save()
 
 
 class Edit(ReferenceMixin, base.NewEdit):
-    forms = {'referenceform': (forms.Reference, 'reference')}
+    forms = {'referenceform': forms.Reference}
 
     def handle_forms(self, request, reference, referenceform):
-        reference = referenceform.save()
-        return redirect(reference)
+        return referenceform.save()
 
 
-class Delete(ReferenceMixin, base.SecureBase):
-    def post(self, request, reference):
-        reference.delete()
-        return redirect('references:list')
+class Delete(ReferenceMixin, base.Delete):
+    pass
