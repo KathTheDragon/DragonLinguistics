@@ -8,7 +8,7 @@ class Reference(models.Model):
     author = models.CharField(max_length=255)
     year = models.PositiveSmallIntegerField()
     title = models.CharField(max_length=255)
-    link = models.TextField(blank=True)
+    link = models.URLField(max_length=255, blank=True)
     comment = models.CharField(max_length=255, blank=True)
 
     class Meta:
