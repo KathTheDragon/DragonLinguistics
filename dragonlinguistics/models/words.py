@@ -17,20 +17,12 @@ class Word(models.Model):
     ]
     lang = models.ForeignKey(Language, verbose_name='language', on_delete=models.CASCADE)
     lemma = models.CharField(max_length=50)
-    homonym = models.IntegerField(default=0)
     type = models.CharField(max_length=2, choices=TYPES, default='s')
     notes = models.TextField(blank=True)
     etymology = models.TextField(blank=True)
 
     class Meta:
         ordering = ['lemma', 'id']
-        constraints = [
-            models.UniqueConstraint(fields=['lang', 'lemma', 'homonym'], name='unique-homonym')
-        ]
-
-    def save(self, *args, **kwargs):
-        self.homonym = self.id
-        super().save(*args, **kwargs)
 
     def get_homonym(self):
         ids = [
