@@ -41,6 +41,11 @@ class Reference(models.Model):
             kwargs={'author': self.author, 'year': self.year, 'index': self.index}
         )
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        
+        return reverse('references:list')
+
     def get_edit_url(self):
         return self.urls('edit')
 
