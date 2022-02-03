@@ -1,5 +1,6 @@
+<h1>Search</h1>
+
 <form class="search-form" method="get">
-    <h4>Search:</h4>
-    {%for field in form%}{{field.label_tag}} {{field}}<br />{%endfor%}
+    {%include './form-fields.html'%}
     <input type="submit" value="Search" />
 </form>
