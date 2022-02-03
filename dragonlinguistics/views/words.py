@@ -87,7 +87,7 @@ class New(WordMixin, base.NewEdit):
         if addmore is not None:
             return self.get(request, lang=lang, addmore=addmore)
         else:
-            return redirect(newword.get_absolute_url())
+            return redirect(newword)
 
 
 class View(WordMixin, base.Base):
@@ -105,7 +105,7 @@ class Edit(WordMixin, base.NewEdit):
         else:
             setnewhomonym(lang, newword)
             correcthomonyms(lang, word.lemma)
-        return redirect(newword.get_absolute_url())
+        return redirect(newword)
 
 
 class Delete(WordMixin, base.SecureBase):
