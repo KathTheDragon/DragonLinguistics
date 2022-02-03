@@ -45,15 +45,15 @@ class New(ReferenceMixin, base.NewEdit):
         if addmore is not None:
             return self.get(request, addmore=addmore)
         else:
-            return redirect('references:list')
+            return redirect(reference)
 
 
 class Edit(ReferenceMixin, base.NewEdit):
     forms = {'referenceform': (forms.Reference, 'reference')}
 
     def handle_forms(self, request, reference, referenceform):
-        referenceform.save()
-        return redirect('references:list')
+        reference = referenceform.save()
+        return redirect(reference)
 
 
 class Delete(ReferenceMixin, base.SecureBase):
