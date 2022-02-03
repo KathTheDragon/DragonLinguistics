@@ -95,6 +95,7 @@ h1,h2 { border: none; }
 #how-to-cite {
     margin-top: 1em;
     border-top: 1px solid #6a737d;
+    color: #6a737d;
 }
 
 .edit-article input[type=text] {
