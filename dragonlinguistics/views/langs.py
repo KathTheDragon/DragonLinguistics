@@ -60,5 +60,5 @@ class Edit(LangMixin, base.NewEdit):
         return lang
 
 
-class Delete(LangMixin, base.SecureBase):
+class Delete(LangMixin, base.Delete):
     pass
