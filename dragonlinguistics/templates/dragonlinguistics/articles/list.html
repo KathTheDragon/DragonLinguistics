@@ -14,5 +14,13 @@
 </div>
 {%endif%}
 
-{%include 'dragonlinguistics/snippets/list.html' with types='articles'%}
+{%include 'dragonlinguistics/snippets/prevpage.html'%}
+<ul>
+    {%for article in page.object_list%}
+    <li><a class="{{article.get_classes}}" href="{{article.get_absolute_url}}">{{article}} ({{article.created.year}})</a></li>
+    {%empty%}
+    <li>There are no articles</li>
+    {%endfor%}
+</ul>
+{%include 'dragonlinguistics/snippets/nextpage.html'%}
 {%endblock%}

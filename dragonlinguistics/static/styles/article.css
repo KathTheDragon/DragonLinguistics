@@ -92,6 +92,10 @@ h1,h2 { border: none; }
     list-style-type: none;
 }
 
+#how-to-cite {
+    border-top: 1px solid #6a737d;
+}
+
 .edit-article input[type=text] {
     display: inline-block;
     width: 100%;

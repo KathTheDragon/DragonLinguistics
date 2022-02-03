@@ -10,4 +10,11 @@
 <span>{{article.title}}</span>
 {%endblock%}
 
-{%block content%}{%include 'dragonlinguistics/snippets/articles/view.html'%}{%endblock%}
+{%block content%}{%include 'dragonlinguistics/snippets/articles/view.html'%}
+<div id="how-to-cite">
+    <p>This article can be cited as:</p>
+    <blockquote>
+        Spence, Kathryn ({{article.created|date:'Y'}}). {{article.title}}. Dragon Linguistics ({{article.get_absolute_url}}).
+    </blockquote>
+</div>
+{%endblock%}
