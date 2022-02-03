@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
@@ -21,16 +22,16 @@ class Reference(models.Model):
         ]
         return titles.index(self.title)
 
-    def long_str(self):
-        html = f'{self.year} - <a href="{self.link}" target="_blank"><em>{self.title}</em></a>'
-        if self.comment:
-            html += f' ({self.comment})'
-        return mark_safe(html)
-
-    def short_str(self):
+    def __str__(self):
         author = self.author.split(',', maxsplit=1)[0]
         index = chr(self.index + ord('a'))
         return f'{author} ({self.year}{index})'
+
+    def as_html(self):
+        html = f'{self.year} - <a href="{self.link}" target="_blank"><em>{escape(self.title)}</em></a>'
+        if self.comment:
+            html += f' ({escape(self.comment)})'
+        return mark_safe(html)
 
     def urls(self, action):
         from django.urls import reverse
