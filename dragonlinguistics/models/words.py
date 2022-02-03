@@ -17,16 +17,23 @@ class Word(models.Model):
     ]
     lang = models.ForeignKey(Language, verbose_name='language', on_delete=models.CASCADE)
     lemma = models.CharField(max_length=50)
-    homonym = models.IntegerField(default=0)
     type = models.CharField(max_length=2, choices=TYPES, default='s')
     notes = models.TextField(blank=True)
     etymology = models.TextField(blank=True)
 
     class Meta:
-        ordering = ['lemma', 'homonym']
-        constraints = [
-            models.UniqueConstraint(fields=['lang', 'lemma', 'homonym'], name='unique-homonym')
+        ordering = ['lemma', 'id']
+
+    @property
+    def homonym(self):
+        ids = [
+            id for (id,) in
+            Word.objects.filter(lang=self.lang, lemma=self.lemma).values_list('id')
         ]
+        if ids == [self.id]:
+            return 0
+        else:
+            return ids.index(self.id) + 1
 
     def __str__(self):
         from django.utils.html import format_html
@@ -38,11 +45,12 @@ class Word(models.Model):
             'pc': '{}=',
             'ec': '={}',
         }.get(self.type, '{}').format(self.lemma)
-        if self.homonym:
+        homonym = self.homonym
+        if homonym:
             return format_html(
                 '{}<sub>{}</sub>',
                 citation,
-                self.homonym
+                homonym
             )
         else:
             return citation
@@ -57,10 +65,11 @@ class Word(models.Model):
 
     def urls(self, action):
         from django.urls import reverse
-        if self.homonym:
+        homonym = self.homonym
+        if homonym:
             return reverse(
                 f'langs:words:{action}-homonym',
-                kwargs={'code': self.lang.code, 'lemma': self.lemma, 'homonym': self.homonym}
+                kwargs={'code': self.lang.code, 'lemma': self.lemma, 'homonym': homonym}
             )
         else:
             return reverse(

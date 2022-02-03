@@ -40,11 +40,11 @@ def setnewhomonym(lang, word):
 class WordMixin(LangMixin):
     folder = 'langs/words'
 
-    def get_kwargs(self, code, lemma=None, homonym=0, **kwargs):
+    def get_kwargs(self, code, lemma=None, homonym=1, **kwargs):
         if lemma is None:
             return super().get_kwargs(code=code, **kwargs)
         else:
-            word = models.Word.objects.get(lang__code=code, lemma=lemma, homonym=homonym)
+            word = models.Word.objects.filter(lang__code=code, lemma=lemma)[homonym-1]
             return super().get_kwargs(code=code, word=word, **kwargs)
 
 
@@ -79,7 +79,7 @@ class New(WordMixin, base.NewEdit):
     def handle_forms(self, request, lang, wordform, senseformset, addmore):
         newword = wordform.save(commit=False)
         newword.lang = lang
-        setnewhomonym(lang, newword)
+        newword.save()
         senses = senseformset.save(commit=False)
         for sense in senses:
             sense.word = newword
@@ -98,13 +98,8 @@ class Edit(WordMixin, base.NewEdit):
     forms = {'wordform': (forms.Word, 'word'), 'senseformset': (forms.Senses, 'word')}
 
     def handle_forms(self, request, lang, word, wordform, senseformset):
-        newword = wordform.save(commit=False)
+        newword = wordform.save()
         senseformset.save()
-        if word.lemma == newword.lemma:
-            newword.save()
-        else:
-            setnewhomonym(lang, newword)
-            correcthomonyms(lang, word.lemma)
         return redirect(newword)
 
 
@@ -112,7 +107,6 @@ class Delete(WordMixin, base.SecureBase):
     def post(self, request, lang, word):
         lemma = word.lemma
         word.delete()
-        correcthomonyms(lang, lemma)
         return redirect('langs:words:list', code=lang.code)
 
 
@@ -136,9 +130,6 @@ class Import(WordMixin, base.SecureBase):
             if importform.cleaned_data['action'] == 'replace':
                 Word.objects.delete()
             for entry in entries:
-                count = Word.objects.filter(lemma=entry['word']['lemma']).count()
-                if count:
-                    entry['word']['homonym'] = count + 1
                 word = Word(**entry['word'])
                 word.save()
                 for sense in entry['senses']:
