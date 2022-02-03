@@ -161,9 +161,10 @@ class NewEdit(SecureBase):
         if self.forms is None:
             raise ValueError
 
+        instance = kwargs.get(self.instance)
         forms = {
-            attr: form(request.POST, instance=kwargs.get(instance))
-            for attr, (form, instance) in self.forms.items()
+            attr: form(request.POST, instance=instance)
+            for attr, form in self.forms.items()
         }
         extra_fields = {attr: request.POST.get(attr) for attr in self.extra_fields}
         if all(form.is_valid() for form in forms.values()):
