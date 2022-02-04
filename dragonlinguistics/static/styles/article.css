@@ -60,6 +60,16 @@ h1,h2 { border: none; }
     font-size: .75rem;
 }
 
+@media screen and (max-width: 64em) {
+    #article-header {
+        grid-template-columns: auto;
+    }
+
+    #article-tags {
+        grid-column-end: auto;
+    }
+}
+
 #article-body {
     margin: var(--spacing) 0 0 0;
 }
