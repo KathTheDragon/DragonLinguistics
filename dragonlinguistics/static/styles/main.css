@@ -20,6 +20,12 @@ body {
     background-color: white;
 }
 
+@media screen and (max-width: 64em) {
+    #page {
+        width: 100%;
+    }
+}
+
 .body-section {
     margin: 0 40px;
     padding: 10px 0;
@@ -137,7 +143,7 @@ body {
     background: #e4e4e4;
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 64em) {
     #page-header {
         margin: 0;
     }
