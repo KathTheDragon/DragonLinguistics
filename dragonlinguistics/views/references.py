@@ -21,8 +21,11 @@ class List(base.SearchMixin, ReferenceMixin, base.Base):
     def get_context_data(self, **kwargs):
         query = self.request.GET
         objectlist = models.Reference.objects.filter(
-            **base.fuzzysearch(author=query.get('author', ''), title=query.get('title', '')),
-            **base.strictsearch(year=int(query.get('year', '0'))),
+            **base.fuzzysearch(title=query.get('title', '')),
+            **base.strictsearch(
+                author__startswith=query.get('author', ''),
+                year=int(query.get('year', '0'))
+            ),
         )
         authors = objectlist.values_list('author').distinct()
         author_references = {}
