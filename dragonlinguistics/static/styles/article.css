@@ -123,3 +123,16 @@ label {
     color: var(--accent-color);
     font-weight: bold;
 }
+
+.paradigm {
+    float: left;
+    padding-right: 1.5em;
+}
+
+.paradigm td {
+    vertical-align: middle;
+}
+
+.phonology td {
+    text-align: center;
+}
