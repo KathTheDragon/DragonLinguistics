@@ -50,7 +50,7 @@ label {
 
 div.form-field {
     display: grid;
-    grid-template-columns: min-content;
+    grid-template-columns: max-content;
 }
 
 div.form-field > input {
