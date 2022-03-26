@@ -4,8 +4,9 @@ from .html import html
 from .formats import process as process_format
 from .objects import process as process_object
 
-class ParseError(MarkupError):
+class ParseError(Exception):
     def __init__(self, message, remainder):
+        self.message = message
         self.remainder = remainder
         super().__init__(message)
 
