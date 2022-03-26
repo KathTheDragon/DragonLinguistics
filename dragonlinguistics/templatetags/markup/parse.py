@@ -1,7 +1,14 @@
 import string
+from .exceptions import MarkupError
 from .html import html
 from .formats import process as process_format
 from .objects import process as process_object
+
+class ParseError(MarkupError):
+    def __init__(self, message, remainder):
+        self.remainder = remainder
+        super().__init__(message)
+
 
 def parse(value, *, end=''):
     output = ''
@@ -14,10 +21,13 @@ def parse(value, *, end=''):
 CONTROL_CHARS = '@$'
 
 def parse_chunk(value, *, exclude=''):
-    if value[0] in CONTROL_CHARS:
-        return parse_tag(value)
-    else:
-        return parse_string(value, alphabet='', exclude=exclude+CONTROL_CHARS, escape=True)
+    try:
+        if value[0] in CONTROL_CHARS:
+            return parse_tag(value)
+        else:
+            return parse_string(value, alphabet='', exclude=exclude+CONTROL_CHARS, escape=True)
+    except ParseError as e:
+        return error(e.message), e.remainder
 
 
 def parse_tag(value):
@@ -36,9 +46,9 @@ def parse_tag(value):
     try:
         return html(*func(command, id, classes, data, text)), value
     except MarkupError as e:
-        return error(e.message), value
+        raise ParseError(e.message, value)
     except Exception:
-        return error('An unknown error occurred'), value
+        raise ParseError('An unknown error occurred', value)
 
 
 def parse_id(value):
@@ -67,7 +77,7 @@ def parse_data(value):
             elif value[0] == '"':
                 arg, value = parse_string(value, start=1, alphabet='', exclude='\r\n]"', escape=True, no_escape='\r\n')
                 if value[0] != '"':
-                    return error('Incomplete string'), value
+                    raise ParseError('Incomplete string', value)
                 value = value[1:]
             else:
                 arg, value = parse_string(value, alphabet='', exclude='\r\n]" ', escape=True, no_escape='\r\n', error_msg='Incomplete tag data')
@@ -91,9 +101,9 @@ def parse_string(value, *, start=0, alphabet=STRING_CHARS, exclude='', escape=Fa
     while i < len(value):
         if escape and value[i] == '\\':
             if i >= len(value) - 1:
-                return error('Incomplete escape sequence'), value
+                raise ParseError('Incomplete escape sequence', value)
             elif value[i+1] in no_escape:
-                return error('Invalid escape sequence'), value
+                raise ParseError('Invalid escape sequence', value)
             else:
                 i += 2
         elif (not alphabet or value[i] in alphabet) and value[i] not in exclude:
@@ -103,7 +113,7 @@ def parse_string(value, *, start=0, alphabet=STRING_CHARS, exclude='', escape=Fa
     if i != start:
         return value[start:i], value[i:]
     else:
-        return error(error_msg), value
+        raise ParseError(error_msg, value)
 
 
 def error(msg):
