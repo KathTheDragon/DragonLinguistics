@@ -217,6 +217,8 @@ def process_format(command, id, classes, data, text):
             return error('Invalid tag data')
     elif command == 'link':
         command = 'a'
+        if data[0] == '_blank':
+            attributes['target'] = data.pop(0)
         if data[0].startswith('#') or '.' in data[0]:  # In-page or external url
             url, = data
         else:  # Internal url
