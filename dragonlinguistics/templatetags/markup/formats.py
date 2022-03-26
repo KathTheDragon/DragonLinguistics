@@ -74,7 +74,7 @@ def handle_section(command, id, classes, data, text):
 def handle_footnote(command, id, classes, data, text):
     number, = data
     classes.append('footnote')
-    prefix = html('sup', {}, '1')
+    prefix = html('sup', {}, number)
     text = f'{prefix}{text}'
 
     return 'p', {}, id, classes, text
