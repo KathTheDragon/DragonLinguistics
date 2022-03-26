@@ -4,9 +4,10 @@ from .exceptions import MarkupError
 from .html import html
 
 def handle_word(command, id, classes, data, text):
-    if data:
-        raise MarkupError('Invalid tag data')
     classes.append('word')
+    if data:
+        code, = data
+        classes.append(code)
 
     return 'span', {}, id, classes, text
 
