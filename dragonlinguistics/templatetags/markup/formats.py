@@ -11,13 +11,6 @@ def handle_word(command, id, classes, data, text):
     return 'span', {}, id, classes, text
 
 
-def handle_tag(command, id, classes, data, text):
-    if data:
-        raise MarkupError('Invalid tag data')
-
-    return command, {}, id, classes, text
-
-
 def handle_link(command, id, classes, data, text):
     attributes = {}
     if data[0] == '_blank':
@@ -96,7 +89,7 @@ def process(command, id, classes, data, text):
     if command in HANDLERS:
         func = HANDLERS[command]
     elif command in SIMPLE_TAGS:
-        func = handle_tag
+        func = lambda command, id, classes, data, text: command, {}, id, classes, text
     else:
         raise MarkupError('Invalid command')
 
