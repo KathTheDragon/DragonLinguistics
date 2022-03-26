@@ -22,20 +22,41 @@ def parse_chunk(value, *, exclude=''):
 
 def parse_tag(value):
     # @-, $cmd#id.class.class[data]{text}
-    control, value = value[0], value[1:]
-
-    command, value = parse_string(value, error_msg='Invalid command name')
-
-    if value and value[0] == '#':
-        id, value = parse_string(value, start=1, error_msg='Invalid id')
+    if value[0] == '@':
+        func = process_object
     else:
-        id = None
+        func = process_format
+    value = value[1:]
+    command, value = parse_string(value, error_msg='Invalid command name')
+    id, value = parse_id(value)
+    classes, value = parse_classes(value)
+    data, value = parse_data(value)
+    text, value = parse_text(value)
 
+    try:
+        return html(*func(command, id, classes, data, text)), value
+    except MarkupError as e:
+        return error(e.message), value
+    except Exception:
+        return error('An unknown error occurred'), value
+
+
+def parse_id(value):
+    if value and value[0] == '#':
+        return parse_string(value, start=1, error_msg='Invalid id')
+    else:
+        return None, value
+
+
+def parse_classes(value):
     classes = []
     while value and value[0] == '.':
         class_, value = parse_string(value, start=1, error_msg='Invalid class')
         classes.append(class_)
+    return classes, value
 
+
+def parse_data(value):
     data = []
     if value and value[0] == '[':
         value = value[1:]
@@ -52,7 +73,10 @@ def parse_tag(value):
                 arg, value = parse_string(value, alphabet='', exclude='\r\n]" ', escape=True, no_escape='\r\n', error_msg='Incomplete tag data')
             data.append(arg)
         value = value[1:]
+    return data, value
 
+
+def parse_text(value):
     if value and value[0] == '{':
         value = value[1:]
         text = ''
@@ -60,19 +84,9 @@ def parse_tag(value):
             chunk, value = parse_chunk(value, exclude='}')
             text += chunk
         value = value[1:]
+        return text, value
     else:
-        text = None
-
-    if control == '@':
-        func = process_object
-    else:
-        func = process_format
-    try:
-        return html(*func(command, id, classes, data, text)), value
-    except MarkupError as e:
-        return error(e.message), value
-    except Exception:
-        return error('An unknown error occurred'), value
+        return None, value
 
 
 STRING_CHARS = string.ascii_letters + string.digits + '_-'
