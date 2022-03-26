@@ -11,7 +11,7 @@ register = Library()
 def markup(value, autoescape=True):
     if autoescape:
         value = conditional_escape(value, quote=False)
-    return mark_safe(parse(value))
+    return mark_safe(parse(value)[0])
 
 
 # Reimplement conditional_escape to be able to not escape quotes

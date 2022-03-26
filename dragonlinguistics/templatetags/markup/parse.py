@@ -3,12 +3,12 @@ from .html import html
 from .formats import process as process_format
 from .objects import process as process_object
 
-def parse(value):
+def parse(value, *, end=''):
     output = ''
-    while value:
-        chunk, value = parse_chunk(value)
+    while value and value[0] not in end:
+        chunk, value = parse_chunk(value, exclude=end)
         output += chunk
-    return output
+    return output, value
 
 
 CONTROL_CHARS = '@$'
@@ -78,13 +78,8 @@ def parse_data(value):
 
 def parse_text(value):
     if value and value[0] == '{':
-        value = value[1:]
-        text = ''
-        while value[0] != '}':
-            chunk, value = parse_chunk(value, exclude='}')
-            text += chunk
-        value = value[1:]
-        return text, value
+        text, value = parse(value[1:], end='}')
+        return text, value[1:]
     else:
         return None, value
 
