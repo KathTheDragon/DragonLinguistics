@@ -37,12 +37,12 @@ def handle_word(command, id, classes, data, text):
     url = word.get_absolute_url()
     classes.extend(['word', code])
     if text is None:
-        if command == 'word':
-            text = str(word)
-        elif command == 'word-gloss':
-            text = f'{word} "{word.firstgloss()}"'
-        else:
-            text = f'"{word.firstgloss()}"'
+        parts = []
+        if 'word' in command:
+            parts.append(str(word))
+        if 'gloss' in command:
+            parts.append(f'"{word.firstgloss()}"')
+        text = ' '.join(parts)
 
     return url, id, classes, text
 
