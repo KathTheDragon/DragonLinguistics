@@ -23,7 +23,7 @@ class List(base.SearchMixin, ReferenceMixin, base.Base):
         objectlist = models.Reference.objects.filter(
             **base.fuzzysearch(title=query.get('title', '')),
             **base.strictsearch(
-                author__startswith=query.get('author', ''),
+                author__istartswith=query.get('author', ''),
                 year=int(query.get('year', '0'))
             ),
         )
