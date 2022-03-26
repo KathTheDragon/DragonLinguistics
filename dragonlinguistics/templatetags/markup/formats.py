@@ -79,7 +79,7 @@ SIMPLE_TAGS = [
     'p', 'table', 'tr', 'th', 'blockquote', 'sup', 'sub', 'strong', 'caption',
 ]
 HANDLERS = {
-    'word': handle_word_format,
+    'word': handle_word,
     'link': handle_link,
     'td': handle_td,
     'section': handle_section,
