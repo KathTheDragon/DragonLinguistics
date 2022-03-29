@@ -12,7 +12,7 @@ def handle_lang(command, id, classes, data, text):
     url = lang.get_absolute_url()
     classes.extend(['lang', code])
     if text is None:
-        text = str(lang)
+        text = [str(lang)]
 
     return url, id, classes, text
 
@@ -42,7 +42,7 @@ def handle_word(command, id, classes, data, text):
             parts.append(str(word))
         if 'gloss' in command:
             parts.append(f'"{word.firstgloss()}"')
-        text = ' '.join(parts)
+        text = [' '.join(parts)]
 
     return url, id, classes, text
 
@@ -63,7 +63,7 @@ def handle_article(command, id, classes, data, text):
     if section:
         url = f'{url}#sect-{slugify(section)}'
     if text is None:
-        text = section or title
+        text = [section or title]
 
     return url, id, classes, text
 
@@ -87,7 +87,7 @@ def handle_lang_article(command, id, classes, data, text):
     if section:
         url = f'{url}#sect-{slugify(section)}'
     if text is None:
-        text = section or title
+        text = [section or title]
 
     return url, id, classes, text
 
@@ -117,4 +117,4 @@ def process(command, id, classes, data, text):
     if classes:
         attributes['class'] = ' '.join(classes)
 
-    return 'a', attributes, text
+    return 'a', attributes, ''.join(text) if text is not None else None

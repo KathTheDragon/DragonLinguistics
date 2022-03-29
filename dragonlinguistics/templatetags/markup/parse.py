@@ -11,24 +11,52 @@ class ParseError(Exception):
         super().__init__(message)
 
 
-def parse(value, *, end=''):
-    output = ''
-    while value and value[0] not in end:
-        chunk, value = parse_chunk(value, exclude=end)
-        output += chunk
-    return output, value
+def parse(value, *, skip_whitespace=False, exclude='', end='', embed=True, error_msg=''):
+    parts = []
+    quoted_exclude = exclude + '"'
+    unquoted_exclude = exclude + end + '"' + string.whitespace
+    while value and value[0] not in exclude + end:
+        if value[0] in string.whitespace:
+            part, value = parse_string(value, alphabet=string.whitespace, exclude=exclude, error_msg='Invalid whitespace')
+            if skip_whitespace:
+                continue
+        elif value[0] == '"':
+            part, value = parse_string(value[1:], alphabet='', exclude=quoted_exclude, escape=True, no_escape=exclude, embed=embed, error_msg='Empty or incomplete string')
+            if value[0] != '"':
+                raise ParseError('Incomplete string', value)
+            value = value[1:]
+        else:
+            part, value = parse_string(value, alphabet='', exclude=unquoted_exclude, escape=True, no_escape=exclude, embed=embed)
+        parts.append(part)
+    return parts, value
 
 
+STRING_CHARS = string.ascii_letters + string.digits + '_-'
 CONTROL_CHARS = '@$'
 
-def parse_chunk(value, *, exclude=''):
-    try:
-        if value[0] in CONTROL_CHARS:
-            return parse_tag(value)
+def parse_string(value, *, alphabet=STRING_CHARS, exclude='', escape=False, no_escape='', embed=False, error_msg=''):
+    out = ''
+    while value:
+        if escape and value[0] == '\\':
+            if len(value) <= 1:
+                raise ParseError('Incomplete escape sequence', value)
+            elif value[1] in no_escape:
+                raise ParseError('Invalid escape sequence', value)
+            else:
+                out += value[:2]  # Unescaping here?
+                value = value[2:]
+        elif embed and value[0] in CONTROL_CHARS:
+            tag, value = parse_tag(value)
+            out += tag
+        elif (not alphabet or value[0] in alphabet) and value[0] not in exclude:
+            out += value[0]
+            value = value[1:]
         else:
-            return parse_string(value, alphabet='', exclude=exclude+CONTROL_CHARS, escape=True)
-    except ParseError as e:
-        return error(e.message), e.remainder
+            break
+    if out:
+        return out, value
+    else:
+        raise ParseError(error_msg, value)
 
 
 def parse_tag(value):
@@ -54,7 +82,7 @@ def parse_tag(value):
 
 def parse_id(value):
     if value and value[0] == '#':
-        return parse_string(value, start=1, error_msg='Invalid id')
+        return parse_string(value[1:], error_msg='Invalid id')
     else:
         return None, value
 
@@ -62,29 +90,17 @@ def parse_id(value):
 def parse_classes(value):
     classes = []
     while value and value[0] == '.':
-        class_, value = parse_string(value, start=1, error_msg='Invalid class')
+        class_, value = parse_string(value[1:], error_msg='Invalid class')
         classes.append(class_)
     return classes, value
 
 
 def parse_data(value):
-    data = []
     if value and value[0] == '[':
-        value = value[1:]
-        while value[0] != ']':
-            if value[0] == ' ':
-                value = value[1:]
-                continue
-            elif value[0] == '"':
-                arg, value = parse_string(value, start=1, alphabet='', exclude='\r\n]"', escape=True, no_escape='\r\n')
-                if value[0] != '"':
-                    raise ParseError('Incomplete string', value)
-                value = value[1:]
-            else:
-                arg, value = parse_string(value, alphabet='', exclude='\r\n]" ', escape=True, no_escape='\r\n', error_msg='Incomplete tag data')
-            data.append(arg)
-        value = value[1:]
-    return data, value
+        data, value = parse(value[1:], skip_whitespace=True, exclude='\r\n', end=']', embed=False)
+        return data, value[1:]
+    else:
+        return [], value
 
 
 def parse_text(value):
@@ -93,28 +109,6 @@ def parse_text(value):
         return text, value[1:]
     else:
         return None, value
-
-
-STRING_CHARS = string.ascii_letters + string.digits + '_-'
-
-def parse_string(value, *, start=0, alphabet=STRING_CHARS, exclude='', escape=False, no_escape='', error_msg=''):
-    i = start
-    while i < len(value):
-        if escape and value[i] == '\\':
-            if i >= len(value) - 1:
-                raise ParseError('Incomplete escape sequence', value)
-            elif value[i+1] in no_escape:
-                raise ParseError('Invalid escape sequence', value)
-            else:
-                i += 2
-        elif (not alphabet or value[i] in alphabet) and value[i] not in exclude:
-            i += 1
-        else:
-            break
-    if i != start:
-        return value[start:i], value[i:]
-    else:
-        raise ParseError(error_msg, value)
 
 
 def error(msg):

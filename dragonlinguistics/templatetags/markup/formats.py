@@ -29,7 +29,7 @@ def handle_link(command, id, classes, data, text):
             url = f'{url}#{section}'
     attributes['href'] = url
     if text is None:
-        text = url
+        text = [url]
 
     return 'a', attributes, id, classes, text
 
@@ -56,11 +56,11 @@ def handle_section(command, id, classes, data, text):
     if level not in ('1', '2', '3', '4', '5', '6'):
         raise MarkupError('Invalid level')
     heading = html(f'h{level}', {}, title)
-    if text.startswith('\n'):
-        indent = re.match(r'\n( *)', text).group(1)
-        text = f'\n{indent}{heading}\n{text}'
+    if text[0].startswith('\n'):
+        indent = re.match(r'\n( *)', text[0]).group(1)
+        text.insert(0, f'\n{indent}{heading}\n')
     else:
-        text = f'{heading}{text}'
+        text.insert(0, heading)
 
     return 'section', {}, id, classes, text
 
@@ -69,7 +69,7 @@ def handle_footnote(command, id, classes, data, text):
     number, = data
     classes.append('footnote')
     prefix = html('sup', {}, number)
-    text = f'{prefix}{text}'
+    text.insert(0, prefix)
 
     return 'p', {}, id, classes, text
 
@@ -90,7 +90,7 @@ def process(command, id, classes, data, text):
     if command in HANDLERS:
         func = HANDLERS[command]
     elif command in SIMPLE_TAGS:
-        func = lambda command, id, classes, data, text: command, {}, id, classes, text
+        func = lambda command, id, classes, data, text: (command, {}, id, classes, text)
     else:
         raise MarkupError('Invalid command')
 
@@ -101,4 +101,4 @@ def process(command, id, classes, data, text):
     if classes:
         attributes['class'] = ' '.join(classes)
 
-    return tag, attributes, text
+    return tag, attributes, ''.join(text) if text is not None else None
