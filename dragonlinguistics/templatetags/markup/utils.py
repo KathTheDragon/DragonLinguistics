@@ -9,3 +9,12 @@ def partition(strings, separator):
             i += 1
     parts.append(strings)
     return parts
+
+
+def strip(strings):
+    leading = trailing = ''
+    if strings[0].isspace():
+        leading = strings.pop(0)
+    if strings[-1].isspace():
+        trailing = strings.pop()
+    return leading, strings, trailing

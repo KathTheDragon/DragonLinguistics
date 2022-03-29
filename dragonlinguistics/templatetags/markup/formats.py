@@ -2,7 +2,7 @@ import re
 from django.urls import reverse
 from .exceptions import MarkupError
 from .html import html
-from .utils import partition
+from .utils import partition, strip
 
 def handle_word(command, id, classes, data, text):
     classes.append('word')
@@ -93,15 +93,12 @@ def handle_list(command, id, classes, data, text):
     parts = partition(text, '/')
     text = []
     for part in parts:
-        if part[0].isspace():
-            text.append(part.pop(0))
-        if part[-1].isspace():
-            end = part.pop()
-        else:
-            end = ''
+        leading, part, trailing = strip(part)
+        if leading:
+            text.append(leading)
         text.append(html('li', {}, ''.join(part)))
-        if end:
-            text.append(end)
+        if trailing:
+            text.append(trailing)
 
     return tag, attributes, id, classes, text
 
