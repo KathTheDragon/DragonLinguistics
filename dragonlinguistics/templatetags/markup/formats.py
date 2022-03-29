@@ -85,7 +85,7 @@ def handle_list(command, id, classes, data, text):
         else:
             raise MarkupError('Invalid tag data')
 
-    if 'start' in attributes:
+    if attributes:
         tag = 'ol'
     else:
         tag = 'ul'
