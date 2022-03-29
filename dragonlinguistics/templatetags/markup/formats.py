@@ -2,6 +2,7 @@ import re
 from django.urls import reverse
 from .exceptions import MarkupError
 from .html import html
+from .utils import partition
 
 def handle_word(command, id, classes, data, text):
     classes.append('word')
@@ -74,8 +75,39 @@ def handle_footnote(command, id, classes, data, text):
     return 'p', {}, id, classes, text
 
 
+def handle_list(command, id, classes, data, text):
+    attributes = {}
+    for attr in data:
+        if attr.startswith('start='):
+            attributes['start'] = attr.removeprefix('start=')
+        elif attr == 'reversed':
+            attributes['reversed'] = True
+        else:
+            raise MarkupError('Invalid tag data')
+
+    if 'start' in attributes:
+        tag = 'ol'
+    else:
+        tag = 'ul'
+
+    parts = partition(text, '/')
+    text = []
+    for part in parts:
+        if part[0].isspace():
+            text.append(part.pop(0))
+        if part[-1].isspace():
+            end = part.pop()
+        else:
+            end = ''
+        text.append(html('li', {}, ''.join(part)))
+        if end:
+            text.append(end)
+
+    return tag, attributes, id, classes, text
+
+
 SIMPLE_TAGS = [
-    'br', 'dl', 'dt', 'dd', 'div', 'em', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'br', 'dl', 'dt', 'dd', 'div', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
     'p', 'table', 'tr', 'th', 'blockquote', 'sup', 'sub', 'strong', 'caption',
 ]
 HANDLERS = {
@@ -84,6 +116,7 @@ HANDLERS = {
     'td': handle_td,
     'section': handle_section,
     'footnote': handle_footnote,
+    'list': handle_list,
 }
 
 def process(command, id, classes, data, text):
