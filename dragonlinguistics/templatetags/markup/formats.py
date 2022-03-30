@@ -103,9 +103,85 @@ def handle_list(command, id, classes, data, text):
     return tag, attributes, id, classes, text
 
 
+def handle_table(command, id, classes, data, text):
+    header_row = header_col = False
+    for attr in data:
+        if attr.startswith('headers='):
+            headers = attr.removeprefix('headers=').split(',')
+            header_row = 'rows' in headers
+            header_col = 'cols' in headers
+
+    parts = partition(text, '//')
+    if len(parts) == 1:
+        caption, text = None, parts[0]
+    else:
+        caption, text = parts
+
+    table = [[strip(cell) for cell in partition(row, '|')] for row in partition(text, '/')]
+    if len(set(map(len, table))) != 1:
+        raise MarkupError('Table rows must be the same size')
+    merged = []
+    for row in table:
+        col = 0
+        merged_row = []
+        for leading, cell, trailing in row:
+            if cell == '<':
+                if not merged_row:
+                    raise MarkupError('Invalid cell merge')
+                merged_row[-1]['cols'] += 1
+            elif cell == '^':
+                if merged_row[-1]['data'] == ('', '^', ''):
+                    merged_row[-1]['cols'] += 1
+                else:
+                    if merged_row:
+                        col += merged_row[-1]['cols']
+                    merged_row.append({'data': ('', '^', ''), 'rows': 1, 'cols': 1})
+                for mrow in reversed(merged):
+                    mcol = 0
+                    for mcell in mrow:
+                        if mcol == col:
+                            break
+                        elif mcol > col:
+                            raise MarkupError('Misaligned table cell')
+                        else:
+                            mcol += mcell['cols']
+                    if mcell['data'] is not None:
+                        if mcell['cols'] == merged_row[-1]['cols']:
+                            mcell['rows'] += 1
+                            merged_row[-1]['data'] = None
+                            break
+                        else:
+                            raise MarkupError('Misaligned table cell')
+            else:
+                if merged_row:
+                    col += merged_row[-1]['cols']
+                merged_row.append({'data': (leading, cell, trailing), 'rows': 1, 'cols': 1})
+        if any(cell['data'] == ('', '^', '') for cell in merged_row):
+            raise MarkupError('Invalid cell merge')
+        merged.append(merged_row)
+    rows = []
+    if caption is not None:
+        rows.append(html('caption', {}, ''.join(caption)))
+    for mrow in merged:
+        row = []
+        for mcell in mrow:
+            if mcell['data'] is not None:
+                tag = 'th' if (header_row and not rows or header_col and not row) else 'td'
+                leading, cell, trailing = mcell['data']
+                attributes = {}
+                if mcell['rows'] != 1:
+                    attributes['rowspan'] = mcell['rows']
+                if mcell['cols'] != 1:
+                    attributes['colspan'] = mcell['cols']
+                row.extend([leading, html(tag, attributes, ''.join(cell)), trailing])
+        if row:
+            rows.append(html('tr', {}, ''.join(row)))
+    return 'table', {}, id, classes, rows
+
+
 SIMPLE_TAGS = [
     'br', 'dl', 'dt', 'dd', 'div', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    'p', 'table', 'tr', 'th', 'blockquote', 'sup', 'sub', 'strong', 'caption',
+    'p', 'blockquote', 'sup', 'sub', 'strong',
 ]
 HANDLERS = {
     'word': handle_word,
@@ -114,6 +190,7 @@ HANDLERS = {
     'section': handle_section,
     'footnote': handle_footnote,
     'list': handle_list,
+    'table': handle_table,
 }
 
 def process(command, id, classes, data, text):
