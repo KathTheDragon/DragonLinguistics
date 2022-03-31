@@ -1,23 +1,63 @@
+from django.urls import reverse
 from django.utils.text import slugify
 from dragonlinguistics.models import Article, Language, Word
-from .exceptions import MarkupError
+from markup.exceptions import MarkupError
+from markup.nodes import handler
 
-def handle_lang(command, id, classes, data, text):
+@handler
+def link_node(command, attributes, data, text):
+    if data[0] == '_blank':
+        attributes['target'] = data.pop(0)
+    if data[0].startswith('#') or '.' in data[0]:  # In-page or external url
+        url, = data
+    else:  # Internal url
+        name, *args = data
+        if '#' in name:
+            name, section = name.split('#')
+        else:
+            section = ''
+        url = reverse(name, kwargs=dict(map(lambda s: s.split('='), args)))
+        if section:
+            url = f'{url}#{section}'
+    attributes['href'] = url
+    if text is None:
+        text = [url]
+
+    return 'a', attributes, text
+
+
+@handler
+def word_node(command, attributes, data, text):
+    attributes['class'].append('word')
+    if data:
+        code, = data
+        attributes['class'].append(code)
+
+    return 'span', attributes, text
+
+
+node_handlers = {
+    'link': link_node,
+    'word': word_node,
+}
+
+
+def lang_object(command, attributes, data, text):
     code, = data
     try:
         lang = Language.objects.get(code=code)
     except Language.DoesNotExist:
         raise MarkupError('Invalid language code')
 
-    url = lang.get_absolute_url()
-    classes.extend(['lang', code])
+    attributes['href'] = lang.get_absolute_url()
+    attributes['class'].extend(['lang', code])
     if text is None:
         text = [str(lang)]
 
-    return url, id, classes, text
+    return 'a', attributes, text
 
 
-def handle_word(command, id, classes, data, text):
+def word_object(command, attributes, data, text):
     if len(data) == 2:
         code, lemma = data
         homonym = 0
@@ -34,8 +74,8 @@ def handle_word(command, id, classes, data, text):
     except Word.DoesNotExist:
         raise MarkupError('Invalid lemma/homonym number')
 
-    url = word.get_absolute_url()
-    classes.extend(['word', code])
+    attributes['href'] = word.get_absolute_url()
+    attributes['class'].extend(['word', code])
     if text is None:
         parts = []
         if 'word' in command:
@@ -44,10 +84,10 @@ def handle_word(command, id, classes, data, text):
             parts.append(f'"{word.firstgloss()}"')
         text = [' '.join(parts)]
 
-    return url, id, classes, text
+    return url, attributes, text
 
 
-def handle_article(command, id, classes, data, text):
+def article_object(command, attributes, data, text):
     if len(data) == 2:
         title, section = data
     else:
@@ -62,13 +102,14 @@ def handle_article(command, id, classes, data, text):
     url = article.get_absolute_url()
     if section:
         url = f'{url}#sect-{slugify(section)}'
+    attributes['href'] = url
     if text is None:
         text = [section or title]
 
-    return url, id, classes, text
+    return url, attributes, text
 
 
-def handle_lang_article(command, id, classes, data, text):
+def lang_article_object(command, attributes, data, text):
     if command != 'grammar':
         command += 's'
 
@@ -86,13 +127,14 @@ def handle_lang_article(command, id, classes, data, text):
     url = article.get_absolute_url()
     if section:
         url = f'{url}#sect-{slugify(section)}'
+    attributes['href'] = url
     if text is None:
         text = [section or title]
 
-    return url, id, classes, text
+    return url, attributes, text
 
 
-HANDLERS = {
+object_handlers = {
     'lang': handle_lang,
     'word': handle_word,
     'word-gloss': handle_word,
@@ -102,19 +144,3 @@ HANDLERS = {
     'lesson': handle_lang_article,
     'text': handle_lang_article,
 }
-
-def process(command, id, classes, data, text):
-    if command in HANDLERS:
-        func = HANDLERS[command]
-    else:
-        raise MarkupError('Invalid command')
-
-    url, id, classes, text = func(command, id, classes, data, text)
-
-    attributes = {'href': url}
-    if id is not None:
-        attributes['id'] = id
-    if classes:
-        attributes['class'] = ' '.join(classes)
-
-    return 'a', attributes, ''.join(text) if text is not None else None

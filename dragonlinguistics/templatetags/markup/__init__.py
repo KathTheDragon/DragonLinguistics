@@ -1,8 +1,9 @@
+import markup
 from html import escape
 from django.template import Library
 from django.template.defaultfilters import stringfilter
 from django.utils.safestring import mark_safe
-from . import parse
+from . import nodes
 
 register = Library()
 
@@ -11,7 +12,7 @@ register = Library()
 def markup(value, autoescape=True):
     if autoescape:
         value = conditional_escape(value, quote=False)
-    return mark_safe(''.join(parse.parse(value)[0]))
+    return mark_safe(Markup().parse(value))
 
 
 # Reimplement conditional_escape to be able to not escape quotes
@@ -20,3 +21,10 @@ def conditional_escape(text, quote=True):
         return text.__html__()
     else:
         return mark_safe(escape(str(text), quote=quote))
+
+
+class Markup(markup.Markup):
+    def __init__(self):
+        super().__init__()
+        self.node_handlers['$'] |= nodes.node_handlers
+        self.node_handlers['@'] = nodes.object_handlers
