@@ -549,3 +549,11 @@ input[type=submit].search {
     font-size: x-small;
     line-height: 1.5em;  /* Needed to get the correct spacing */
 }
+
+.ipa::before {
+    content: "[";
+}
+
+.ipa::after {
+    content: "]";
+}

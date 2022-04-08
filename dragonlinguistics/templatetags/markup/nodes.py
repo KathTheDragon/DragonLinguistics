@@ -26,6 +26,16 @@ def link_node(command, attributes, data, text):
 
 
 @handler
+def ipa_node(command, attributes, data, text):
+    if data:
+        raise InvalidData()
+    attributes['class'].append('ipa')
+    text = [word.replace(' ', chr(0xA0)) for word in text]
+
+    return 'span', attributes, text
+
+
+@handler
 def word_node(command, attributes, data, text):
     attributes['class'].append('word')
     if data:
@@ -37,6 +47,7 @@ def word_node(command, attributes, data, text):
 
 node_handlers = {
     'link': link_node,
+    'ipa': ipa_node,
     'word': word_node,
 }
 
