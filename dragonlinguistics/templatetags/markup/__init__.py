@@ -1,4 +1,4 @@
-import markup
+import markup as _markup
 from html import escape
 from django.template import Library
 from django.template.defaultfilters import stringfilter
@@ -23,7 +23,7 @@ def conditional_escape(text, quote=True):
         return mark_safe(escape(str(text), quote=quote))
 
 
-class Markup(markup.Markup):
+class Markup(_markup.Markup):
     def __init__(self):
         super().__init__()
         self.node_handlers['$'] |= nodes.node_handlers

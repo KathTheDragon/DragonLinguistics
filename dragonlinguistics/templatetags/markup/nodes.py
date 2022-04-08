@@ -1,8 +1,7 @@
 from django.urls import reverse
 from django.utils.text import slugify
 from dragonlinguistics.models import Article, Language, Word
-from markup.exceptions import MarkupError
-from markup.nodes import handler
+from markup.nodes import handler, MarkupError, InvalidData
 
 @handler
 def link_node(command, attributes, data, text):
