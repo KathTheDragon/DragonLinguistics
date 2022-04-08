@@ -41,6 +41,7 @@ node_handlers = {
 }
 
 
+@handler
 def lang_object(command, attributes, data, text):
     code, = data
     try:
@@ -56,6 +57,7 @@ def lang_object(command, attributes, data, text):
     return 'a', attributes, text
 
 
+@handler
 def word_object(command, attributes, data, text):
     if len(data) == 2:
         code, lemma = data
@@ -83,9 +85,10 @@ def word_object(command, attributes, data, text):
             parts.append(f'"{word.firstgloss()}"')
         text = [' '.join(parts)]
 
-    return url, attributes, text
+    return 'a', attributes, text
 
 
+@handler
 def article_object(command, attributes, data, text):
     if len(data) == 2:
         title, section = data
@@ -105,9 +108,10 @@ def article_object(command, attributes, data, text):
     if text is None:
         text = [section or title]
 
-    return url, attributes, text
+    return 'a', attributes, text
 
 
+@handler
 def lang_article_object(command, attributes, data, text):
     if command != 'grammar':
         command += 's'
@@ -130,16 +134,16 @@ def lang_article_object(command, attributes, data, text):
     if text is None:
         text = [section or title]
 
-    return url, attributes, text
+    return 'a', attributes, text
 
 
 object_handlers = {
-    'lang': handle_lang,
-    'word': handle_word,
-    'word-gloss': handle_word,
-    'gloss': handle_word,
-    'article': handle_article,
-    'grammar': handle_lang_article,
-    'lesson': handle_lang_article,
-    'text': handle_lang_article,
+    'lang': lang_object,
+    'word': word_object,
+    'word-gloss': word_object,
+    'gloss': word_object,
+    'article': article_object,
+    'grammar': lang_article_object,
+    'lesson': lang_article_object,
+    'text': lang_article_object,
 }
