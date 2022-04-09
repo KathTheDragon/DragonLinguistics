@@ -105,16 +105,9 @@ def _make_word_object(node):
     return word_object
 
 
-@handler
-def article_object(attributes, data, text):
-    if len(data) == 2:
-        title, section = data
-    else:
-        title, = data
-        section = ''
-
+def _article_object(attributes, text, path, title, section=''):
     try:
-        article = Article.objects.get(folder__path='', slug=slugify(title))
+        article = Article.objects.get(folder__path=path, slug=slugify(title))
     except Article.DoesNotExist:
         raise MarkupError('Invalid article title')
 
@@ -128,31 +121,16 @@ def article_object(attributes, data, text):
     return 'a', attributes, text
 
 
-def _make_lang_article_object(node):
+@handler
+def article_object(attributes, data, text):
+    return _article_object(attributes, text, '', *data)
+
+
+def _make_lang_article_object(type):
     @handler
     def lang_article_object(attributes, data, text):
-        if node != 'grammar':
-            node += 's'
-
-        if len(data) == 3:
-            code, title, section = data
-        else:
-            code, title = data
-            section = ''
-
-        try:
-            article = Article.objects.get(folder__path=f'langs/{code}/{node}', slug=slugify(title))
-        except Article.DoesNotExist:
-            raise MarkupError('Invalid language code/article title')
-
-        url = article.get_absolute_url()
-        if section:
-            url = f'{url}#sect-{slugify(section)}'
-        attributes['href'] = url
-        if text is None:
-            text = [section or title]
-
-        return 'a', attributes, text
+        code = data.pop(0)
+        return _article_object(attributes, text, f'langs/{code}/{type}', *data)
 
 
 object_handlers = {
@@ -162,6 +140,6 @@ object_handlers = {
     'gloss': _make_word_object('gloss'),
     'article': article_object,
     'grammar': _make_lang_article_object('grammar'),
-    'lesson': _make_lang_article_object('lesson'),
-    'text': _make_lang_article_object('text'),
+    'lesson': _make_lang_article_object('lessons'),
+    'text': _make_lang_article_object('texts'),
 }
