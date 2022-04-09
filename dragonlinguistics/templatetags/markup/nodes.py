@@ -4,7 +4,7 @@ from dragonlinguistics.models import Article, Language, Word
 from markup.nodes import handler, MarkupError, InvalidData
 
 @handler
-def link_node(command, attributes, data, text):
+def link_node(attributes, data, text):
     if data[0] == '_blank':
         attributes['target'] = data.pop(0)
     if data[0].startswith('#') or '.' in data[0]:  # In-page or external url
@@ -26,7 +26,7 @@ def link_node(command, attributes, data, text):
 
 
 @handler
-def ipa_node(command, attributes, data, text):
+def ipa_node(attributes, data, text):
     if data:
         raise InvalidData()
     attributes['class'].append('ipa')
@@ -36,7 +36,7 @@ def ipa_node(command, attributes, data, text):
 
 
 @handler
-def word_node(command, attributes, data, text):
+def word_node(attributes, data, text):
     attributes['class'].append('word')
     if data:
         code, = data
@@ -53,7 +53,7 @@ node_handlers = {
 
 
 @handler
-def lang_object(command, attributes, data, text):
+def lang_object(attributes, data, text):
     code, = data
     try:
         lang = Language.objects.get(code=code)
@@ -68,39 +68,45 @@ def lang_object(command, attributes, data, text):
     return 'a', attributes, text
 
 
+def _make_word_object(node):
+    @handler
+    def word_object(attributes, data, text):
+        if len(data) == 2:
+            code, lemma = data
+            homonym = 0
+        else:
+            code, lemma, homonym = data
+
+        try:
+            lang = Language.objects.get(code=code)
+        except Language.DoesNotExist:
+            raise MarkupError('Invalid language code')
+
+        try:
+            word = Word.objects.get(lang=lang, lemma=lemma, homonym=homonym)
+        except Word.DoesNotExist:
+            raise MarkupError('Invalid lemma/homonym number')
+
+        attributes['href'] = word.get_absolute_url()
+        attributes['class'].extend(['word', code])
+        if text is None:
+            parts = []
+            if 'word' in node:
+                parts.append(str(word))
+            if 'gloss' in node:
+                parts.append(f'"{word.firstgloss()}"')
+            text = [' '.join(parts)]
+
+        return 'a', attributes, text
+    name = f'{node}_object'
+    word_object.__name__ = name
+    word_object.__qualname__ = name
+
+    return word_object
+
+
 @handler
-def word_object(command, attributes, data, text):
-    if len(data) == 2:
-        code, lemma = data
-        homonym = 0
-    else:
-        code, lemma, homonym = data
-
-    try:
-        lang = Language.objects.get(code=code)
-    except Language.DoesNotExist:
-        raise MarkupError('Invalid language code')
-
-    try:
-        word = Word.objects.get(lang=lang, lemma=lemma, homonym=homonym)
-    except Word.DoesNotExist:
-        raise MarkupError('Invalid lemma/homonym number')
-
-    attributes['href'] = word.get_absolute_url()
-    attributes['class'].extend(['word', code])
-    if text is None:
-        parts = []
-        if 'word' in command:
-            parts.append(str(word))
-        if 'gloss' in command:
-            parts.append(f'"{word.firstgloss()}"')
-        text = [' '.join(parts)]
-
-    return 'a', attributes, text
-
-
-@handler
-def article_object(command, attributes, data, text):
+def article_object(attributes, data, text):
     if len(data) == 2:
         title, section = data
     else:
@@ -122,39 +128,40 @@ def article_object(command, attributes, data, text):
     return 'a', attributes, text
 
 
-@handler
-def lang_article_object(command, attributes, data, text):
-    if command != 'grammar':
-        command += 's'
+def _make_lang_article_object(node):
+    @handler
+    def lang_article_object(attributes, data, text):
+        if node != 'grammar':
+            node += 's'
 
-    if len(data) == 3:
-        code, title, section = data
-    else:
-        code, title = data
-        section = ''
+        if len(data) == 3:
+            code, title, section = data
+        else:
+            code, title = data
+            section = ''
 
-    try:
-        article = Article.objects.get(folder__path=f'langs/{code}/{command}', slug=slugify(title))
-    except Article.DoesNotExist:
-        raise MarkupError('Invalid language code/article title')
+        try:
+            article = Article.objects.get(folder__path=f'langs/{code}/{node}', slug=slugify(title))
+        except Article.DoesNotExist:
+            raise MarkupError('Invalid language code/article title')
 
-    url = article.get_absolute_url()
-    if section:
-        url = f'{url}#sect-{slugify(section)}'
-    attributes['href'] = url
-    if text is None:
-        text = [section or title]
+        url = article.get_absolute_url()
+        if section:
+            url = f'{url}#sect-{slugify(section)}'
+        attributes['href'] = url
+        if text is None:
+            text = [section or title]
 
-    return 'a', attributes, text
+        return 'a', attributes, text
 
 
 object_handlers = {
     'lang': lang_object,
-    'word': word_object,
-    'word-gloss': word_object,
-    'gloss': word_object,
+    'word': _make_word_object('word'),
+    'word-gloss': _make_word_object('word-gloss'),
+    'gloss': _make_word_object('gloss'),
     'article': article_object,
-    'grammar': lang_article_object,
-    'lesson': lang_article_object,
-    'text': lang_article_object,
+    'grammar': _make_lang_article_object('grammar'),
+    'lesson': _make_lang_article_object('lesson'),
+    'text': _make_lang_article_object('text'),
 }
