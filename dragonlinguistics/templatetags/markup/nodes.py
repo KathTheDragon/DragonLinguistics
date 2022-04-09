@@ -134,8 +134,8 @@ def _make_lang_article_object(type):
         code = data.pop(0)
         return _article_object(attributes, text, f'langs/{code}/{type}', *data)
     name = f'{type}_object'
-    word_object.__name__ = name
-    word_object.__qualname__ = name
+    lang_article_object.__name__ = name
+    lang_article_object.__qualname__ = name
 
     return lang_article_object
 
