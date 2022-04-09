@@ -129,8 +129,15 @@ def article_object(attributes, data, text):
 def _make_lang_article_object(type):
     @handler
     def lang_article_object(attributes, data, text):
+        if type != 'grammar':
+            type += 's'
         code = data.pop(0)
         return _article_object(attributes, text, f'langs/{code}/{type}', *data)
+    name = f'{type}_object'
+    word_object.__name__ = name
+    word_object.__qualname__ = name
+
+    return lang_article_object
 
 
 object_handlers = {
@@ -140,6 +147,6 @@ object_handlers = {
     'gloss': _make_word_object('gloss'),
     'article': article_object,
     'grammar': _make_lang_article_object('grammar'),
-    'lesson': _make_lang_article_object('lessons'),
-    'text': _make_lang_article_object('texts'),
+    'lesson': _make_lang_article_object('lesson'),
+    'text': _make_lang_article_object('text'),
 }
