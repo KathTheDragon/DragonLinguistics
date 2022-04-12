@@ -1,7 +1,8 @@
 from django.urls import reverse
 from django.utils.text import slugify
 from dragonlinguistics.models import Article, Language, Word
-from markup.nodes import handler, MarkupError, InvalidData
+from markup import nodes
+from markup.nodes import handler, html, MarkupError, InvalidData
 
 @handler
 def link_node(attributes, data, text):
@@ -23,6 +24,26 @@ def link_node(attributes, data, text):
         text = [url]
 
     return 'a', attributes, text
+
+
+def section_node(id, classes, data, text):
+    if len(data) != 2:
+        raise InvalidData()
+    else:
+        number, title = data
+
+    if id is None:
+        id = f'sect-{slugify(title)}'
+    level = str(number.count('.') + 1)
+    number = number.lstrip('0.')
+    if number:
+        section_num = html('a', {'class': ['section-num'], 'href': f'#{id}'}, [number])
+    else:
+        section_num = ''
+    back_to_top = html('a', {'class': ['back-to-top'], 'href': '#top'}, ['↑'])
+    title = f'{section_num} {title} {back_to_top}'
+
+    return nodes.section_node(id, classes, [level, title], text)
 
 
 @handler
@@ -47,6 +68,7 @@ def word_node(attributes, data, text):
 
 node_handlers = {
     'link': link_node,
+    'section': section_node,
     'ipa': ipa_node,
     'word': word_node,
 }
