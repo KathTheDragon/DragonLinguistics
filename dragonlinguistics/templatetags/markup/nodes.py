@@ -61,7 +61,7 @@ class IpaNode(nodes.Node):
         return self.attributes | {'class': [*self.attributes['class'], 'ipa']}
 
     def make_content(self) -> list[str]:
-        return [word.replace(' ', chr(0xA0)) for word in (text or [])]
+        return [word.replace(' ', chr(0xA0)) for word in (self.text or [])]
 
 
 class WordNode(nodes.Node):
