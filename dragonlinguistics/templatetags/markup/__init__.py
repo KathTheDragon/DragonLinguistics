@@ -26,5 +26,5 @@ def conditional_escape(text, quote=True):
 class Markup(_markup.Markup):
     def __init__(self):
         super().__init__()
-        self.node_handlers['$'] |= nodes.node_handlers
-        self.node_handlers['@'] = nodes.object_handlers
+        self.node_handlers['$'] |= nodes.nodes
+        self.node_handlers['@'] = nodes.objects
