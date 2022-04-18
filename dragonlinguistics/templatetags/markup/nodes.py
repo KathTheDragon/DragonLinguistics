@@ -5,7 +5,7 @@ from markup import nodes
 from markup.nodes import html, Attributes, MarkupError, InvalidData
 
 class LinkNode(nodes.LinkNode):
-    params = nodes.LinkNode.params | {'**': None}
+    params = nodes.LinkNode.params | {'*=': None}
 
     def make_data(self, data: Attributes) -> Attributes:
         if not (data['url'].startswith('#') or '.' in data['url']):
