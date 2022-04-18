@@ -2,12 +2,12 @@ from django.urls import reverse
 from django.utils.text import slugify
 from dragonlinguistics.models import Article, Language, Word
 from markup import nodes
-from markup.nodes import html, MarkupError, InvalidData
+from markup.nodes import html, Attributes, MarkupError, InvalidData
 
 class LinkNode(nodes.LinkNode):
     params = nodes.LinkNode.params | {'**': None}
 
-    def make_data(self, data: html.Attributes) -> html.Attributes:
+    def make_data(self, data: Attributes) -> Attributes:
         if not (data['url'].startswith('#') or '.' in data['url']):
             kwargs = {key: value for key, value in data.items() if key not in nodes.LinkNode.params}
             name = data['url']
@@ -25,7 +25,7 @@ class LinkNode(nodes.LinkNode):
 class SectionNode(nodes.SectionNode):
     params = {'number': None, 'title': None}
 
-    def make_data(self, data: html.Attributes) -> html.Attributes:
+    def make_data(self, data: Attributes) -> Attributes:
         number, title = data['number'], data['title']
         data['level'] = str(number.count('.') + 1)
         data['id'] = id = self.attributes['id'] or f'sect-{slugify(title)}'
@@ -38,18 +38,18 @@ class SectionNode(nodes.SectionNode):
         data['title'] = f'{section_num} {title} {back_to_top}'
         return super().make_data(data)
 
-    def make_attributes(self) -> html.Attributes:
+    def make_attributes(self) -> Attributes:
         return self.attributes | {'id': self.data['id']}
 
 
-class FootnoteNode(Node):
+class FootnoteNode(nodes.Node):
     tag = 'p'
     params = {'number': None}
 
     def make_attributes(self) -> Attributes:
         return self.attributes | {'class': [*self.attributes['class'], 'footnote']}
 
-    def make_content(self) -> Optional[list[str]]:
+    def make_content(self) -> list[str]:
         prefix = html('sup', {}, [self.data['number']])
         return [prefix, *(self.text or [])]
 
@@ -57,7 +57,7 @@ class FootnoteNode(Node):
 class IpaNode(nodes.Node):
     tag = 'span'
 
-    def make_attributes(self) -> html.Attributes:
+    def make_attributes(self) -> Attributes:
         return self.attributes | {'class': [*self.attributes['class'], 'ipa']}
 
     def make_content(self) -> list[str]:
@@ -68,23 +68,15 @@ class WordNode(nodes.Node):
     tag = 'span'
     params = {'code': ''}
 
-    def make_attributes(self) -> html.Attributes:
+    def make_attributes(self) -> Attributes:
         return self.attributes | {'class': [*self.attributes['class'], 'word', self.data['code']]}
 
-
-nodes = {
-    'link': LinkNode,
-    'section': SectionNode,
-    'footnote': FootnoteNode,
-    'ipa': IpaNode,
-    'word': WordNode,
-}
 
 class Object(nodes.Node):
     tag = 'a'
     name = ''
 
-    def make_attributes(self) -> html.Attributes:
+    def make_attributes(self) -> Attributes:
         return self.attributes | {'href': self.data[self.name].get_absolute_url()}
 
     def make_content(self) -> list[str]:
@@ -95,14 +87,14 @@ class LangObject(nodes.Node):
     params = {'code': None}
     name = 'lang'
 
-    def parse_data(self, data: html.Attributes) -> html.Attributes:
+    def parse_data(self, data: Attributes) -> Attributes:
         try:
             data['lang'] = Language.objects.get(code=data['code'])
         except Language.DoesNotExist:
             raise InvalidData(f'language {data["code"]!r} does not exist')
         return data
 
-    def make_attributes(self) -> html.Attributes:
+    def make_attributes(self) -> Attributes:
         return super().make_attributes() | {'class': [*self.attributes['class'], 'lang', self.data['code']]}
 
 
@@ -110,7 +102,7 @@ class WordObject(nodes.Node):
     params = {'code': None, 'lemma': None, 'homonym': '0'}
     name = 'word'
 
-    def make_data(self, data: html.Attributes) -> html.Attributes:
+    def make_data(self, data: Attributes) -> Attributes:
         try:
             lang = Language.objects.get(code=data['code'])
         except Language.DoesNotExist:
@@ -123,7 +115,7 @@ class WordObject(nodes.Node):
 
         return data
 
-    def make_attributes(self) -> html.Attributes:
+    def make_attributes(self) -> Attributes:
         return super().make_attributes() | {'class': [*self.attributes['class'], 'word', self.data['code']]}
 
 
@@ -141,14 +133,14 @@ class ArticleObject(Object):
     params = {'title': None, 'section': ''}
     name = 'article'
 
-    def make_data(self, data: html.Attributes) -> html.Attributes:
+    def make_data(self, data: Attributes) -> Attributes:
         try:
             data['article'] = Article.objects.get(folder__path=data.get('path', ''), slug=slugify(data['title']))
         except Article.DoesNotExist:
             raise InvalidData(f'article {data["title"]!r} at path {data.get("path", "")!r} does not exist')
         return data
 
-    def make_attributes(self) -> html.Attributes:
+    def make_attributes(self) -> Attributes:
         attributes = super().make_attributes()
         if self.data['section']:
             attributes['href'] += f'#sect-{slugify(self.data["section"])}'
@@ -162,7 +154,7 @@ class LangArticleObject(ArticleObject):
     params = {'code': None} | ArticleObject.params
     type = ''
 
-    def make_data(self, data: html.Attributes) -> html.Attributes:
+    def make_data(self, data: Attributes) -> Attributes:
         data['path'] = f'langs/{data["code"]}/{self.type}'
         return super().make_data(data)
 
@@ -178,6 +170,14 @@ class LessonObject(LangArticleObject):
 class TextObject(LangArticleObject):
     type = 'texts'
 
+
+nodes = {
+    'link': LinkNode,
+    'section': SectionNode,
+    'footnote': FootnoteNode,
+    'ipa': IpaNode,
+    'word': WordNode,
+}
 
 objects = {
     'lang': LangObject,
