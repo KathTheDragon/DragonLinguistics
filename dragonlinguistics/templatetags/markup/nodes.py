@@ -42,6 +42,18 @@ class SectionNode(nodes.SectionNode):
         return self.attributes | {'id': self.data['id']}
 
 
+class FootnoteNode(Node):
+    tag = 'p'
+    params = {'number': None}
+
+    def make_attributes(self) -> Attributes:
+        return self.attributes | {'class': [*self.attributes['class'], 'footnote']}
+
+    def make_content(self) -> Optional[list[str]]:
+        prefix = html('sup', {}, [self.data['number']])
+        return [prefix, *(self.text or [])]
+
+
 class IpaNode(nodes.Node):
     tag = 'span'
 
@@ -63,6 +75,7 @@ class WordNode(nodes.Node):
 nodes = {
     'link': LinkNode,
     'section': SectionNode,
+    'footnote': FootnoteNode,
     'ipa': IpaNode,
     'word': WordNode,
 }
