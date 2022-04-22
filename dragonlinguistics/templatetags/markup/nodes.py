@@ -118,21 +118,31 @@ class WordObject(nodes.Node):
 
         return data
 
-    def make_attributes(self) -> Attributes:
-        return super().make_attributes() | {'class': [*self.attributes['class'], 'word', self.data['code']]}
+    def _make_word(self, word: list[str]) -> str:
+        word = word or [str(self.data['word'])]
+        return html('span', {'class': ['word', self.data['code']]}, word)
+
+    def _make_gloss(self, gloss: list[str]) -> str:
+        gloss = gloss or [self.data['word'].firstgloss()]
+        return f'"{"".join(gloss)}"'
 
     def make_content(self) -> list[str]:
-        return self.text or [str(self.data['word'])]
+        return [self._make_word(self.text)]
 
 
 class WordGlossObject(WordObject):
     def make_content(self) -> list[str]:
-        return self.text or [str(self.data['word']), ' ', f'"{self.data["word"].firstgloss()}"']
+        parts = [strip(part)[1] for part in partition(self.text, '|')]
+        word = self._make_word(parts.pop(0) if parts else [])
+        gloss = self._make_gloss(parts.pop(0) if parts else [])
+        if parts:
+            raise MarkupError('Could not parse text')
+        return [word, ' ', gloss]
 
 
 class GlossObject(WordObject):
     def make_content(self) -> list[str]:
-        return self.text or [f'"{self.data["word"].firstgloss()}"']
+        return [self._make_gloss(self.text)]
 
 
 class ArticleObject(Object):
