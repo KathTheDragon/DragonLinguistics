@@ -118,6 +118,9 @@ class WordObject(nodes.Node):
     def make_attributes(self) -> Attributes:
         return super().make_attributes() | {'class': [*self.attributes['class'], 'word', self.data['code']]}
 
+    def make_content(self) -> list[str]:
+        return self.text or [str(self.data['word'])]
+
 
 class WordGlossObject(WordObject):
     def make_content(self) -> list[str]:
