@@ -51,7 +51,7 @@ class FootnoteNode(nodes.Node):
 
     def make_content(self) -> list[str]:
         prefix = html('sup', {}, [self.data['number']])
-        return [prefix, *(self.text or [])]
+        return [prefix, *self.text]
 
 
 class IpaNode(nodes.Node):
@@ -61,7 +61,7 @@ class IpaNode(nodes.Node):
         return self.attributes | {'class': [*self.attributes['class'], 'ipa']}
 
     def make_content(self) -> list[str]:
-        return [word.replace(' ', chr(0xA0)) for word in (self.text or [])]
+        return [word.replace(' ', chr(0xA0)) for word in self.text]
 
 
 class WordNode(nodes.Node):
