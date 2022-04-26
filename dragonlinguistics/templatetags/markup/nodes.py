@@ -49,9 +49,9 @@ class FootnoteNode(nodes.Node):
     def make_attributes(self) -> Attributes:
         return self.attributes | {'class': [*self.attributes['class'], 'footnote']}
 
-    def make_content(self) -> list[str]:
+    def make_content(self, text: list[str]) -> list[str]:
         prefix = html('sup', {}, [self.data['number']])
-        return [prefix, *self.text]
+        return [prefix, *text]
 
 
 class IpaNode(nodes.Node):
@@ -60,8 +60,8 @@ class IpaNode(nodes.Node):
     def make_attributes(self) -> Attributes:
         return self.attributes | {'class': [*self.attributes['class'], 'ipa']}
 
-    def make_content(self) -> list[str]:
-        return [word.replace(' ', chr(0xA0)) for word in self.text]
+    def make_content(self, text: list[str]) -> list[str]:
+        return [word.replace(' ', chr(0xA0)) for word in text]
 
 
 class WordNode(nodes.Node):
@@ -79,8 +79,8 @@ class Object(nodes.Node):
     def make_attributes(self) -> Attributes:
         return self.attributes | {'href': self.data[self.name].get_absolute_url()}
 
-    def make_content(self) -> list[str]:
-        return self.text or [str(self.data[self.name])]
+    def make_content(self, text: list[str]) -> list[str]:
+        return text or [str(self.data[self.name])]
 
 
 class LangObject(nodes.Node):
@@ -97,8 +97,8 @@ class LangObject(nodes.Node):
     def make_attributes(self) -> Attributes:
         return super().make_attributes() | {'class': [*self.attributes['class'], 'lang', self.data['code']]}
 
-    def make_content(self) -> list[str]:
-        return self.text or [str(self.data['lang'])]
+    def make_content(self, text: list[str]) -> list[str]:
+        return text or [str(self.data['lang'])]
 
 
 class WordObject(nodes.Node):
@@ -126,13 +126,13 @@ class WordObject(nodes.Node):
         gloss = gloss or [self.data['word'].firstgloss()]
         return f'"{"".join(gloss)}"'
 
-    def make_content(self) -> list[str]:
-        return [self._make_word(self.text)]
+    def make_content(self, text: list[str]) -> list[str]:
+        return [self._make_word(text)]
 
 
 class WordGlossObject(WordObject):
-    def make_content(self) -> list[str]:
-        parts = [strip(part)[1] for part in partition(self.text, '|')]
+    def make_content(self, text: list[str]) -> list[str]:
+        parts = [strip(part)[1] for part in partition(text, '|')]
         word = self._make_word(parts.pop(0) if parts else [])
         gloss = self._make_gloss(parts.pop(0) if parts else [])
         if parts:
@@ -141,8 +141,8 @@ class WordGlossObject(WordObject):
 
 
 class GlossObject(WordObject):
-    def make_content(self) -> list[str]:
-        return [self._make_gloss(self.text)]
+    def make_content(self, text: list[str]) -> list[str]:
+        return [self._make_gloss(text)]
 
 
 class ArticleObject(Object):
@@ -162,8 +162,8 @@ class ArticleObject(Object):
             attributes['href'] += f'#sect-{slugify(self.data["section"])}'
         return attributes
 
-    def make_content(self) -> list[str]:
-        return self.text or [self.data['section'] or self.data['title']]
+    def make_content(self, text: list[str]) -> list[str]:
+        return text or [self.data['section'] or self.data['title']]
 
 
 class LangArticleObject(ArticleObject):
