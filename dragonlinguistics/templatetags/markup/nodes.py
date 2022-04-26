@@ -28,18 +28,23 @@ class SectionNode(nodes.SectionNode):
     def make_data(self, data: Attributes) -> Attributes:
         number, title = data['number'], data['title']
         data['level'] = str(number.count('.') + 1)
-        data['id'] = id = self.attributes['id'] or f'sect-{slugify(title)}'
-        number = number.lstrip('0.')
-        if number:
-            section_num = html('a', {'class': ['section-num'], 'href': f'#{id}'}, [number])
-        else:
-            section_num = ''
-        back_to_top = html('a', {'class': ['back-to-top'], 'href': '#top'}, ['↑'])
-        data['title'] = f'{section_num} {title} {back_to_top}'
+        data['id'] = self.attributes['id'] or f'sect-{slugify(title)}'
         return super().make_data(data)
 
     def make_attributes(self) -> Attributes:
         return self.attributes | {'id': self.data['id']}
+
+    def make_content(self, text: list[str]) -> list[str]:
+        number = number.lstrip('0.')
+        back_to_top = html('a', {'class': ['back-to-top'], 'href': '#top'}, ['↑'])
+        if number:
+            section_num = html('a', {'class': ['section-num'], 'href': f'#{self.data["id"]}'}, [number])
+            heading = [section_num, ' ', title, ' ', back_to_top]
+        else:
+            heading = [title, ' ', back_to_top]
+        if text and text[0].startswith('\n'):
+            heading = [re.match(r'(\n *)', text[0]).group(1), *heading, '\n']
+        return super().make_content([*heading, '/', *text])
 
 
 class FootnoteNode(nodes.Node):
