@@ -39,11 +39,9 @@ class SectionNode(nodes.SectionNode):
         back_to_top = html('a', {'class': ['back-to-top'], 'href': '#top'}, ['↑'])
         if number:
             section_num = html('a', {'class': ['section-num'], 'href': f'#{self.data["id"]}'}, [number])
-            heading = [section_num, ' ', title, ' ', back_to_top]
+            heading = [section_num, title, back_to_top]
         else:
-            heading = [title, ' ', back_to_top]
-        if text and text[0].startswith('\n'):
-            heading = [re.match(r'(\n *)', text[0]).group(1), *heading, '\n']
+            heading = [title, back_to_top]
         return super().make_content([*heading, '/', *text])
 
 
@@ -66,7 +64,7 @@ class IpaNode(nodes.Node):
         return self.attributes | {'class': [*self.attributes['class'], 'ipa']}
 
     def make_content(self, text: list[str]) -> list[str]:
-        return [word.replace(' ', chr(0xA0)) for word in text]
+        return [word.replace('-', '  ‿ ') for word in text]
 
 
 class WordNode(nodes.Node):
@@ -92,7 +90,7 @@ class LangObject(nodes.Node):
     params = {'code': None}
     name = 'lang'
 
-    def parse_data(self, data: Attributes) -> Attributes:
+    def make_data(self, data: Attributes) -> Attributes:
         try:
             data['lang'] = Language.objects.get(code=data['code'])
         except Language.DoesNotExist:
