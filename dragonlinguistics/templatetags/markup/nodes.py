@@ -35,13 +35,13 @@ class SectionNode(nodes.SectionNode):
         return self.attributes | {'id': self.data['id']}
 
     def make_content(self, text: list[str]) -> list[str]:
-        number = number.lstrip('0.')
+        number = self.data['number'].lstrip('0.')
         back_to_top = html('a', {'class': ['back-to-top'], 'href': '#top'}, ['↑'])
         if number:
             section_num = html('a', {'class': ['section-num'], 'href': f'#{self.data["id"]}'}, [number])
-            heading = [section_num, title, back_to_top]
+            heading = [section_num, self.data['title'], back_to_top]
         else:
-            heading = [title, back_to_top]
+            heading = [self.data['title'], back_to_top]
         return super().make_content([*heading, '/', *text])
 
 
