@@ -75,6 +75,20 @@ class WordNode(nodes.Node):
         return self.attributes | {'class': [*self.attributes['class'], 'word', self.data['code']]}
 
 
+class GlossNode(nodes.Node):
+    tag = 'span'
+
+    def make_attributes(self) -> Attributes:
+        return self.attributes | {'class': [*self.attributes['class'], 'gloss']}
+
+
+class QuoteNode(nodes.Node):
+    tag = 'span'
+
+    def make_attributes(self) -> Attributes:
+        return self.attributes | {'class': [*self.attributes['class'], 'quote']}
+
+
 class Object(nodes.Node):
     tag = 'a'
     name = ''
@@ -196,6 +210,8 @@ nodes = {
     'footnote': FootnoteNode,
     'ipa': IpaNode,
     'word': WordNode,
+    'gloss': GlossNode,
+    'quote': QuoteNode,
 }
 
 objects = {

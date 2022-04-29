@@ -550,6 +550,10 @@ input[type=submit].search {
     line-height: 1.5em;  /* Needed to get the correct spacing */
 }
 
+.gloss::before, .gloss::after, .quote::before, .quote::after {
+    content: "\""
+}
+
 .ipa::before {
     content: "[";
 }
