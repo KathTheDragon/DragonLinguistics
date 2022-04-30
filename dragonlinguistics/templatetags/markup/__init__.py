@@ -7,12 +7,10 @@ from . import nodes
 
 register = Library()
 
-@register.filter(needs_autoescape=True)
-@stringfilter
-def markup(value, autoescape=True):
-    if autoescape:
-        value = conditional_escape(value, quote=False)
-    return mark_safe(Markup().parse(value))
+@register.simple_tag
+def markup(value, depth=0):
+    value = conditional_escape(value, quote=False)
+    return mark_safe(Markup().parse(value, depth=depth))
 
 
 # Reimplement conditional_escape to be able to not escape quotes

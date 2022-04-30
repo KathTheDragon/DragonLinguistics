@@ -23,6 +23,6 @@
         {%endif%}
     </div>
     <div id="article-body">
-        {{article.content|markup}}
+        {% markup article.content depth=2 %}
     </div>
 </article>
