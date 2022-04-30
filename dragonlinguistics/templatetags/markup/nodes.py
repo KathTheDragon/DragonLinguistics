@@ -23,21 +23,20 @@ class LinkNode(nodes.LinkNode):
 
 
 class SectionNode(nodes.SectionNode):
-    params = {'number': None, 'title': None}
+    params = {'not-numbered?': False, 'number': None, 'title': None}
 
     def make_data(self, data: Attributes) -> Attributes:
-        number, title = data['number'], data['title']
-        data['level'] = str(number.count('.') + 1)
-        data['id'] = self.attributes['id'] or f'sect-{slugify(title)}'
+        data['level'] = str(data['number'].count('.') + 1)
+        data['id'] = self.attributes['id'] or f'sect-{slugify(data["title"])}'
         return super().make_data(data)
 
     def make_attributes(self) -> Attributes:
         return self.attributes | {'id': self.data['id']}
 
     def make_content(self, text: list[str]) -> list[str]:
-        number = self.data['number'].lstrip('0.')
+        number = self.data['number'].lstrip('.')
         back_to_top = html('a', {'class': ['back-to-top'], 'href': '#top'}, ['↑'])
-        if number:
+        if not self.data['not-numbered']:
             section_num = html('a', {'class': ['section-num'], 'href': f'#{self.data["id"]}'}, [number])
             heading = [section_num, self.data['title'], back_to_top]
         else:
