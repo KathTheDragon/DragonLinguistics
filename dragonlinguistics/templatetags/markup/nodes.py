@@ -26,7 +26,7 @@ class SectionNode(nodes.SectionNode):
     params = {'not-numbered?': False, 'number': None, 'title': None}
 
     def make_data(self, data: Attributes) -> Attributes:
-        data['level'] = str(data['number'].count('.') + 1)
+        data['level'] = str(min(6, data['number'].count('.') + 1))
         data['id'] = self.attributes['id'] or f'sect-{slugify(data["title"])}'
         return super().make_data(data)
 
