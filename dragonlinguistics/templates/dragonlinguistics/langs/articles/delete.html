@@ -2,11 +2,6 @@
 
 {%block title%}Delete &lsquo;{{article.title}}&rsquo;{%endblock%}
 
-{%block breadcrumbs%}
-{%include './breadcrumbs.html'%}
-<span>Delete</span>
-{%endblock%}
-
 {%block content%}
 {%include 'dragonlinguistics/snippets/delete.html' with object=article type='article'%}
 {%endblock%}

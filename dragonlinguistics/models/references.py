@@ -27,6 +27,13 @@ class Reference(models.Model):
         index = chr(self.index + ord('a'))
         return f'{author} ({self.year}{index})'
 
+    def html(self):
+        from django.utils.html import format_html
+        return format_html(
+            '<span>{}</span>',
+            self,
+        )
+
     def as_html(self):
         html = f'{self.year} - <a href="{self.link}" target="_blank"><em>{escape(self.title)}</em></a>'
         if self.comment:
@@ -43,7 +50,7 @@ class Reference(models.Model):
 
     def get_absolute_url(self):
         from django.urls import reverse
-        
+
         return reverse('references:list')
 
     def get_edit_url(self):

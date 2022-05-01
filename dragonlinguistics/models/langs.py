@@ -13,6 +13,14 @@ class Language(models.Model):
     def __str__(self):
         return self.name
 
+    def html(self):
+        from django.utils.html import format_html
+        return format_html(
+            '<span class={}>{}</span>',
+            self.get_classes(),
+            self,
+        )
+
     def delete(self, *args, **kwargs):
         Folder.objects.filter(path__startswith=f'langs/{self.code}').delete()
         return super().delete(*args, **kwargs)

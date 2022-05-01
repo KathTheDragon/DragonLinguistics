@@ -20,7 +20,11 @@
             </nav>
         </header>
 
-        <div id="breadcrumbs">{%block breadcrumbs%}{%endblock%}</div>
+        <div id="breadcrumbs">
+            {%for crumb, url in breadcrumbs%}
+            <a{%if url%} href="{{url}}"{%endif%}>{{crumb}}</a>
+            {%endfor%}
+        </div>
 
         <hr class="divider">
 

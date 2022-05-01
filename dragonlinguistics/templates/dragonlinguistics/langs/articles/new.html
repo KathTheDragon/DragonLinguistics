@@ -6,11 +6,6 @@
 
 {%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/form.css'%}" type="text/css" />{%endblock%}
 
-{%block breadcrumbs%}
-{%include './breadcrumbs.html'%}
-<span>Add {{type|singular:'article'}}</span>
-{%endblock%}
-
 {%block content%}
 <h1>Add {{type|singular:'article'|title}}</h1>
 

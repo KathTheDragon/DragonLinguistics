@@ -14,6 +14,14 @@ class LangMixin:
         else:
             return super().get_kwargs(lang=models.Language.objects.get(code=code), **kwargs)
 
+    def get_breadcrumbs(self, lang=None, **kwargs):
+        from django.urls import reverse
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('Languages', reverse('langs:list')))
+        if lang is not None:
+            breadcrumbs.append((lang.html(), lang.get_absolute_url()))
+        return breadcrumbs
+
 
 class List(base.SearchMixin, LangMixin, base.List):
     form = forms.LanguageSearch
@@ -31,6 +39,11 @@ class List(base.SearchMixin, LangMixin, base.List):
 class Search(LangMixin, base.Search):
     form = forms.LanguageSearch
 
+    def get_breadcrumbs(self, **kwargs):
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('Search', ''))
+        return breadcrumbs
+
 
 class New(LangMixin, base.NewEdit):
     forms = {'langform': forms.Language}
@@ -42,6 +55,11 @@ class New(LangMixin, base.NewEdit):
         models.Folder.objects.get_or_create(path=f'langs/{lang.code}/lessons')
         models.Folder.objects.get_or_create(path=f'langs/{lang.code}/texts')
         return lang
+
+    def get_breadcrumbs(self, **kwargs):
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('New', ''))
+        return breadcrumbs
 
 
 class View(LangMixin, base.Base):
@@ -59,6 +77,14 @@ class Edit(LangMixin, base.NewEdit):
             folder.save()
         return lang
 
+    def get_breadcrumbs(self, **kwargs):
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('Edit', ''))
+        return breadcrumbs
+
 
 class Delete(LangMixin, base.Delete):
-    pass
+    def get_breadcrumbs(self, **kwargs):
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('Delete', ''))
+        return breadcrumbs

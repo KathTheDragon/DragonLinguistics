@@ -170,7 +170,7 @@ body {
     font-size: 0.9em;
 }
 
-#breadcrumbs span:not(:last-child)::after {
+#breadcrumbs a:not(:last-child)::after {
     content: "/";
     color: #959595;
     margin: 0 4px 0 6px;
@@ -198,12 +198,12 @@ p {
     text-align: justify;
 }
 
-a {
+a[href] {
     color: #1e74d7;
     text-decoration: none;
 }
 
-a:hover {
+a[href]:hover {
     color: #004ca2;
 }
 
@@ -494,7 +494,7 @@ section::after {
 
 /* Buttons */
 
-.button {
+a.button {
     cursor: auto;
     padding: 4px 8px;
     margin: 4px 0;
@@ -508,7 +508,7 @@ input[type=submit] {
     padding: 4px 14px;
 }
 
-input[type=submit], .button {
+input[type=submit], a.button {
     margin: 4px;
     font-size: 0.9rem;
     -webkit-transition: background-color 0.05s ease-in-out;
@@ -516,7 +516,7 @@ input[type=submit], .button {
     background: #f4f4f4;
 }
 
-input[type=submit]:hover, .button:hover {
+input[type=submit]:hover, a.button:hover {
     background: #ededed;
     color: #24292e;
 }

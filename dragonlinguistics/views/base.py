@@ -107,6 +107,16 @@ class Base(TemplateView):
         except (ObjectDoesNotExist, MultipleObjectsReturned):
             raise Http404
 
+    def get_breadcrumbs(self, **kwargs):
+        from django.urls import reverse
+        return [('Home', reverse('home'))]
+
+    def get_context_data(self, **kwargs):
+        breadcrumbs = self.get_breadcrumbs(**kwargs)
+        breadcrumbs[-1] = (breadcrumbs[-1][0], '')
+        kwargs.setdefault('breadcrumbs', breadcrumbs)
+        return super().get_context_data(**kwargs)
+
 
 class SecureBase(LoginRequiredMixin, Base):
     pass

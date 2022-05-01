@@ -5,9 +5,4 @@
 
 {%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/article.css'%}" type="text/css" />{%endblock%}
 
-{%block breadcrumbs%}
-{%include './breadcrumbs.html' with article=None%}
-<span>{{article.title}}</span>
-{%endblock%}
-
 {%block content%}{%include 'dragonlinguistics/snippets/articles/view.html'%}{%endblock%}

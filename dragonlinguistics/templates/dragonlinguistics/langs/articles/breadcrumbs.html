@@ -1,5 +1,0 @@
-{%load util%}
-
-{%include '../breadcrumbs.html'%}
-<span><a href="{{folder.get_absolute_url}}">{{type|capfirst}}</a></span>
-{%if article%}<span><a href="{{article.get_absolute_url}}">{{article.title}}</a></span>{%endif%}

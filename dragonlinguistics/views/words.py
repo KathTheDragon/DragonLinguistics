@@ -48,6 +48,14 @@ class WordMixin(LangMixin):
             word = models.Word.objects.filter(lang__code=code, lemma=lemma)[homonym-1]
             return super().get_kwargs(code=code, word=word, **kwargs)
 
+    def get_breadcrumbs(self, lang, word=None, **kwargs):
+        from django.urls import reverse
+        breadcrumbs = super().get_breadcrumbs(lang=lang, **kwargs)
+        breadcrumbs.append(('Dictionary', reverse('langs:words:list', kwargs={'code': lang.code})))
+        if word is not None:
+            breadcrumbs.append((word.html(), word.get_absolute_url()))
+        return breadcrumbs
+
 
 class List(WordMixin, base.SearchMixin, base.List):
     form = forms.WordSearch
@@ -71,6 +79,11 @@ class List(WordMixin, base.SearchMixin, base.List):
 class Search(WordMixin, base.Search):
     form = forms.WordSearch
 
+    def get_breadcrumbs(self, **kwargs):
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('Search', ''))
+        return breadcrumbs
+
 
 class New(WordMixin, base.NewEdit):
     forms = {'wordform': forms.Word, 'senseformset': forms.Senses}
@@ -85,6 +98,11 @@ class New(WordMixin, base.NewEdit):
             sense.save()
         return newword
 
+    def get_breadcrumbs(self, **kwargs):
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('New', ''))
+        return breadcrumbs
+
 
 class View(WordMixin, base.Base):
     pass
@@ -98,10 +116,20 @@ class Edit(WordMixin, base.NewEdit):
         senseformset.save()
         return newword
 
+    def get_breadcrumbs(self, **kwargs):
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('Edit', ''))
+        return breadcrumbs
+
 
 class Delete(WordMixin, base.Delete):
     def get_redirect_kwargs(self, lang):
         return {'code': lang.code}
+
+    def get_breadcrumbs(self, **kwargs):
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('Delete', ''))
+        return breadcrumbs
 
 
 class Import(WordMixin, base.SecureBase):
@@ -130,3 +158,8 @@ class Import(WordMixin, base.SecureBase):
                     Sense(word=word, **sense).save()
         else:
             return self.get(request, lang=lang, importform=importform)
+
+    def get_breadcrumbs(self, **kwargs):
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('Import', ''))
+        return breadcrumbs

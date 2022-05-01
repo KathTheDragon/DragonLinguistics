@@ -41,6 +41,14 @@ class Article(models.Model):
     def __str__(self):
         return self.title
 
+    def html(self):
+        from django.utils.html import format_html
+        return format_html(
+            '<span class={}>{}</span>',
+            self.get_classes(),
+            self,
+        )
+
     @property
     def tag_list(self):
         return list(filter(None, map(lambda t: t.strip(), self.tags.split(','))))

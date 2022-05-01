@@ -14,6 +14,14 @@ class ReferenceMixin:
             reference = models.Reference.objects.filter(author=author, year=year)[index]
             return super().get_kwargs(reference=reference, **kwargs)
 
+    def get_breadcrumbs(self, reference=None, **kwargs):
+        from django.urls import reverse
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('Bibliography', reverse('references:list')))
+        if reference is not None:
+            breadcrumbs.append((reference.html(), ''))
+        return breadcrumbs
+
 
 class List(base.SearchMixin, ReferenceMixin, base.Base):
     form = forms.ReferenceSearch
@@ -38,12 +46,22 @@ class List(base.SearchMixin, ReferenceMixin, base.Base):
 class Search(ReferenceMixin, base.Search):
     form = forms.LanguageSearch
 
+    def get_breadcrumbs(self, **kwargs):
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('Search', ''))
+        return breadcrumbs
+
 
 class New(ReferenceMixin, base.NewEdit):
     forms = {'referenceform': forms.Reference}
 
     def handle_forms(self, request, referenceform):
         return referenceform.save()
+
+    def get_breadcrumbs(self, **kwargs):
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('New', ''))
+        return breadcrumbs
 
 
 class Edit(ReferenceMixin, base.NewEdit):
@@ -52,6 +70,14 @@ class Edit(ReferenceMixin, base.NewEdit):
     def handle_forms(self, request, reference, referenceform):
         return referenceform.save()
 
+    def get_breadcrumbs(self, **kwargs):
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('Edit', ''))
+        return breadcrumbs
+
 
 class Delete(ReferenceMixin, base.Delete):
-    pass
+    def get_breadcrumbs(self, **kwargs):
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('Delete', ''))
+        return breadcrumbs

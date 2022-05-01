@@ -54,6 +54,14 @@ class Word(models.Model):
         else:
             return citation
 
+    def html(self):
+        from django.utils.html import format_html
+        return format_html(
+            '<span class={}>{}</span>',
+            self.get_classes(),
+            self,
+        )
+
     def firstgloss(self):
         senses = self.sense_set.all()
         if senses:
