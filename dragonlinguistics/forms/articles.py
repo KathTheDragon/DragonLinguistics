@@ -14,12 +14,12 @@ class NewArticle(ModelForm):
 
     class Meta:
         model = models.Article
-        fields = ['title', 'description', 'content', 'tags', 'created']
+        fields = ['title', 'description', 'number', 'content', 'tags', 'created']
         widgets = {'tags': TextInput()}
 
 
 class EditArticle(ModelForm):
     class Meta:
         model = models.Article
-        fields = ['title', 'description', 'content', 'tags']
+        fields = ['title', 'description', 'number', 'content', 'tags']
         widgets = {'tags': TextInput()}
