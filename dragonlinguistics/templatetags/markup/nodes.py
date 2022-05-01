@@ -23,7 +23,15 @@ class LinkNode(nodes.LinkNode):
 
 
 class SectionNode(nodes.SectionNode):
-    params = {'not-numbered?': False, 'number': None, 'title': None}
+    params = {'not-numbered?': False, 'title': None}
+
+    @staticmethod
+    def parse_data(data: Attributes, kwargs: Attributes) -> tuple[Attributes, Attributes]:
+        data['number'] = kwargs.get('section_number', '1')
+        parts = data['number'].split('.')
+        parts[-1] = str(int(parts[-1]) + 1)
+        kwargs['section_number'] = '.'.join(parts)
+        return data, kwargs | {'section_number': data['number'] + '.1'}
 
     def make_data(self, data: Attributes) -> Attributes:
         data['level'] = str(min(6, data['number'].count('.') + 1))

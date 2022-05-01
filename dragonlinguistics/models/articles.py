@@ -29,6 +29,7 @@ class Article(models.Model):
     slug = models.SlugField()
     title = models.CharField(max_length=255)
     description = models.CharField(blank=True, max_length=255)
+    number = models.CharField(blank=True, max_length=5)  # Used for section numbering
     content = models.TextField()
     tags = models.TextField(blank=True)
     created = models.DateTimeField()

@@ -8,9 +8,9 @@ from . import nodes
 register = Library()
 
 @register.simple_tag
-def markup(value, depth=0):
+def markup(value, depth=0, section=''):
     value = conditional_escape(value, quote=False)
-    return mark_safe(Markup().parse(value, depth=depth))
+    return mark_safe(Markup().parse(value, depth=depth, section_number=section + '.1'))
 
 
 # Reimplement conditional_escape to be able to not escape quotes
