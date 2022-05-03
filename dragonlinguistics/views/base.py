@@ -28,13 +28,13 @@ def strictsearch(**kwargs):
     return {term: value for term, value in kwargs.items() if value}
 
 
-def redirect_params(url, kwargs=None, params=None):
+def redirect_params(url, kwargs=None, params=None, exclude=set()):
     from urllib.parse import urlencode
     if kwargs is None:
         kwargs = {}
     response = redirect(url, **kwargs)
     if params:
-        params = {key: value for key, value in params.items() if value}
+        params = {key: value for key, value in params.items() if key not in exclude and value}
     if params:
         query_string = urlencode(params)
         response['Location'] += '?' + query_string
@@ -174,15 +174,13 @@ class Search(Base):
     def get_target_url(self):
         return f'{self.get_namespace()}:list'
 
-    def get(self, request, **kwargs):
-        if request.GET:
-            return redirect_params(
-                self.get_target_url(),
-                kwargs=kwargs,
-                params=request.GET
-            )
-        else:
-            return super().get(request, **kwargs)
+    def post(self, request, **kwargs):
+        return redirect_params(
+            self.get_target_url(),
+            kwargs=kwargs,
+            params=request.POST,
+            exclude={'_action'},
+        )
 
 
 class NewEdit(SecureBase):
