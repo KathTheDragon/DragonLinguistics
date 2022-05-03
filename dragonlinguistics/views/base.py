@@ -168,7 +168,7 @@ class Search(Base):
         return f'{self.get_namespace()}:list'
 
     def get(self, request, **kwargs):
-        if list(request.GET.keys) == ['search']:
+        if list(request.GET.keys()) == ['search']:
             return super().get(request, **kwargs)
         else:
             return redirect_params(
