@@ -2,6 +2,7 @@
 
 <form method="post">
     {%csrf_token%}
+    <input type="hidden" name="_action" value="edit" />
     <input type="submit" value="Save changes" />
     <a class="button" href="{{object.get_absolute_url}}">Cancel</a>
     {{form.non_field_errors}}
