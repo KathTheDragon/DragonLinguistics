@@ -167,13 +167,15 @@ class Search(Base):
     def get_target_url(self):
         return f'{self.get_namespace()}:list'
 
-    def post(self, request, **kwargs):
-        return redirect_params(
-            self.get_target_url(),
-            kwargs=kwargs,
-            params=request.POST,
-            exclude={'_action'},
-        )
+    def get(self, request, **kwargs):
+        if list(request.GET.keys) == ['search']:
+            return super().get(request, **kwargs)
+        else:
+            return redirect_params(
+                self.get_target_url(),
+                kwargs=kwargs,
+                params=request.GET,
+            )
 
 
 class NewEdit(SecureBase):
