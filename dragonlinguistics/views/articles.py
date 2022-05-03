@@ -32,47 +32,46 @@ class ArticleMixin:
         return breadcrumbs
 
 
-class List(ArticleMixin, base.List):
-    def get_object_list(self, folder, **kwargs):
-        return models.Article.objects.filter(folder=folder)
+class List(base.Actions):
+    class List(ArticleMixin, base.List):
+        def get_object_list(self, folder, **kwargs):
+            return models.Article.objects.filter(folder=folder)
+
+    class New(ArticleMixin, base.NewEdit):
+        forms = {'articleform': forms.EditArticle}
+
+        def handle_forms(self, request, folder, articleform, **kwargs):
+            article = articleform.save(commit=False)
+            article.folder = folder
+            article.save()
+            return article
+
+        def get_breadcrumbs(self, **kwargs):
+            breadcrumbs = super().get_breadcrumbs(**kwargs)
+            breadcrumbs.append(('New', ''))
+            return breadcrumbs
 
 
-class New(ArticleMixin, base.NewEdit):
-    forms = {'articleform': forms.EditArticle}
+class View(base.Actions):
+    class View(ArticleMixin, base.Base):
+        pass
 
-    def handle_forms(self, request, folder, articleform, **kwargs):
-        article = articleform.save(commit=False)
-        article.folder = folder
-        article.save()
-        return article
+    class Edit(ArticleMixin, base.NewEdit):
+        forms = {'articleform': forms.EditArticle}
 
-    def get_breadcrumbs(self, **kwargs):
-        breadcrumbs = super().get_breadcrumbs(**kwargs)
-        breadcrumbs.append(('New', ''))
-        return breadcrumbs
+        def handle_forms(self, request, folder, article, articleform, **kwargs):
+            return articleform.save()
 
+        def get_breadcrumbs(self, **kwargs):
+            breadcrumbs = super().get_breadcrumbs(**kwargs)
+            breadcrumbs.append(('Edit', ''))
+            return breadcrumbs
 
-class View(ArticleMixin, base.Base):
-    pass
+    class Delete(ArticleMixin, base.Delete):
+        def get_redirect_to(self, folder):
+            return folder
 
-
-class Edit(ArticleMixin, base.NewEdit):
-    forms = {'articleform': forms.EditArticle}
-
-    def handle_forms(self, request, folder, article, articleform, **kwargs):
-        return articleform.save()
-
-    def get_breadcrumbs(self, **kwargs):
-        breadcrumbs = super().get_breadcrumbs(**kwargs)
-        breadcrumbs.append(('Edit', ''))
-        return breadcrumbs
-
-
-class Delete(ArticleMixin, base.Delete):
-    def get_redirect_to(self, folder):
-        return folder
-
-    def get_breadcrumbs(self, **kwargs):
-        breadcrumbs = super().get_breadcrumbs(**kwargs)
-        breadcrumbs.append(('Delete', ''))
-        return breadcrumbs
+        def get_breadcrumbs(self, **kwargs):
+            breadcrumbs = super().get_breadcrumbs(**kwargs)
+            breadcrumbs.append(('Delete', ''))
+            return breadcrumbs

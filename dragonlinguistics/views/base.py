@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.http import Http404
 from django.shortcuts import redirect
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 from django.views.generic.base import ContextMixin
 
 ## Helper functions
@@ -75,6 +75,34 @@ class SearchMixin(ContextMixin):
         kwargs.setdefault('query', query)
         kwargs.setdefault('searchform', searchform)
         return super().get_context_data(**kwargs)
+
+
+class Actions(View):
+    default_action = ''
+
+    def get_default_action(self):
+        return self.default_action or self.__class__.__name__.lower()
+
+    def dispatch(self, request, **kwargs):
+        default_action = self.get_default_action()
+
+        if request.method.lower() == 'get':
+            action, values = next(request.GET.lists(), ('', [' ']))
+            if values and values[0] == '':
+                request.GET.setlist(action, values[1:])
+            else:
+                action = default_action
+        elif request.method.lower() == 'post':
+            action = request.POST.get('_action', default_action)
+            request.POST.pop('_action', None)
+        else:
+            action = default_action
+
+        view = getattr(self, action.capitalize(), None)
+        if issubclass(view, View):
+            return view.as_view()(request, **kwargs)
+        else:
+            raise Http404
 
 
 BASE_PATH = PurePath('dragonlinguistics')

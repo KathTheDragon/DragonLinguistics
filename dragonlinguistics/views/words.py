@@ -57,79 +57,77 @@ class WordMixin(LangMixin):
         return breadcrumbs
 
 
-class List(WordMixin, base.SearchMixin, base.List):
-    form = forms.WordSearch
+class List(base.Actions):
+    class List(WordMixin, base.SearchMixin, base.List):
+        form = forms.WordSearch
 
-    def get_object_list(self, lang, **kwargs):
-        query = self.request.GET
-        return models.Word.objects.filter(
-            lang=lang,
-            # word-level search terms
-            **base.fuzzysearch(lemma=query.get('lemma', '')),
-            **base.strictsearch(type=query.get('type', ''))
-        ).filter(  # sense-level search terms
-            **base.fuzzysearch(sense__gloss=query.get('gloss', ''))
-        ).filter(
-            **base.strictsearch(sense__pos=query.get('pos', ''))
-        ).filter(
-            **base.strictsearch(sense__grammclass__contains=query.get('classes', ''))
-        )
+        def get_object_list(self, lang, **kwargs):
+            query = self.request.GET
+            return models.Word.objects.filter(
+                lang=lang,
+                # word-level search terms
+                **base.fuzzysearch(lemma=query.get('lemma', '')),
+                **base.strictsearch(type=query.get('type', ''))
+            ).filter(  # sense-level search terms
+                **base.fuzzysearch(sense__gloss=query.get('gloss', ''))
+            ).filter(
+                **base.strictsearch(sense__pos=query.get('pos', ''))
+            ).filter(
+                **base.strictsearch(sense__grammclass__contains=query.get('classes', ''))
+            )
 
+    class Search(WordMixin, base.Search):
+        form = forms.WordSearch
 
-class Search(WordMixin, base.Search):
-    form = forms.WordSearch
+        def get_breadcrumbs(self, **kwargs):
+            breadcrumbs = super().get_breadcrumbs(**kwargs)
+            breadcrumbs.append(('Search', ''))
+            return breadcrumbs
 
-    def get_breadcrumbs(self, **kwargs):
-        breadcrumbs = super().get_breadcrumbs(**kwargs)
-        breadcrumbs.append(('Search', ''))
-        return breadcrumbs
+    class New(WordMixin, base.NewEdit):
+        forms = {'wordform': forms.Word, 'senseformset': forms.Senses}
 
+        def handle_forms(self, request, lang, wordform, senseformset):
+            newword = wordform.save(commit=False)
+            newword.lang = lang
+            newword.save()
+            senses = senseformset.save(commit=False)
+            for sense in senses:
+                sense.word = newword
+                sense.save()
+            return newword
 
-class New(WordMixin, base.NewEdit):
-    forms = {'wordform': forms.Word, 'senseformset': forms.Senses}
-
-    def handle_forms(self, request, lang, wordform, senseformset):
-        newword = wordform.save(commit=False)
-        newword.lang = lang
-        newword.save()
-        senses = senseformset.save(commit=False)
-        for sense in senses:
-            sense.word = newword
-            sense.save()
-        return newword
-
-    def get_breadcrumbs(self, **kwargs):
-        breadcrumbs = super().get_breadcrumbs(**kwargs)
-        breadcrumbs.append(('New', ''))
-        return breadcrumbs
-
-
-class View(WordMixin, base.Base):
-    pass
+        def get_breadcrumbs(self, **kwargs):
+            breadcrumbs = super().get_breadcrumbs(**kwargs)
+            breadcrumbs.append(('New', ''))
+            return breadcrumbs
 
 
-class Edit(WordMixin, base.NewEdit):
-    forms = {'wordform': forms.Word, 'senseformset': forms.Senses}
+class View(base.Actions):
+    class View(WordMixin, base.Base):
+        pass
 
-    def handle_forms(self, request, lang, word, wordform, senseformset):
-        newword = wordform.save()
-        senseformset.save()
-        return newword
+    class Edit(WordMixin, base.NewEdit):
+        forms = {'wordform': forms.Word, 'senseformset': forms.Senses}
 
-    def get_breadcrumbs(self, **kwargs):
-        breadcrumbs = super().get_breadcrumbs(**kwargs)
-        breadcrumbs.append(('Edit', ''))
-        return breadcrumbs
+        def handle_forms(self, request, lang, word, wordform, senseformset):
+            newword = wordform.save()
+            senseformset.save()
+            return newword
 
+        def get_breadcrumbs(self, **kwargs):
+            breadcrumbs = super().get_breadcrumbs(**kwargs)
+            breadcrumbs.append(('Edit', ''))
+            return breadcrumbs
 
-class Delete(WordMixin, base.Delete):
-    def get_redirect_kwargs(self, lang):
-        return {'code': lang.code}
+    class Delete(WordMixin, base.Delete):
+        def get_redirect_kwargs(self, lang):
+            return {'code': lang.code}
 
-    def get_breadcrumbs(self, **kwargs):
-        breadcrumbs = super().get_breadcrumbs(**kwargs)
-        breadcrumbs.append(('Delete', ''))
-        return breadcrumbs
+        def get_breadcrumbs(self, **kwargs):
+            breadcrumbs = super().get_breadcrumbs(**kwargs)
+            breadcrumbs.append(('Delete', ''))
+            return breadcrumbs
 
 
 class Import(WordMixin, base.SecureBase):
