@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 from django.forms import ModelForm, Textarea
 
 from . import models
@@ -14,6 +15,7 @@ class ArticleAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.Language)
+admin.site.register(models.User, UserAdmin)
 
 textarea_attrs = {'rows':5, 'cols':40}
 
