@@ -1,4 +1,4 @@
-from . import articles, langs
+from . import base, articles, langs
 
 # Views
 class LangArticleMixin(articles.ArticleMixin, langs.LangMixin):
