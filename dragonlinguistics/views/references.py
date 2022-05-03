@@ -64,6 +64,10 @@ class List(base.Actions):
 
 
 class View(base.Actions):
+    class View(ReferenceMixin, base.Base):
+        def get(self, request, **kwargs):
+            return redirect('references:list')
+
     class Edit(ReferenceMixin, base.NewEdit):
         forms = {'referenceform': forms.Reference}
 
