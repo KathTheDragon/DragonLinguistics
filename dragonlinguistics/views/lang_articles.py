@@ -7,19 +7,19 @@ class LangArticleMixin(articles.ArticleMixin, langs.LangMixin):
 
 
 class List(base.Actions):
-    class List(LangArticleMixin, articles.List):
+    class List(LangArticleMixin, articles.List.List):
         pass
 
-    class New(LangArticleMixin, articles.New):
+    class New(LangArticleMixin, articles.List.New):
         pass
 
 
 class View(base.Actions):
-    class View(LangArticleMixin, articles.View):
+    class View(LangArticleMixin, articles.View.View):
         pass
 
-    class Edit(LangArticleMixin, articles.Edit):
+    class Edit(LangArticleMixin, articles.View.Edit):
         pass
 
-    class Delete(LangArticleMixin, articles.Delete):
+    class Delete(LangArticleMixin, articles.View.Delete):
         pass
