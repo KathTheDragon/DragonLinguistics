@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.safestring import mark_safe
 
 from . import base
 from .langs import Language
@@ -55,14 +54,6 @@ class Word(base.Model):
         else:
             return citation
 
-    def html(self):
-        from django.utils.html import format_html
-        return format_html(
-            '<span class={}>{}</span>',
-            self.get_classes(),
-            self,
-        )
-
     def firstgloss(self):
         senses = self.sense_set.all()
         if senses:
@@ -86,7 +77,7 @@ class Word(base.Model):
             )
 
     def get_classes(self):
-        return mark_safe(f'"word {self.lang.code}"')
+        return ['word', self.lang.code]
 
 
 class Sense(models.Model):

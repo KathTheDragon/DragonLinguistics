@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
 from . import base
@@ -37,14 +36,6 @@ class Article(base.Model):
     def __str__(self):
         return self.title
 
-    def html(self):
-        from django.utils.html import format_html
-        return format_html(
-            '<span class={}>{}</span>',
-            self.get_classes(),
-            self,
-        )
-
     @property
     def tag_list(self):
         return list(filter(None, map(lambda t: t.strip(), self.tags.split(','))))
@@ -63,7 +54,7 @@ class Article(base.Model):
         return reverse(f'{namespace}:view', kwargs=kwargs)
 
     def get_classes(self):
-        return mark_safe(f'"article"')
+        return ['article']
 
 
 def parse_path(path, kwargs=None):

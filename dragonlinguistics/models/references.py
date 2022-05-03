@@ -29,13 +29,6 @@ class Reference(base.Model):
         index = chr(self.index + ord('a'))
         return f'{author} ({self.year}{index})'
 
-    def html(self):
-        from django.utils.html import format_html
-        return format_html(
-            '<span>{}</span>',
-            self,
-        )
-
     def as_html(self):
         html = f'{self.year} - <a href="{self.link}" target="_blank"><em>{escape(self.title)}</em></a>'
         if self.comment:
