@@ -18,7 +18,7 @@
 <h3>{{author}}</h3>
 <ul>
     {%for reference in references%}
-    <li id="{{reference|slugify}}">{{reference.as_html}}{%if user.is_authenticated%}<a class="button" href="{{reference.get_absolute_url}}?edit">Edit</a><a class="button" href="{{reference.get_absolute_url}}?delete">Delete</a>{%endif%}</li>
+    <li id="{{reference|slugify}}">{{reference.as_html}}{%if user.is_authenticated%}<a class="button" href="{{reference.url}}?edit">Edit</a><a class="button" href="{{reference.url}}?delete">Delete</a>{%endif%}</li>
     {%endfor%}
 </ul>
 

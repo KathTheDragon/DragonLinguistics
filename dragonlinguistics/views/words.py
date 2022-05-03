@@ -53,7 +53,7 @@ class WordMixin(LangMixin):
         breadcrumbs = super().get_breadcrumbs(lang=lang, **kwargs)
         breadcrumbs.append(('Dictionary', reverse('langs:words:list', kwargs={'code': lang.code})))
         if word is not None:
-            breadcrumbs.append((word.html(), word.get_absolute_url()))
+            breadcrumbs.append((word.html(), word.url()))
         return breadcrumbs
 
 

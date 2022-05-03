@@ -6,5 +6,5 @@ Are you <i>sure</i> you want to delete this {{type}}?
     {%csrf_token%}
     <input type="hidden" name="_action" value="delete" />
     <input type='submit' value='Delete'/>
-    <a class="button" href="{{object.get_absolute_url}}">Cancel</a>
+    <a class="button" href="{{object.url}}">Cancel</a>
 </form>

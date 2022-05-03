@@ -19,7 +19,7 @@ class LangMixin:
         breadcrumbs = super().get_breadcrumbs(**kwargs)
         breadcrumbs.append(('Languages', reverse('langs:list')))
         if lang is not None:
-            breadcrumbs.append((lang.html(), lang.get_absolute_url()))
+            breadcrumbs.append((lang.html(), lang.url()))
         return breadcrumbs
 
 

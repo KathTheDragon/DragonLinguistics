@@ -26,9 +26,9 @@ class ArticleMixin:
     def get_breadcrumbs(self, folder, type='articles', article=None, **kwargs):
         from django.urls import reverse
         breadcrumbs = super().get_breadcrumbs(**kwargs)
-        breadcrumbs.append((type.capitalize(), folder.get_absolute_url()))
+        breadcrumbs.append((type.capitalize(), folder.url()))
         if article is not None:
-            breadcrumbs.append((article.html(), article.get_absolute_url()))
+            breadcrumbs.append((article.html(), article.url()))
         return breadcrumbs
 
 

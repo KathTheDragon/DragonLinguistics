@@ -4,7 +4,9 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
-class Reference(models.Model):
+from . import base
+
+class Reference(base.Model):
     author = models.CharField(max_length=255)
     year = models.PositiveSmallIntegerField()
     title = models.CharField(max_length=255)
@@ -40,7 +42,7 @@ class Reference(models.Model):
             html += f' ({escape(self.comment)})'
         return mark_safe(html)
 
-    def get_absolute_url(self):
+    def url(self):
         from django.urls import reverse
 
         return reverse(

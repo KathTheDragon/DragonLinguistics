@@ -1,9 +1,10 @@
 from django.db import models
 from django.utils.safestring import mark_safe
 
+from . import base
 from .langs import Language
 
-class Word(models.Model):
+class Word(base.Model):
     TYPES = [
         ('r', 'Root'),
         ('br', 'Bound Root'),
@@ -70,7 +71,7 @@ class Word(models.Model):
             return ''
     firstgloss.short_description = 'Gloss'
 
-    def get_absolute_url(self):
+    def url(self):
         from django.urls import reverse
         homonym = self.get_homonym()
         if homonym:

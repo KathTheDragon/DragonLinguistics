@@ -101,7 +101,7 @@ class Object(nodes.Node):
     name = ''
 
     def make_attributes(self) -> Attributes:
-        return self.attributes | {'href': self.data[self.name].get_absolute_url()}
+        return self.attributes | {'href': self.data[self.name].url()}
 
     def make_content(self, text: list[str]) -> list[str]:
         return text or [str(self.data[self.name])]

@@ -2,7 +2,9 @@ from django.db import models
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
-class Folder(models.Model):
+from . import base
+
+class Folder(base.Model):
     path = models.TextField(blank=True)
 
     @property
@@ -12,13 +14,13 @@ class Folder(models.Model):
     def __str__(self):
         return self.path
 
-    def get_absolute_url(self):
+    def url(self):
         from django.urls import reverse
         namespace, kwargs = parse_path(self.path)
         return reverse(f'{namespace}:list', kwargs=kwargs)
 
 
-class Article(models.Model):
+class Article(base.Model):
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
     slug = models.SlugField()
     title = models.CharField(max_length=255)
@@ -51,7 +53,7 @@ class Article(models.Model):
         self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
-    def get_absolute_url(self):
+    def url(self):
         from django.urls import reverse
         kwargs = {'slug': self.slug}
         if self.folder is None:
