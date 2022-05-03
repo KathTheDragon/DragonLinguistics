@@ -89,12 +89,16 @@ class Actions(View):
         if request.method.lower() == 'get':
             action, values = next(request.GET.lists(), ('', [' ']))
             if values and values[0] == '':
+                request.GET._mutable = True  # Evil shit, don't do this
                 request.GET.setlist(action, values[1:])
+                request.GET._mutable = False
             else:
                 action = default_action
         elif request.method.lower() == 'post':
             action = request.POST.get('_action', default_action)
+            request.POST._mutable = True  # Same evil shit, still don't do this
             request.POST.pop('_action', None)
+            request.POST._mutable = False
         else:
             action = default_action
 
