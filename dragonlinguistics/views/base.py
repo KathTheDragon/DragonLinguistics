@@ -101,6 +101,10 @@ class Actions(View):
         else:
             raise Http404
 
+    # Define just so it can allow POST requests
+    def post(self, request, **kwargs):
+        pass
+
 
 BASE_PATH = PurePath('dragonlinguistics')
 
