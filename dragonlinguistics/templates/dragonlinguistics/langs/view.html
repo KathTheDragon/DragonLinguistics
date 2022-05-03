@@ -8,8 +8,8 @@
     <h1 class="lang {{lang.code}}">{{lang}}</h1>
     {%if user.is_authenticated%}
     <div class="controls">
-        <a class="btn edit" href="{{lang.get_edit_url}}">Edit</a>
-        <a class="btn delete" href="{{lang.get_delete_url}}">Delete</a>
+        <a class="btn edit" href="?edit">Edit</a>
+        <a class="btn delete" href="?delete">Delete</a>
     </div>
     {%endif%}
 </div>

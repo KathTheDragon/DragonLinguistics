@@ -16,8 +16,8 @@
     <h1 class="word {{lang.code}}">{{word}}</h1>
     {%if user.is_authenticated%}
     <div class="controls">
-        <a class="btn edit" href="{{word.get_edit_url}}">Edit</a>
-        <a class="btn delete" href="{{word.get_delete_url}}">Delete</a>
+        <a class="btn edit" href="?edit">Edit</a>
+        <a class="btn delete" href="?delete">Delete</a>
     </div>
     {%endif%}
 </div>

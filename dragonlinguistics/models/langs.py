@@ -25,22 +25,10 @@ class Language(models.Model):
         Folder.objects.filter(path__startswith=f'langs/{self.code}').delete()
         return super().delete(*args, **kwargs)
 
-    def urls(self, action):
+    def get_absolute_url(self):
         from django.urls import reverse
         kwargs = {'code': self.code}
-        url = reverse(f'langs:view', kwargs=kwargs)
-        if action:
-            url += f'?{action}'
-        return url
-
-    def get_absolute_url(self):
-        return self.urls('')
-
-    def get_edit_url(self):
-        return self.urls('edit')
-
-    def get_delete_url(self):
-        return self.urls('delete')
+        return reverse(f'langs:view', kwargs=kwargs)
 
     def get_classes(self):
         return mark_safe(f'"lang {self.code}"')

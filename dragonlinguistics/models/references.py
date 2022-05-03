@@ -40,22 +40,10 @@ class Reference(models.Model):
             html += f' ({escape(self.comment)})'
         return mark_safe(html)
 
-    def urls(self, action):
+    def get_absolute_url(self):
         from django.urls import reverse
 
-        url = reverse(
+        return reverse(
             f'references:view',
             kwargs={'author': self.author, 'year': self.year, 'index': self.index}
         )
-        if action:
-            url += f'?{action}'
-        return url
-
-    def get_absolute_url(self):
-        return self.urls('')
-
-    def get_edit_url(self):
-        return self.urls('edit')
-
-    def get_delete_url(self):
-        return self.urls('delete')

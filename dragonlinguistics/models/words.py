@@ -70,31 +70,19 @@ class Word(models.Model):
             return ''
     firstgloss.short_description = 'Gloss'
 
-    def urls(self, action):
+    def get_absolute_url(self):
         from django.urls import reverse
         homonym = self.get_homonym()
         if homonym:
-            url = reverse(
+            return reverse(
                 f'langs:words:view-homonym',
                 kwargs={'code': self.lang.code, 'lemma': self.lemma, 'homonym': homonym}
             )
         else:
-            url = reverse(
+            return reverse(
                 f'langs:words:view',
                 kwargs={'code': self.lang.code, 'lemma': self.lemma}
             )
-        if action:
-            url += f'?{action}'
-        return url
-
-    def get_absolute_url(self):
-        return self.urls('')
-
-    def get_edit_url(self):
-        return self.urls('edit')
-
-    def get_delete_url(self):
-        return self.urls('delete')
 
     def get_classes(self):
         return mark_safe(f'"word {self.lang.code}"')

@@ -12,19 +12,10 @@ class Folder(models.Model):
     def __str__(self):
         return self.path
 
-    def urls(self, action):
+    def get_absolute_url(self):
         from django.urls import reverse
         namespace, kwargs = parse_path(self.path)
-        url = reverse(f'{namespace}:list', kwargs=kwargs)
-        if action:
-            url += f'?{action}'
-        return
-
-    def get_absolute_url(self):
-        return self.urls('')
-
-    def get_new_url(self):
-        return self.urls('new')
+        return reverse(f'{namespace}:list', kwargs=kwargs)
 
 
 class Article(models.Model):
@@ -60,26 +51,14 @@ class Article(models.Model):
         self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
-    def urls(self, action):
+    def get_absolute_url(self):
         from django.urls import reverse
         kwargs = {'slug': self.slug}
         if self.folder is None:
             namespace, kwargs = parse_path('', kwargs)
         else:
             namespace, kwargs = parse_path(self.folder.path, kwargs)
-        url = reverse(f'{namespace}:view', kwargs=kwargs)
-        if action:
-            url += f'?{action}'
-        return url
-
-    def get_absolute_url(self):
-        return self.urls('')
-
-    def get_edit_url(self):
-        return self.urls('edit')
-
-    def get_delete_url(self):
-        return self.urls('delete')
+        return reverse(f'{namespace}:view', kwargs=kwargs)
 
     def get_classes(self):
         return mark_safe(f'"article"')

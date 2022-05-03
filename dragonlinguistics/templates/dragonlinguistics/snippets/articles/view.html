@@ -8,8 +8,8 @@
         </div>
         {%if user.is_authenticated%}
         <div class="controls">
-            <a class="btn edit" href="{{article.get_edit_url}}">Edit</a>
-            <a class="btn delete" href="{{article.get_delete_url}}">Delete</a>
+            <a class="btn edit" href="?edit">Edit</a>
+            <a class="btn delete" href="?delete">Delete</a>
         </div>
         {%endif%}
         <div id="article-meta">
