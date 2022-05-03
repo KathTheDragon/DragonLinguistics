@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 class UpdatableModel(models.Model):
     updated_at = models.DateTimeField(
