@@ -28,10 +28,13 @@ class Language(models.Model):
     def urls(self, action):
         from django.urls import reverse
         kwargs = {'code': self.code}
-        return reverse(f'langs:{action}', kwargs=kwargs)
+        url = reverse(f'langs:view', kwargs=kwargs)
+        if action:
+            url += f'?{action}'
+        return url
 
     def get_absolute_url(self):
-        return self.urls('view')
+        return self.urls('')
 
     def get_edit_url(self):
         return self.urls('edit')

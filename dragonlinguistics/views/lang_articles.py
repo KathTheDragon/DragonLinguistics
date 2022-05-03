@@ -1,4 +1,4 @@
-from . import articles, langs
+from . import base, articles, langs
 
 # Views
 class LangArticleMixin(articles.ArticleMixin, langs.LangMixin):
@@ -6,21 +6,20 @@ class LangArticleMixin(articles.ArticleMixin, langs.LangMixin):
     path_fmt = 'langs/{code}/{type}'
 
 
-class List(LangArticleMixin, articles.List):
-    pass
+class List(base.Actions):
+    class List(LangArticleMixin, articles.List.List):
+        pass
+
+    class New(LangArticleMixin, articles.List.New):
+        pass
 
 
-class New(LangArticleMixin, articles.New):
-    pass
+class View(base.Actions):
+    class View(LangArticleMixin, articles.View.View):
+        pass
 
+    class Edit(LangArticleMixin, articles.View.Edit):
+        pass
 
-class View(LangArticleMixin, articles.View):
-    pass
-
-
-class Edit(LangArticleMixin, articles.Edit):
-    pass
-
-
-class Delete(LangArticleMixin, articles.Delete):
-    pass
+    class Delete(LangArticleMixin, articles.View.Delete):
+        pass

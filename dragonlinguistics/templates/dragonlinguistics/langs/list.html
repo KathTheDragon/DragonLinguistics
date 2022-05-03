@@ -5,8 +5,8 @@
 {%block content%}
 {%if user.is_authenticated%}
 <div class="page-controls">
-    <a class="button" href="{%url 'langs:new'%}">Add language</a>
-    <a class="button" href="{%url 'langs:search'%}">Search languages</a>
+    <a class="button" href="?new">Add language</a>
+    <a class="button" href="?search">Search languages</a>
 </div>
 {%endif%}
 

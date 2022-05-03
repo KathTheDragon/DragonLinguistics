@@ -10,6 +10,7 @@
 
 <form method="post">
     {%csrf_token%}
+    <input type="hidden" name="_action" value="new" />
     {{langform.non_field_errors}}
     {%include 'dragonlinguistics/snippets/form-fields.html' with form=langform%}
     <input type="submit" value="Add language" />

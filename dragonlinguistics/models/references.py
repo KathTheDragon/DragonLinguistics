@@ -43,15 +43,16 @@ class Reference(models.Model):
     def urls(self, action):
         from django.urls import reverse
 
-        return reverse(
-            f'references:{action}',
+        url = reverse(
+            f'references:view',
             kwargs={'author': self.author, 'year': self.year, 'index': self.index}
         )
+        if action:
+            url += f'?{action}'
+        return url
 
     def get_absolute_url(self):
-        from django.urls import reverse
-
-        return reverse('references:list')
+        return self.urls('')
 
     def get_edit_url(self):
         return self.urls('edit')

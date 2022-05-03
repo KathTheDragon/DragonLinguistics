@@ -23,61 +23,64 @@ class ReferenceMixin:
         return breadcrumbs
 
 
-class List(base.SearchMixin, ReferenceMixin, base.Base):
-    form = forms.ReferenceSearch
+class List(base.Actions):
+    class List(base.SearchMixin, ReferenceMixin, base.Base):
+        form = forms.ReferenceSearch
 
-    def get_context_data(self, **kwargs):
-        query = self.request.GET
-        objectlist = models.Reference.objects.filter(
-            **base.fuzzysearch(title=query.get('title', '')),
-            **base.strictsearch(
-                author__istartswith=query.get('author', ''),
-                year=int(query.get('year', '0'))
-            ),
-        )
-        authors = objectlist.values_list('author').distinct()
-        author_references = {}
-        for (author,) in authors:
-            author_references[author] = objectlist.filter(author=author)
-        kwargs.setdefault('author_references', author_references)
-        return super().get_context_data(**kwargs)
+        def get_context_data(self, **kwargs):
+            query = self.request.GET
+            objectlist = models.Reference.objects.filter(
+                **base.fuzzysearch(title=query.get('title', '')),
+                **base.strictsearch(
+                    author__istartswith=query.get('author', ''),
+                    year=int(query.get('year', '0'))
+                ),
+            )
+            authors = objectlist.values_list('author').distinct()
+            author_references = {}
+            for (author,) in authors:
+                author_references[author] = objectlist.filter(author=author)
+            kwargs.setdefault('author_references', author_references)
+            return super().get_context_data(**kwargs)
 
+    class Search(ReferenceMixin, base.Search):
+        form = forms.LanguageSearch
 
-class Search(ReferenceMixin, base.Search):
-    form = forms.LanguageSearch
+        def get_breadcrumbs(self, **kwargs):
+            breadcrumbs = super().get_breadcrumbs(**kwargs)
+            breadcrumbs.append(('Search', ''))
+            return breadcrumbs
 
-    def get_breadcrumbs(self, **kwargs):
-        breadcrumbs = super().get_breadcrumbs(**kwargs)
-        breadcrumbs.append(('Search', ''))
-        return breadcrumbs
+    class New(ReferenceMixin, base.NewEdit):
+        forms = {'referenceform': forms.Reference}
 
+        def handle_forms(self, request, referenceform):
+            return referenceform.save()
 
-class New(ReferenceMixin, base.NewEdit):
-    forms = {'referenceform': forms.Reference}
-
-    def handle_forms(self, request, referenceform):
-        return referenceform.save()
-
-    def get_breadcrumbs(self, **kwargs):
-        breadcrumbs = super().get_breadcrumbs(**kwargs)
-        breadcrumbs.append(('New', ''))
-        return breadcrumbs
-
-
-class Edit(ReferenceMixin, base.NewEdit):
-    forms = {'referenceform': forms.Reference}
-
-    def handle_forms(self, request, reference, referenceform):
-        return referenceform.save()
-
-    def get_breadcrumbs(self, **kwargs):
-        breadcrumbs = super().get_breadcrumbs(**kwargs)
-        breadcrumbs.append(('Edit', ''))
-        return breadcrumbs
+        def get_breadcrumbs(self, **kwargs):
+            breadcrumbs = super().get_breadcrumbs(**kwargs)
+            breadcrumbs.append(('New', ''))
+            return breadcrumbs
 
 
-class Delete(ReferenceMixin, base.Delete):
-    def get_breadcrumbs(self, **kwargs):
-        breadcrumbs = super().get_breadcrumbs(**kwargs)
-        breadcrumbs.append(('Delete', ''))
-        return breadcrumbs
+class View(base.Actions):
+    class View(ReferenceMixin, base.Base):
+        def get(self, request, **kwargs):
+            return redirect('references:list')
+
+    class Edit(ReferenceMixin, base.NewEdit):
+        forms = {'referenceform': forms.Reference}
+
+        def handle_forms(self, request, reference, referenceform):
+            return referenceform.save()
+
+        def get_breadcrumbs(self, **kwargs):
+            breadcrumbs = super().get_breadcrumbs(**kwargs)
+            breadcrumbs.append(('Edit', ''))
+            return breadcrumbs
+
+    class Delete(ReferenceMixin, base.Delete):
+        def get_breadcrumbs(self, **kwargs):
+            breadcrumbs = super().get_breadcrumbs(**kwargs)
+            breadcrumbs.append(('Delete', ''))
+            return breadcrumbs

@@ -10,6 +10,7 @@
 
 <form method="post">
     {%csrf_token%}
+    <input type="hidden" name="_action" value="new" />
     {{referenceform.non_field_errors}}
     <div>
         <label for="id_addmore">Keep adding references?</label>

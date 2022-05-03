@@ -74,18 +74,21 @@ class Word(models.Model):
         from django.urls import reverse
         homonym = self.get_homonym()
         if homonym:
-            return reverse(
-                f'langs:words:{action}-homonym',
+            url = reverse(
+                f'langs:words:view-homonym',
                 kwargs={'code': self.lang.code, 'lemma': self.lemma, 'homonym': homonym}
             )
         else:
-            return reverse(
-                f'langs:words:{action}',
+            url = reverse(
+                f'langs:words:view',
                 kwargs={'code': self.lang.code, 'lemma': self.lemma}
             )
+        if action:
+            url += f'?{action}'
+        return url
 
     def get_absolute_url(self):
-        return self.urls('view')
+        return self.urls('')
 
     def get_edit_url(self):
         return self.urls('edit')
