@@ -15,6 +15,6 @@
     {{articleform.non_field_errors}}
     {%include 'dragonlinguistics/snippets/form-fields.html' with form=articleform%}
     <input type="submit" value="Add {{type|singular:'article'}}" />
-    <a class="button" href="{{folder.url}}">Cancel</a>
+    <a class="button" href="?">Cancel</a>
 </form>
 {%endblock%}
