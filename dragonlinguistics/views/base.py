@@ -140,6 +140,7 @@ class Base(TemplateView):
         breadcrumbs = self.get_breadcrumbs(**kwargs)
         breadcrumbs[-1] = (breadcrumbs[-1][0], '')
         kwargs.setdefault('breadcrumbs', breadcrumbs)
+        kwargs.setdefault('navbar_active', self.parts[0] if self.parts else 'home')
         return super().get_context_data(**kwargs)
 
 
