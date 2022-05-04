@@ -1,0 +1,24 @@
+{%extends './base.html'%}
+{%load static%}
+
+{%block title%}Add {{type}}{%endblock%}
+
+{%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/form.css'%}" type="text/css" />{%endblock%}
+
+{%block content%}
+<h1>Add {{type|title}}</h1>
+
+<form method="post">
+    {%csrf_token%}
+    <input type="hidden" name="_action" value="new" />
+    {{form.non_field_errors}}
+    {%if use_addmore%}<div>
+        <label for="id_addmore">Keep adding {{type}}s?</label>
+        <input id="id_addmore" type="checkbox" name="addmore" {%if addmore%}checked{%endif%} />
+    </div>{%endif%}
+    {%include './snippets/form-fields.html'%}
+    {%if formset%}{%include './snippets/formset-fields.html'%}{%endif%}
+    <input type="submit" value="Add {{type}}" />
+    <a class="button" href="?">Cancel</a>
+</form>
+{%endblock%}

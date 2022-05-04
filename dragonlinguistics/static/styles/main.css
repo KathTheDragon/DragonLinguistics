@@ -473,6 +473,14 @@ section::after {
 
 /* Word/lang styling */
 
+#lemmas {
+    list-style-type: none;
+    column-count: 5;
+    column-width: 6.875em;
+    column-gap: 1.875em;
+    column-rule: 1px solid #eaecef;
+}
+
 .word {
     font-style: italic;
 }

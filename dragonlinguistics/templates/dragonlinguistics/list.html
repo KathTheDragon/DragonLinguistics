@@ -1,0 +1,26 @@
+{%extends './base.html'%}
+
+{%block title%}{{title}}{%endblock%}
+
+{%block content%}
+<h1>{{title}}</h1>
+
+{%if user.is_authenticated%}
+<div class="page-controls">
+    <a class="button" href="?new">Add {{type}}</a>
+    {%if search%}<a class="button" href="?search">Search {{type}}s</a>{%endif%}
+</div>
+{%endif%}
+
+{%if searchfield%}{%include './snippets/quick-search.html'%}{%endif%}
+
+{%include './snippets/prevpage.html'%}
+<ul>
+    {%for object in page.object_list%}
+    <li><a href="{{object.url}}">{{object.html}}</a></li>
+    {%empty%}
+    <li>There are no {{type}}s</li>
+    {%endfor%}
+</ul>
+{%include './snippets/nextpage.html'%}
+{%endblock%}

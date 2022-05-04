@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.http import Http404
 from django.shortcuts import redirect
-from django.views.generic import TemplateView, View
+from django.views import generic
 from django.views.generic.base import ContextMixin
 
 ## Helper functions
@@ -63,6 +63,7 @@ class PageMixin(ContextMixin):
 class SearchMixin(ContextMixin):
     page_length = 100
     form = None
+    fieldname = ''
 
     def get_form(self):
         if self.form is None:
@@ -73,11 +74,12 @@ class SearchMixin(ContextMixin):
         query = self.request.GET
         searchform = self.get_form()(query)
         kwargs['query'] = query
-        kwargs['searchform'] = searchform
+        kwargs['search'] = True
+        kwargs['searchfield'] = searchform[self.fieldname]
         return super().get_context_data(**kwargs)
 
 
-class Actions(View):
+class Actions(generic.View):
     default_action = ''
 
     def get_default_action(self):
@@ -96,7 +98,7 @@ class Actions(View):
             action = default_action
 
         view = getattr(self, action.capitalize(), None)
-        if issubclass(view, View):
+        if issubclass(view, generic.View):
             return view.as_view()(request, **kwargs)
         else:
             raise Http404
@@ -105,13 +107,13 @@ class Actions(View):
 BASE_PATH = PurePath('dragonlinguistics')
 
 
-class Base(TemplateView):
+class Base(generic.TemplateView):
     parts = []
     name = None
     instance = None
 
     def get_folder(self):
-        return '/'.join(self.parts)
+        return ''
 
     def get_namespace(self):
         return ':'.join(self.parts)
@@ -149,7 +151,17 @@ class SecureBase(LoginRequiredMixin, Base):
 
 
 class List(PageMixin, Base):
-    pass
+    def get_folder(self):
+        return ''
+
+    def get_context_data(self, **kwargs):
+        kwargs.setdefault('title', (kwargs['type'] + 's').title())
+        return super().get_context_data(**kwargs)
+
+
+class View(Base):
+    def get_folder(self):
+        return '/'.join(self.parts)
 
 
 class Search(Base):
@@ -162,7 +174,7 @@ class Search(Base):
             return self.form
 
     def get_context_data(self, **kwargs):
-        kwargs['searchform'] = self.get_form()()
+        kwargs['form'] = self.get_form()()
         return super().get_context_data(**kwargs)
 
     def get_target_url(self):
@@ -189,8 +201,10 @@ class NewEdit(SecureBase):
             raise ValueError
 
         instance = kwargs.get(self.instance)
+        kwargs['object'] = instance
         for attr, form in self.forms.items():
             kwargs.setdefault(attr, form(instance=instance))
+        kwargs['use_addmore'] = self.use_addmore
         return super().get_context_data(**kwargs)
 
     def post(self, request, **kwargs):
@@ -215,6 +229,10 @@ class NewEdit(SecureBase):
 
 
 class Delete(SecureBase):
+    def get_context_data(self, **kwargs):
+        kwargs['object'] = kwargs.get(self.instance)
+        return super().get_context_data(**kwargs)
+
     def cleanup(self, **kwargs):
         pass
 

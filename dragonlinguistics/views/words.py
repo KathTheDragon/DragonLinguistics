@@ -48,6 +48,10 @@ class WordMixin(LangMixin):
             word = models.Word.objects.filter(lang__code=code, lemma=lemma)[homonym-1]
             return super().get_kwargs(code=code, word=word, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        kwargs['type'] = 'word'
+        return super().get_context_data(**kwargs)
+
     def get_breadcrumbs(self, lang, word=None, **kwargs):
         from django.urls import reverse
         breadcrumbs = super().get_breadcrumbs(lang=lang, **kwargs)
@@ -60,6 +64,7 @@ class WordMixin(LangMixin):
 class List(base.Actions):
     class List(WordMixin, base.SearchMixin, base.List):
         form = forms.WordSearch
+        fieldname = 'lemma'
 
         def get_object_list(self, lang, **kwargs):
             query = self.request.GET
@@ -76,6 +81,10 @@ class List(base.Actions):
                 **base.strictsearch(sense__grammclass__contains=query.get('classes', ''))
             )
 
+        def get_context_data(self, **kwargs):
+            kwargs['title'] = f'{kwargs["lang"].name} Dictionary'
+            return super().get_context_data(**kwargs)
+
     class Search(WordMixin, base.Search):
         form = forms.WordSearch
 
@@ -85,13 +94,14 @@ class List(base.Actions):
             return breadcrumbs
 
     class New(WordMixin, base.NewEdit):
-        forms = {'wordform': forms.Word, 'senseformset': forms.Senses}
+        forms = {'form': forms.Word, 'formset': forms.Senses}
+        use_addmore = True
 
-        def handle_forms(self, request, lang, wordform, senseformset):
-            newword = wordform.save(commit=False)
+        def handle_forms(self, request, lang, form, formset):
+            newword = form.save(commit=False)
             newword.lang = lang
             newword.save()
-            senses = senseformset.save(commit=False)
+            senses = formset.save(commit=False)
             for sense in senses:
                 sense.word = newword
                 sense.save()
@@ -102,23 +112,31 @@ class List(base.Actions):
             breadcrumbs.append(('New', ''))
             return breadcrumbs
 
+        def get_context_data(self, **kwargs):
+            kwargs['formsetname'] = 'Sense'
+            return super().get_context_data(**kwargs)
+
 
 class View(base.Actions):
-    class View(WordMixin, base.Base):
+    class View(WordMixin, base.View):
         pass
 
     class Edit(WordMixin, base.NewEdit):
-        forms = {'wordform': forms.Word, 'senseformset': forms.Senses}
+        forms = {'form': forms.Word, 'formset': forms.Senses}
 
-        def handle_forms(self, request, lang, word, wordform, senseformset):
-            newword = wordform.save()
-            senseformset.save()
+        def handle_forms(self, request, form, formset, **kwargs):
+            newword = form.save()
+            formset.save()
             return newword
 
         def get_breadcrumbs(self, **kwargs):
             breadcrumbs = super().get_breadcrumbs(**kwargs)
             breadcrumbs.append(('Edit', ''))
             return breadcrumbs
+
+        def get_context_data(self, **kwargs):
+            kwargs['formsetname'] = 'Sense'
+            return super().get_context_data(**kwargs)
 
     class Delete(WordMixin, base.Delete):
         def get_redirect_kwargs(self, lang):
@@ -131,6 +149,9 @@ class View(base.Actions):
 
 
 class Import(WordMixin, base.SecureBase):
+    def get_folder(self):
+        return '/'.join(self.parts)
+
     def get_context_data(self, **kwargs):
         kwargs.setdefault('importform', forms.Import(initial={'delimiter': ',', 'quotechar': '"'}))
         return super().get_context_data(**kwargs)

@@ -36,6 +36,18 @@ class Article(base.Model):
     def __str__(self):
         return self.title
 
+    def html(self):
+        from django.utils.html import format_html
+        html = super().html()
+        if self.folder is None:
+            namespace, _ = parse_path('')
+        else:
+            namespace, _ = parse_path(self.folder.path)
+        if namespace == 'articles':
+            return format_html('{} ({})', html, self.created.year)
+        else:
+            return html
+
     @property
     def tag_list(self):
         return list(filter(None, map(lambda t: t.strip(), self.tags.split(','))))

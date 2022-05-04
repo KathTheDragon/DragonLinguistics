@@ -23,10 +23,14 @@ class ArticleMixin:
             article = models.Article.objects.get(folder=folder, slug=slug)
             return super().get_kwargs(folder=folder, article=article, **kwargs)
 
-    def get_breadcrumbs(self, folder, type='articles', article=None, **kwargs):
+    def get_context_data(self, **kwargs):
+        kwargs.setdefault('type', 'article')
+        return super().get_context_data(**kwargs)
+
+    def get_breadcrumbs(self, folder, article=None, **kwargs):
         from django.urls import reverse
         breadcrumbs = super().get_breadcrumbs(**kwargs)
-        breadcrumbs.append((type.capitalize(), folder.url()))
+        breadcrumbs.append((kwargs.get('crumb', 'Articles'), folder.url()))
         if article is not None:
             breadcrumbs.append((article.html(), article.url()))
         return breadcrumbs
@@ -38,10 +42,10 @@ class List(base.Actions):
             return models.Article.objects.filter(folder=folder)
 
     class New(ArticleMixin, base.NewEdit):
-        forms = {'articleform': forms.EditArticle}
+        forms = {'form': forms.EditArticle}
 
-        def handle_forms(self, request, folder, articleform, **kwargs):
-            article = articleform.save(commit=False)
+        def handle_forms(self, request, folder, form, **kwargs):
+            article = form.save(commit=False)
             article.folder = folder
             article.save()
             return article
@@ -53,14 +57,14 @@ class List(base.Actions):
 
 
 class View(base.Actions):
-    class View(ArticleMixin, base.Base):
+    class View(ArticleMixin, base.View):
         pass
 
     class Edit(ArticleMixin, base.NewEdit):
-        forms = {'articleform': forms.EditArticle}
+        forms = {'form': forms.EditArticle}
 
-        def handle_forms(self, request, folder, article, articleform, **kwargs):
-            return articleform.save()
+        def handle_forms(self, request, form, **kwargs):
+            return form.save()
 
         def get_breadcrumbs(self, **kwargs):
             breadcrumbs = super().get_breadcrumbs(**kwargs)

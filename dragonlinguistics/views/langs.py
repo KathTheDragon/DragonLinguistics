@@ -14,6 +14,10 @@ class LangMixin:
         else:
             return super().get_kwargs(lang=models.Language.objects.get(code=code), **kwargs)
 
+    def get_context_data(self, **kwargs):
+        kwargs.setdefault('type', 'language')
+        return super().get_context_data(**kwargs)
+
     def get_breadcrumbs(self, lang=None, **kwargs):
         from django.urls import reverse
         breadcrumbs = super().get_breadcrumbs(**kwargs)
@@ -26,6 +30,7 @@ class LangMixin:
 class List(base.Actions):
     class List(base.SearchMixin, LangMixin, base.List):
         form = forms.LanguageSearch
+        fieldname = 'code'
 
         def get_object_list(self, **kwargs):
             query = self.request.GET
@@ -45,10 +50,10 @@ class List(base.Actions):
             return breadcrumbs
 
     class New(LangMixin, base.NewEdit):
-        forms = {'langform': forms.Language}
+        forms = {'form': forms.Language}
 
-        def handle_forms(self, request, langform):
-            lang = langform.save()
+        def handle_forms(self, request, form):
+            lang = form.save()
             models.Folder.objects.get_or_create(path=f'langs/{lang.code}')
             models.Folder.objects.get_or_create(path=f'langs/{lang.code}/grammar')
             models.Folder.objects.get_or_create(path=f'langs/{lang.code}/lessons')
@@ -62,15 +67,15 @@ class List(base.Actions):
 
 
 class View(base.Actions):
-    class View(LangMixin, base.Base):
+    class View(LangMixin, base.View):
         pass
 
     class Edit(LangMixin, base.NewEdit):
-        forms = {'langform': forms.Language}
+        forms = {'form': forms.Language}
 
-        def handle_forms(self, request, lang, langform):
+        def handle_forms(self, request, lang, form, **kwargs):
             oldcode = lang.code
-            lang = langform.save()
+            lang = form.save()
             for folder in models.Folder.objects.filter(path__startswith=f'langs/{oldcode}'):
                 folder.path = folder.path.replace(f'langs/{oldcode}', f'langs/{lang.code}')
                 folder.save()

@@ -14,6 +14,10 @@ class ReferenceMixin:
             reference = models.Reference.objects.filter(author=author, year=year)[index]
             return super().get_kwargs(reference=reference, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        kwargs['type'] = 'reference'
+        return super().get_context_data(**kwargs)
+
     def get_breadcrumbs(self, reference=None, **kwargs):
         from django.urls import reverse
         breadcrumbs = super().get_breadcrumbs(**kwargs)
@@ -26,6 +30,10 @@ class ReferenceMixin:
 class List(base.Actions):
     class List(base.SearchMixin, ReferenceMixin, base.Base):
         form = forms.ReferenceSearch
+        fieldname = 'author'
+
+        def get_folder(self):
+            return '/'.join(self.parts)
 
         def get_context_data(self, **kwargs):
             query = self.request.GET
@@ -52,10 +60,11 @@ class List(base.Actions):
             return breadcrumbs
 
     class New(ReferenceMixin, base.NewEdit):
-        forms = {'referenceform': forms.Reference}
+        forms = {'form': forms.Reference}
+        use_addmore = True
 
-        def handle_forms(self, request, referenceform):
-            return referenceform.save()
+        def handle_forms(self, request, form):
+            return form.save()
 
         def get_breadcrumbs(self, **kwargs):
             breadcrumbs = super().get_breadcrumbs(**kwargs)
@@ -64,15 +73,15 @@ class List(base.Actions):
 
 
 class View(base.Actions):
-    class View(ReferenceMixin, base.Base):
+    class View(ReferenceMixin, base.View):
         def get(self, request, **kwargs):
             return redirect('references:list')
 
     class Edit(ReferenceMixin, base.NewEdit):
-        forms = {'referenceform': forms.Reference}
+        forms = {'form': forms.Reference}
 
-        def handle_forms(self, request, reference, referenceform):
-            return referenceform.save()
+        def handle_forms(self, request, form, **kwargs):
+            return form.save()
 
         def get_breadcrumbs(self, **kwargs):
             breadcrumbs = super().get_breadcrumbs(**kwargs)
