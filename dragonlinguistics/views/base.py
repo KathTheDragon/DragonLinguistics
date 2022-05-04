@@ -56,7 +56,7 @@ class PageMixin(ContextMixin):
             page = Paginator(objectlist, self.page_length).page(pagenum)
         except InvalidPage:
             raise Http404
-        kwargs.setdefault('page', page)
+        kwargs['page'] = page
         return super().get_context_data(**kwargs)
 
 
@@ -72,8 +72,8 @@ class SearchMixin(ContextMixin):
     def get_context_data(self, **kwargs):
         query = self.request.GET
         searchform = self.get_form()(query)
-        kwargs.setdefault('query', query)
-        kwargs.setdefault('searchform', searchform)
+        kwargs['query'] = query
+        kwargs['searchform'] = searchform
         return super().get_context_data(**kwargs)
 
 
@@ -139,8 +139,8 @@ class Base(TemplateView):
     def get_context_data(self, **kwargs):
         breadcrumbs = self.get_breadcrumbs(**kwargs)
         breadcrumbs[-1] = (breadcrumbs[-1][0], '')
-        kwargs.setdefault('breadcrumbs', breadcrumbs)
-        kwargs.setdefault('navbar_active', self.parts[0] if self.parts else 'home')
+        kwargs['breadcrumbs'] = breadcrumbs
+        kwargs['navbar_active'] = self.parts[0] if self.parts else 'home'
         return super().get_context_data(**kwargs)
 
 
@@ -162,7 +162,7 @@ class Search(Base):
             return self.form
 
     def get_context_data(self, **kwargs):
-        kwargs.setdefault('searchform', self.get_form()())
+        kwargs['searchform'] = self.get_form()()
         return super().get_context_data(**kwargs)
 
     def get_target_url(self):

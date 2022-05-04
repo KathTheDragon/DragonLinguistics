@@ -40,7 +40,7 @@ class List(base.Actions):
             author_references = {}
             for (author,) in authors:
                 author_references[author] = objectlist.filter(author=author)
-            kwargs.setdefault('author_references', author_references)
+            kwargs['author_references'] = author_references
             return super().get_context_data(**kwargs)
 
     class Search(ReferenceMixin, base.Search):
