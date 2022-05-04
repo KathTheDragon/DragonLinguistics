@@ -1,0 +1,15 @@
+<h1>Add {{type|title}}</h1>
+
+<form method="post">
+    {%csrf_token%}
+    <input type="hidden" name="_action" value="new" />
+    {{form.non_field_errors}}
+    {%if use_addmore%}<div>
+        <label for="id_addmore">Keep adding words?</label>
+        <input id="id_addmore" type="checkbox" name="addmore" {%if addmore%}checked{%endif%} />
+    </div>{%endif%}
+    {%include './form-fields.html'%}
+    {%if formset%}{%include './formset-fields.html'%}{%endif%}
+    <input type="submit" value="Add {{type}}" />
+    <a class="button" href="?">Cancel</a>
+</form>

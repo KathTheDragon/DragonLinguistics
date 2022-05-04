@@ -6,18 +6,5 @@
 {%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/form.css'%}" type="text/css" />{%endblock%}
 
 {%block content%}
-<h1>Add Reference</h1>
-
-<form method="post">
-    {%csrf_token%}
-    <input type="hidden" name="_action" value="new" />
-    {{referenceform.non_field_errors}}
-    <div>
-        <label for="id_addmore">Keep adding references?</label>
-        <input id="id_addmore" type="checkbox" name="addmore" {%if addmore%}checked{%endif%} />
-    </div>
-    {%include 'dragonlinguistics/snippets/form-fields.html' with form=referenceform%}
-    <input type="submit" value="Add reference" />
-    <a class="button" href="?">Cancel</a>
-</form>
+{%include 'dragonlinguistics/snippets/new.html' with type='reference' use_addmore=True form=referenceform%}
 {%endblock%}

@@ -6,14 +6,5 @@
 {%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/form.css'%}" type="text/css" />{%endblock%}
 
 {%block content%}
-<h1>Add Article</h1>
-
-<form method="post">
-    {%csrf_token%}
-    <input type="hidden" name="_action" value="new" />
-    {{articleform.non_field_errors}}
-    {%include 'dragonlinguistics/snippets/form-fields.html' with form=articleform%}
-    <input type="submit" value="Add article" />
-    <a class="button" href="?">Cancel</a>
-</form>
+{%include 'dragonlinguistics/snippets/new.html' with type='article' form=articleform%}
 {%endblock%}

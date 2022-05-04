@@ -6,19 +6,5 @@
 {%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/form.css'%}" type="text/css" />{%endblock%}
 
 {%block content%}
-<h1>Add Word</h1>
-
-<form method="post">
-    {%csrf_token%}
-    <input type="hidden" name="_action" value="new" />
-    {{wordform.non_field_errors}}
-    <div>
-        <label for="id_addmore">Keep adding words?</label>
-        <input id="id_addmore" type="checkbox" name="addmore" {%if addmore%}checked{%endif%} />
-    </div>
-    {%include 'dragonlinguistics/snippets/form-fields.html' with form=wordform%}
-    {%include 'dragonlinguistics/snippets/formset-fields.html' with formset=senseformset formsetname='Sense'%}
-    <input type="submit" value="Add word" />
-    <a class="button" href="?">Cancel</a>
-</form>
+{%include 'dragonlinguistics/snippets/new.html' with type='word' use_addmore=True form=wordform formset=senseformset formsetname='Sense'%}
 {%endblock%}
