@@ -20,12 +20,11 @@
     <dd>{% markup word.etymology %}</dd>
     {%endif%}
     {%for sense in word.sense_set.all%}
-        <dt><h3>{{sense.get_pos_display}}</h3></dt>
+        <dt><h3>{{sense.get_pos_display}}</h3>{%if sense.grammclass%} ({{sense.grammclass}}){%endif%}</dt>
         <dd>
             <dl>
                 {%if sense.notes%}<p>{% markup sense.notes %}</p>{%endif%}
                 <dt>Definition:</dt><dd>{%if sense.defin%}{% markup sense.defin %}{%else%}{{sense.gloss}}{%endif%}</dd>
-                {%if sense.grammclass%}<dt>Class:</dt><dd>{{sense.grammclass}}</dd>{%endif%}
             </dl>
         </dd>
     {%empty%}
