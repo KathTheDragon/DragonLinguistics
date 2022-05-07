@@ -19,9 +19,9 @@
 <h2>Options</h2>
 <ul>
     <li><a href="{%url 'langs:words:list' lang.code%}">View dictionary</a></li>
-    <li><a href="{%url 'langs:articles:list' lang.code 'articles'%}">View articles</a></li>
-    <li><a href="{%url 'langs:articles:list' lang.code 'grammar'%}">View grammar</a></li>
-    <li><a href="{%url 'langs:articles:list' lang.code 'lessons'%}">View lessons</a></li>
-    <li><a href="{%url 'langs:articles:list' lang.code 'texts'%}">View texts</a></li>
+    {%if hasarticles or user.is_authenticated%}<li><a href="{%url 'langs:articles:list' lang.code 'articles'%}">View articles</a></li>{%endif%}
+    {%if hasgrammar or user.is_authenticated%}<li><a href="{%url 'langs:articles:list' lang.code 'grammar'%}">View grammar</a></li>{%endif%}
+    {%if haslessons or user.is_authenticated%}<li><a href="{%url 'langs:articles:list' lang.code 'lessons'%}">View lessons</a></li>{%endif%}
+    {%if hastexts or user.is_authenticated%}<li><a href="{%url 'langs:articles:list' lang.code 'texts'%}">View texts</a></li>{%endif%}
 </ul>
 {%endblock%}

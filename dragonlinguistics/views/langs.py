@@ -68,7 +68,13 @@ class List(base.Actions):
 
 class View(base.Actions):
     class View(LangMixin, base.View):
-        pass
+        def get_context_data(self, **kwargs):
+            lang = kwargs['lang']
+            kwargs['hasarticles'] = bool(models.Folder.objects.get(path=f'langs/{lang.code}').article_set.count())
+            kwargs['hasgrammar'] = bool(models.Folder.objects.get(path=f'langs/{lang.code}/grammar').article_set.count())
+            kwargs['haslessons'] = bool(models.Folder.objects.get(path=f'langs/{lang.code}/lessons').article_set.count())
+            kwargs['hastexts'] = bool(models.Folder.objects.get(path=f'langs/{lang.code}/texts').article_set.count())
+            return super().get_context_data(**kwargs)
 
     class Edit(LangMixin, base.NewEdit):
         forms = {'form': forms.Language}
