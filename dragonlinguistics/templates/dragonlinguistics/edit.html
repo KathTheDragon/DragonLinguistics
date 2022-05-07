@@ -12,12 +12,12 @@
     {%csrf_token%}
     <input type="hidden" name="_action" value="edit" />
     <input type="submit" value="Save changes" />
-    <a class="button" href="?">Cancel</a>
+    <a class="button" href=".">Cancel</a>
     {{form.non_field_errors}}
     {%include './snippets/form-fields.html'%}
     {%if formset%}{%include './snippets/formset-fields.html'%}{%endif%}
     <input type="submit" value="Save changes" />
-    <a class="button" href="?">Cancel</a>
+    <a class="button" href=".">Cancel</a>
 </form>
 
 {%endblock%}
