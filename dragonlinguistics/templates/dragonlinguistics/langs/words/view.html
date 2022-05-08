@@ -8,8 +8,8 @@
     <h1 class="word {{lang.code}}">{{word}}</h1>
     {%if user.is_authenticated%}
     <div class="controls">
-        <a class="btn edit" href="?edit">Edit</a>
-        <a class="btn delete" href="?delete">Delete</a>
+        <a class="edit" href="?edit">Edit</a>
+        <a class="delete" href="?delete">Delete</a>
     </div>
     {%endif%}
 </div>
@@ -20,7 +20,7 @@
     <dd>{% markup word.etymology %}</dd>
     {%endif%}
     {%for sense in word.sense_set.all%}
-        <dt><h3>{{sense.get_pos_display}}</h3>{%if sense.grammclass%} ({{sense.grammclass}}){%endif%}</dt>
+        <dt><h3>{{sense.get_pos_display}}{%if sense.grammclass%} ({{sense.grammclass}}){%endif%}</h3></dt>
         <dd>
             <dl>
                 {%if sense.notes%}<p>{% markup sense.notes %}</p>{%endif%}

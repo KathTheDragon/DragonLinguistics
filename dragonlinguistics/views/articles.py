@@ -25,6 +25,7 @@ class ArticleMixin:
 
     def get_context_data(self, **kwargs):
         kwargs.setdefault('type', 'article')
+        kwargs.setdefault('citeable', True)
         return super().get_context_data(**kwargs)
 
     def get_breadcrumbs(self, folder, article=None, **kwargs):

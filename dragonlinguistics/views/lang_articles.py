@@ -14,6 +14,7 @@ class LangArticleMixin(articles.ArticleMixin, langs.LangMixin):
         else:
             type = f'{type} article'
         kwargs['type'] = type
+        kwargs['citeable'] = False
         return super().get_context_data(**kwargs)
 
 
@@ -27,7 +28,8 @@ class List(base.Actions):
 
 class View(base.Actions):
     class View(LangArticleMixin, articles.View.View):
-        pass
+        def get_folder(self):
+            return 'articles'
 
     class Edit(LangArticleMixin, articles.View.Edit):
         pass

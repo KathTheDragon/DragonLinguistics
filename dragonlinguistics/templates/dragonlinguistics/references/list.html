@@ -6,14 +6,15 @@
 {%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/form.css'%}" type="text/css" />{%endblock%}
 
 {%block content%}
-<h1>Bibliography</h1>
-
-{%if user.is_authenticated%}
-<div class="page-controls">
-    <a class="button" href="?new">Add reference</a>
-    <a class="button" href="?search">Search references</a>
+<div id="content-header">
+    <h1>Bibliography</h1>
+    {%if user.is_authenticated%}
+    <div class="controls">
+        <a class="new" href="?new">Add reference</a>
+        <a class="search" href="?search">Search references</a>
+    </div>
+    {%endif%}
 </div>
-{%endif%}
 
 {%include 'dragonlinguistics/snippets/quick-search.html'%}
 

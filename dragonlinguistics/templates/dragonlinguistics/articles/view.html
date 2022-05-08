@@ -1,15 +1,42 @@
 {%extends 'dragonlinguistics/base.html'%}
 {%load static%}
+{%load markup%}
 
 {%block title%}{{article.title}}{%endblock%}
 
 {%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/article.css'%}" type="text/css" />{%endblock%}
 
-{%block content%}{%include 'dragonlinguistics/snippets/articles/view.html'%}
-<div id="how-to-cite">
-    <p>This article can be cited as:</p>
-    <blockquote>
-        Spence, Kathryn ({{article.created.year}}). {{article.title}}. Dragon Linguistics (www.dragonlinguistics.net{{article.url}}).
-    </blockquote>
-</div>
+{%block content%}
+<article>
+    <header id="article-header">
+        <hgroup id="article-heading">
+            <h1 id="article-title">{{article.title}}</h1>
+            <h3 id="article-subtitle">{{article.description}}</h3>
+        </hgroup>
+        {%if user.is_authenticated%}
+        <div class="controls">
+            <a class="edit" href="?edit">Edit</a>
+            <a class="delete" href="?delete">Delete</a>
+        </div>
+        {%endif%}
+        <div id="article-meta">
+            <div id="article-written">Created {{article.created|date:'j M Y, H:i'}}.</div>
+            <div id="article-edited">Last updated {{article.edited|date:'j M Y, H:i'}}.</div>
+        </div>
+        {%if article.tag_list%}
+        <ul id="article-tags">
+            {%for tag in article.tag_list%}<li>#{{tag}}</li>{%endfor%}
+        </ul>
+        {%endif%}
+    </header>
+    <div id="article-body">
+        {% markup article.content depth=2 section=article.number %}
+    </div>
+    {%if citeable%}<footer id="article-footer">
+        <p>This article can be cited as:</p>
+        <blockquote>
+            Spence, Kathryn ({{article.created.year}}). {{article.title}}. Dragon Linguistics (www.dragonlinguistics.net{{article.url}}).
+        </blockquote>
+    </footer>{%endif%}
+</article>
 {%endblock%}

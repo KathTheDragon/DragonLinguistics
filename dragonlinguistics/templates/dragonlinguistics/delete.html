@@ -1,6 +1,9 @@
 {%extends './base.html'%}
+{%load static%}
 
 {%block title%}Delete &lsquo;{{object}}&rsquo;{%endblock%}
+
+{%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/form.css'%}" type="text/css" />{%endblock%}
 
 {%block content%}
 <h1>{{object.html}}</h1>
@@ -10,7 +13,7 @@ Are you <i>sure</i> you want to delete this {{type}}?
 <form method="post">
     {%csrf_token%}
     <input type="hidden" name="_action" value="delete" />
-    <input type='submit' value='Delete'/>
+    <button type="submit">Delete</button>
     <a class="button" href=".">Cancel</a>
 </form>
 {%endblock%}

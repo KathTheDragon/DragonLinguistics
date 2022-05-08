@@ -14,25 +14,23 @@
 <body>
     <div id="page">
         <header id="page-header">
-            <h1><a href="{%url 'home'%}">Dragon Linguistics</a></h1>
-            <nav>
-                {%include 'dragonlinguistics/snippets/navbar.html'%}
+            <h1 id="site-title"><a href="{%url 'home'%}">Dragon Linguistics</a></h1>
+            <nav id="site-nav">
+                <a href="{%url 'home'%}"{%if navbar_active == 'home'%} class="active"{%endif%}>Home</a>
+                <a href="{%url 'langs:list'%}"{%if navbar_active == 'langs'%} class="active"{%endif%}>Languages</a>
+                <a href="{%url 'articles:list'%}"{%if navbar_active == 'articles'%} class="active"{%endif%}>Articles</a>
+                <a href="{%url 'references:list'%}"{%if navbar_active == 'references'%} class="active"{%endif%}>Bibliography</a>
+            </nav>
+
+            <nav id="breadcrumbs">
+                {%for crumb, url in breadcrumbs%}<span><a{%if url%} href="{{url}}"{%endif%}>{{crumb}}</a></span>
+                {%endfor%}
             </nav>
         </header>
 
-        <div id="breadcrumbs">
-            {%for crumb, url in breadcrumbs%}
-            <a{%if url%} href="{{url}}"{%endif%}>{{crumb}}</a>
-            {%endfor%}
-        </div>
-
-        <hr class="divider">
-
-        <section class="body-section">
+        <main id="page-content">
             {%block content%}{%endblock%}
-        </section>
-
-        <hr class="divider">
+        </main>
 
         <footer id="page-footer">
             <a href="#top" class="low-opacity">Back to top</a>
