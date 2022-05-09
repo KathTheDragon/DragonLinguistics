@@ -13,14 +13,14 @@ from .. import models
 class Word(ModelForm):
     class Meta:
         model = models.Word
-        fields = ['lemma', 'type', 'notes', 'etymology']
+        exclude = ['lang']
         widgets = {'notes': Textarea()}
 
 
 Senses = inlineformset_factory(
     models.Word,
     models.Sense,
-    fields=['gloss', 'defin', 'pos', 'grammclass', 'notes'],
+    exclude=['word'],
     widgets={'defin': Textarea(), 'notes': Textarea()},
     extra=1
 )
