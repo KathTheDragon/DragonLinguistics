@@ -1,5 +1,5 @@
 <form class="search-form" method="get">
-    <h4>Quick-search:</h4>
-    {{searchfield.label_tag}} {{searchfield}}
+    <label for="{{searchfield.id_for_label}}"><h4>Quick-search ({{searchfield.label}}):</h4></label>
+    {{searchfield}}
     <button type="submit">🔍</button>
 </form>
