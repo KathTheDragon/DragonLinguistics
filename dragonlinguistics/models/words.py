@@ -36,15 +36,7 @@ class Word(base.Model):
 
     def __str__(self):
         from django.utils.html import format_html
-        citation = {
-            'r': '√{}',
-            'br': '*{}',
-            'pf': '{}-',
-            'if': '<{}>',
-            'sf': '-{}',
-            'pc': '{}=',
-            'ec': '={}',
-        }.get(self.type, '{}').format(self.lemma)
+        citation = self.citation()
         homonym = self.get_homonym()
         if homonym:
             return format_html(
@@ -54,6 +46,17 @@ class Word(base.Model):
             )
         else:
             return citation
+
+    def citation(self):
+        citation = {
+            'r': '√{}',
+            'pf': '{}-',
+            'if': '<{}>',
+            'sf': '-{}',
+            'pc': '{}=',
+            'ec': '={}',
+        }.get(self.type, '{}').format(self.lemma)
+        return citation
 
     def firstgloss(self):
         senses = self.sense_set.all()
