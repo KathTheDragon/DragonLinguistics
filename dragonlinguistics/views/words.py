@@ -116,6 +116,41 @@ class List(base.Actions):
             kwargs['formsetname'] = 'Sense'
             return super().get_context_data(**kwargs)
 
+    class Import(WordMixin, base.SecureBase):
+        def get_folder(self):
+            return '/'.join(self.parts)
+
+        def get_context_data(self, **kwargs):
+            kwargs.setdefault('importform', forms.Import(initial={'delimiter': ',', 'quotechar': '"'}))
+            return super().get_context_data(**kwargs)
+
+        def post(self, request, lang):
+            importform = forms.Import(request.POST, request.FILES)
+            if importform.is_valid():
+                try:
+                    entries = parse_csv(
+                        file=importform.cleaned_data['file'],
+                        delimiter=importform.cleaned_data['delimiter'],
+                        quotechar=importform.cleaned_data['quotechar']
+                    )
+                except csv.Error:
+                    return self.get(request, lang=lang, importform=importform)
+
+                if importform.cleaned_data['action'] == 'replace':
+                    Word.objects.delete()
+                for entry in entries:
+                    word = Word(**entry['word'])
+                    word.save()
+                    for sense in entry['senses']:
+                        Sense(word=word, **sense).save()
+            else:
+                return self.get(request, lang=lang, importform=importform)
+
+        def get_breadcrumbs(self, **kwargs):
+            breadcrumbs = super().get_breadcrumbs(**kwargs)
+            breadcrumbs.append(('Import', ''))
+            return breadcrumbs
+
 
 class View(base.Actions):
     class View(WordMixin, base.View):
@@ -146,39 +181,3 @@ class View(base.Actions):
             breadcrumbs = super().get_breadcrumbs(**kwargs)
             breadcrumbs.append(('Delete', ''))
             return breadcrumbs
-
-
-class Import(WordMixin, base.SecureBase):
-    def get_folder(self):
-        return '/'.join(self.parts)
-
-    def get_context_data(self, **kwargs):
-        kwargs.setdefault('importform', forms.Import(initial={'delimiter': ',', 'quotechar': '"'}))
-        return super().get_context_data(**kwargs)
-
-    def post(self, request, lang):
-        importform = forms.Import(request.POST, request.FILES)
-        if importform.is_valid():
-            try:
-                entries = parse_csv(
-                    file=importform.cleaned_data['file'],
-                    delimiter=importform.cleaned_data['delimiter'],
-                    quotechar=importform.cleaned_data['quotechar']
-                )
-            except csv.Error:
-                return self.get(request, lang=lang, importform=importform)
-
-            if importform.cleaned_data['action'] == 'replace':
-                Word.objects.delete()
-            for entry in entries:
-                word = Word(**entry['word'])
-                word.save()
-                for sense in entry['senses']:
-                    Sense(word=word, **sense).save()
-        else:
-            return self.get(request, lang=lang, importform=importform)
-
-    def get_breadcrumbs(self, **kwargs):
-        breadcrumbs = super().get_breadcrumbs(**kwargs)
-        breadcrumbs.append(('Import', ''))
-        return breadcrumbs

@@ -10,12 +10,11 @@ register(Lemma, 'lemma')
 
 app_name = 'words'
 urlpatterns = [
-    path('', words.List.as_view(), name='list'),  # Includes new and search
+    path('', words.List.as_view(), name='list'),  # Includes new, search, and import
     path('word/<lemma:lemma>/', include([
         path('', words.View.as_view(), name='view'),  # Includes edit and delete
         path('<int:homonym>/', include([
             path('', words.View.as_view(), name='view-homonym'),  # Includes edit and delete
         ]))
     ])),
-    path('import/', words.Import.as_view(), name='import'),
 ]
