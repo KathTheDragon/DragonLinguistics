@@ -37,6 +37,7 @@ class Word(base.Model):
     def __str__(self):
         from django.utils.html import format_html
         citation = {
+            'r': '√{}',
             'br': '*{}',
             'pf': '{}-',
             'if': '<{}>',
