@@ -54,6 +54,7 @@ class List(base.Actions):
 
         def handle_forms(self, request, form):
             lang = form.save()
+            models.Dictionary(language=lang).save()
             models.Folder.objects.get_or_create(path=f'langs/{lang.code}')
             models.Folder.objects.get_or_create(path=f'langs/{lang.code}/grammar')
             models.Folder.objects.get_or_create(path=f'langs/{lang.code}/lessons')
