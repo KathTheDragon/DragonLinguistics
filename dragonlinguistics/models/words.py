@@ -101,16 +101,16 @@ class Word(base.Model):
         if homonym:
             return reverse(
                 f'langs:words:view-homonym',
-                kwargs={'code': self.dictionary.lang.code, 'lemma': self.lemma, 'homonym': homonym}
+                kwargs={'code': self.dictionary.language.code, 'lemma': self.lemma, 'homonym': homonym}
             )
         else:
             return reverse(
                 f'langs:words:view',
-                kwargs={'code': self.dictionary.lang.code, 'lemma': self.lemma}
+                kwargs={'code': self.dictionary.language.code, 'lemma': self.lemma}
             )
 
     def get_classes(self):
-        return ['word', self.dictionary.lang.code]
+        return ['word', self.dictionary.language.code]
 
 
 class Variant(models.Model):
