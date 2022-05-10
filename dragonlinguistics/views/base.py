@@ -98,7 +98,7 @@ class Actions(generic.View):
             action = default_action
 
         view = getattr(self, action.capitalize(), None)
-        if issubclass(view, generic.View):
+        if isinstance(view, type) and issubclass(view, generic.View):
             return view.as_view()(request, **kwargs)
         else:
             raise Http404
