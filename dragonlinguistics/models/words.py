@@ -21,7 +21,7 @@ class Dictionary(base.Model):
                 code, name, group = parts[0], parts[1], ''
             else:
                 code, name, group = parts[:3]
-            classes.append((code, name, group))
+            classes.append((code.strip(), name.strip(), group.strip()))
         return classes
 
     def url(self):
