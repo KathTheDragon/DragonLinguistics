@@ -11,9 +11,9 @@ class Model(models.Model):
         from django.utils.html import format_html
         classes = ' '.join(self.get_classes())
         if classes:
-            return format_html('<span class="{}">{}</span>', classes, self)
+            return format_html('<span class="{}">{}</span>', classes, str(self))
         else:
-            return format_html('{}', self)
+            return format_html('{}', str(self))
 
     class Meta:
         abstract = True
