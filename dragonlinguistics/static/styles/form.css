@@ -1,5 +1,9 @@
 /* Text entries */
 
+input, button {
+    font-family: sans-serif;  /* Need to specify this again, apparently */
+}
+
 input, textarea {
     padding: 4px 8px;
     margin: 4px 0;
@@ -35,7 +39,6 @@ button, a.button {
     border-radius: var(--border-radius);
     margin: 4px;
     font-size: 0.9rem;
-    font-family: sans-serif;  /* Need to specify this again, apparently */
     -webkit-transition: background-color 0.05s ease-in-out;
     transition: background-color 0.05s ease-in-out;
     background: #f4f4f4;
