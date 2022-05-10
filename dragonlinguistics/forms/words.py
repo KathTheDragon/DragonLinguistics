@@ -13,25 +13,25 @@ from .. import models
 class Word(ModelForm):
     class Meta:
         model = models.Word
-        exclude = ['lang']
+        exclude = ['dictionary']
         widgets = {'notes': Textarea()}
 
 
-Senses = inlineformset_factory(
+Variants = inlineformset_factory(
     models.Word,
-    models.Sense,
+    models.Variant,
     exclude=['word'],
     widgets={'defin': Textarea(), 'notes': Textarea()},
     extra=1
 )
 
 
-class Search(Form):
-    lemma = CharField(required=False, max_length=50)
-    type = ChoiceField(required=False, choices=[('','Any'), *models.Word.TYPES])
-    gloss = CharField(required=False, max_length=20)
-    pos = ChoiceField(required=False, choices=[('','Any'), *models.Sense.POS])
-    classes = CharField(required=False, label='Class', max_length=20)
+Search = type('Search', (Form,), {
+    'lemma': CharField(required=False, max_length=50),
+    'type': ChoiceField(required=False, choices=[('','Any'), *models.Word.TYPES]),
+    'class': CharField(required=False, label='Class', max_length=20),
+    'definition': CharField(required=False, max_length=50),
+})
 
 
 class Import(Form):

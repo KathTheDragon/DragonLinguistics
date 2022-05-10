@@ -1,11 +1,11 @@
 {%extends 'dragonlinguistics/base.html'%}
 {%load markup%}
 
-{%block title%}View {{word.lemma}}{%endblock%}
+{%block title%}View {{word.citation}}{%endblock%}
 
 {%block content%}
 <div id="content-header">
-    <h1 class="word {{lang.code}}">{{word}}</h1>
+    <h1 class="{{word.get_classes|join:' '}}">{{word}}</h1>
     {%if user.is_authenticated%}
     <div class="controls">
         <a class="edit" href="?edit">Edit</a>
@@ -14,21 +14,28 @@
     {%endif%}
 </div>
 <dl>
-    {%if word.notes%}<p>{% markup word.notes %}</p>{%endif%}
     {%if word.etymology%}
     <dt><h3>Etymology</h3></dt>
     <dd>{% markup word.etymology %}</dd>
     {%endif%}
-    {%for sense in word.sense_set.all%}
-        <dt><h3>{{sense.get_pos_display}}{%if sense.grammclass%} ({{sense.grammclass}}){%endif%}</h3></dt>
-        <dd>
-            <dl>
-                {%if sense.notes%}<p>{% markup sense.notes %}</p>{%endif%}
-                <dt>Definition:</dt><dd>{%if sense.defin%}{% markup sense.defin %}{%else%}{{sense.gloss}}{%endif%}</dd>
-            </dl>
-        </dd>
-    {%empty%}
-        <h2>No known meanings</h2>
+    {%for variant in word.variants.all%}<dt><h3>{{variant.get_lexclass}}</h3></dt>
+    <dd>
+        {%if variant.notes%}<p>{% markup variant.notes %}</p>{%endif%}
+        <p class="{{word.get_classes|join:' '}}">{%if variant.forms%}{{variant.forms}}{%else%}{{word.citation}}{%endif%}</p>
+        <ol>
+            {%for definition in variant.get_definitions%}<li>{%markup definition%}</li>
+            {%endfor%}
+        </ol>
+        {%if variant.derivatives%}<dl>
+            <dt>Derivatives:</dt>
+            <dd>
+                <ul>
+                    {%for derivative in variant.derivatives.splitlines%}<li>{%markup derivative%}</li>
+                    {%endfor%}
+                </ul>
+            </dd>
+        </dl>{%endif%}
+    </dd>
     {%endfor%}
 </dl>
 {%endblock%}

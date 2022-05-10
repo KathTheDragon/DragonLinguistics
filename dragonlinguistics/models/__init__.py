@@ -2,4 +2,4 @@ from .articles import Folder, Article
 from .langs import Language
 from .references import Reference
 from .user import User
-from .words import Word, Sense
+from .words import Dictionary, Word, Variant

@@ -19,20 +19,38 @@ admin.site.register(models.User, UserAdmin)
 
 textarea_attrs = {'rows':5, 'cols':40}
 
-class SenseForm(ModelForm):
+class DictionaryForm(ModelForm):
     class Meta:
-        model = models.Sense
-        fields = '__all__'
+        model = models.Dictionary
+        exclude = ('order',)
         widgets = {
-            'defin': Textarea(attrs=textarea_attrs),
-            'notes': Textarea(attrs=textarea_attrs),
+            'classes': Textarea(attrs=textarea_attrs),
         }
 
 
-class SenseInline(admin.StackedInline):
-    model = models.Sense
+@admin.register(models.Dictionary)
+class DictionaryAdmin(admin.ModelAdmin):
+    list_display = ('language', 'classes')
+    form = DictionaryForm
+    save_on_top = True
+
+
+class VariantForm(ModelForm):
+    class Meta:
+        model = models.Variant
+        fields = '__all__'
+        widgets = {
+            'forms': Textarea(attrs=textarea_attrs),
+            'definition': Textarea(attrs=textarea_attrs),
+            'notes': Textarea(attrs=textarea_attrs),
+            'derivatives': Textarea(attrs=textarea_attrs),
+        }
+
+
+class VariantInline(admin.StackedInline):
+    model = models.Variant
     extra = 1
-    form = SenseForm
+    form = VariantForm
 
 
 class WordForm(ModelForm):
@@ -40,17 +58,18 @@ class WordForm(ModelForm):
         model = models.Word
         fields = '__all__'
         widgets = {
-            'notes': Textarea(attrs=textarea_attrs),
+            'etymology': Textarea(attrs=textarea_attrs),
+            'descendents': Textarea(attrs=textarea_attrs),
+            'references': Textarea(attrs=textarea_attrs),
         }
 
 
 @admin.register(models.Word)
 class WordAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'firstgloss', 'lang')
-    list_filter = ('lang__name',)
+    list_display = ('__str__', 'definition', lambda word: str(word.dictionary.language))
+    list_filter = ('dictionary__language__name',)
     search_fields = ('lemma',)
-    fields = ('lang', 'lemma', 'homonym', 'type', 'notes')
-    inlines = (SenseInline,)
+    inlines = (VariantInline,)
     form = WordForm
     save_on_top = True
 

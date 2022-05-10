@@ -42,20 +42,21 @@ class WordMixin(LangMixin):
     instance = 'word'
 
     def get_kwargs(self, code, lemma=None, homonym=1, **kwargs):
+        dictionary = models.Dictionary.objects.get(language__code=code)
         if lemma is None:
-            return super().get_kwargs(code=code, **kwargs)
+            return super().get_kwargs(code=code, dictionary=dictionary, **kwargs)
         else:
-            word = models.Word.objects.filter(lang__code=code, lemma=lemma)[homonym-1]
-            return super().get_kwargs(code=code, word=word, **kwargs)
+            word = models.Word.objects.filter(dictionary=dictionary, lemma=lemma)[homonym-1]
+            return super().get_kwargs(code=code, dictionary=dictionary, word=word, **kwargs)
 
     def get_context_data(self, **kwargs):
         kwargs['type'] = 'word'
         return super().get_context_data(**kwargs)
 
-    def get_breadcrumbs(self, lang, word=None, **kwargs):
+    def get_breadcrumbs(self, dictionary, word=None, **kwargs):
         from django.urls import reverse
-        breadcrumbs = super().get_breadcrumbs(lang=lang, **kwargs)
-        breadcrumbs.append(('Dictionary', reverse('langs:words:list', kwargs={'code': lang.code})))
+        breadcrumbs = super().get_breadcrumbs(**kwargs)
+        breadcrumbs.append(('Dictionary', dictionary.url()))
         if word is not None:
             breadcrumbs.append((word.html(), word.url()))
         return breadcrumbs
@@ -66,19 +67,17 @@ class List(base.Actions):
         form = forms.WordSearch
         fieldname = 'lemma'
 
-        def get_object_list(self, lang, **kwargs):
+        def get_object_list(self, dictionary, **kwargs):
             query = self.request.GET
             return models.Word.objects.filter(
-                lang=lang,
+                dictionary=dictionary,
                 # word-level search terms
                 **base.fuzzysearch(lemma=query.get('lemma', '')),
                 **base.strictsearch(type=query.get('type', ''))
-            ).filter(  # sense-level search terms
-                **base.fuzzysearch(sense__gloss=query.get('gloss', ''))
+            ).filter(  # Variant-level search terms
+                **base.strictsearch(variant__definition__contains=query.get('definition', ''))
             ).filter(
-                **base.strictsearch(sense__pos=query.get('pos', ''))
-            ).filter(
-                **base.strictsearch(sense__grammclass__contains=query.get('classes', ''))
+                **base.strictsearch(variant__lexclass=query.get('class', ''))
             )
 
         def get_context_data(self, **kwargs):
@@ -94,17 +93,17 @@ class List(base.Actions):
             return breadcrumbs
 
     class New(WordMixin, base.NewEdit):
-        forms = {'form': forms.Word, 'formset': forms.Senses}
+        forms = {'form': forms.Word, 'formset': forms.Variants}
         use_addmore = True
 
-        def handle_forms(self, request, lang, form, formset):
+        def handle_forms(self, request, dictionary, form, formset, **kwargs):
             newword = form.save(commit=False)
-            newword.lang = lang
+            newword.dictionary = dictionary
             newword.save()
-            senses = formset.save(commit=False)
-            for sense in senses:
-                sense.word = newword
-                sense.save()
+            variants = formset.save(commit=False)
+            for variant in variants:
+                variant.word = newword
+                variant.save()
             return newword
 
         def get_breadcrumbs(self, **kwargs):
@@ -113,7 +112,7 @@ class List(base.Actions):
             return breadcrumbs
 
         def get_context_data(self, **kwargs):
-            kwargs['formsetname'] = 'Sense'
+            kwargs['formsetname'] = 'Variant'
             return super().get_context_data(**kwargs)
 
     class Import(WordMixin, base.SecureBase):
@@ -124,7 +123,7 @@ class List(base.Actions):
             kwargs.setdefault('importform', forms.Import(initial={'delimiter': ',', 'quotechar': '"'}))
             return super().get_context_data(**kwargs)
 
-        def post(self, request, lang):
+        def post(self, request, **kwargs):
             importform = forms.Import(request.POST, request.FILES)
             if importform.is_valid():
                 try:
@@ -134,17 +133,18 @@ class List(base.Actions):
                         quotechar=importform.cleaned_data['quotechar']
                     )
                 except csv.Error:
-                    return self.get(request, lang=lang, importform=importform)
+                    return self.get(request, importform=importform, **kwargs)
 
+                dictionary = kwargs['dictionary']
                 if importform.cleaned_data['action'] == 'replace':
-                    Word.objects.delete()
+                    models.Word.objects.filter(dictionary=dictionary).delete()
                 for entry in entries:
-                    word = Word(**entry['word'])
+                    word = models.Word(dictionary=dictionary, **entry['word'])
                     word.save()
-                    for sense in entry['senses']:
-                        Sense(word=word, **sense).save()
+                    for variant in entry['variants']:
+                        models.Variant(word=word, **variant).save()
             else:
-                return self.get(request, lang=lang, importform=importform)
+                return self.get(request, importform=importform, **kwargs)
 
         def get_breadcrumbs(self, **kwargs):
             breadcrumbs = super().get_breadcrumbs(**kwargs)
@@ -157,7 +157,7 @@ class View(base.Actions):
         pass
 
     class Edit(WordMixin, base.NewEdit):
-        forms = {'form': forms.Word, 'formset': forms.Senses}
+        forms = {'form': forms.Word, 'formset': forms.Variants}
 
         def handle_forms(self, request, form, formset, **kwargs):
             newword = form.save()
@@ -170,12 +170,12 @@ class View(base.Actions):
             return breadcrumbs
 
         def get_context_data(self, **kwargs):
-            kwargs['formsetname'] = 'Sense'
+            kwargs['formsetname'] = 'Variant'
             return super().get_context_data(**kwargs)
 
     class Delete(WordMixin, base.Delete):
-        def get_redirect_kwargs(self, lang):
-            return {'code': lang.code}
+        def get_redirect_to(self, dictionary, **kwargs):
+            return dictionary
 
         def get_breadcrumbs(self, **kwargs):
             breadcrumbs = super().get_breadcrumbs(**kwargs)
