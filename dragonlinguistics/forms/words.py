@@ -1,4 +1,5 @@
 from django.forms import (
+    BooleanField,
     CharField,
     ChoiceField,
     FileField,
@@ -11,6 +12,8 @@ from django.forms import (
 from .. import models
 
 class Word(ModelForm):
+    isunattested = BooleanField(required=False, label='Unattested', label_suffix='?')
+
     class Meta:
         model = models.Word
         exclude = ['dictionary']
