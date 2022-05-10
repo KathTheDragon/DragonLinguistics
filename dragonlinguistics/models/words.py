@@ -125,7 +125,13 @@ class Variant(models.Model):
         return self.get_definitions()[0]
 
     def get_lexclass(self):
-        ...
+        for code, name, group in self.word.dictionary.get_class_list():
+            if self.lexclass == code:
+                if group:
+                    return f'{group} ({name})'
+                else:
+                    return name
+        return 'Unknown'
 
     def get_definitions(self):
         return self.definition.splitlines() or ['']
