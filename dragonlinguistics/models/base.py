@@ -9,7 +9,7 @@ class Model(models.Model):
 
     def html(self):
         from django.utils.html import format_html
-        classes = ''.join(self.get_classes())
+        classes = ' '.join(self.get_classes())
         if classes:
             return format_html('<span class="{}">{}</span>', classes, self)
         else:
