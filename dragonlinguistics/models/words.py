@@ -15,9 +15,9 @@ class Dictionary(base.Model):
         classes = []
         for line in self.classes.splitlines():
             parts = line.split(',')
-            if len(part) == 1:
+            if len(parts) == 1:
                 code, name, group = parts[0], parts[0], ''
-            elif len(part) == 2:
+            elif len(parts) == 2:
                 code, name, group = parts[0], parts[1], ''
             else:
                 code, name, group = parts[:3]
