@@ -2,7 +2,7 @@ import csv
 
 WORD_HEADERS = {'lemma', 'type', 'isunattested', 'etymology', 'descendents', 'references'}
 VARIANT_HEADERS = {'class', 'forms', 'definition', 'notes', 'derivatives'}
-HEADERS = WORD_HEADERS | SENSE_HEADERS
+HEADERS = WORD_HEADERS | VARIANT_HEADERS
 MIN_HEADERS = {'lemma', 'definition'}
 
 

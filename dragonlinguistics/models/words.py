@@ -26,7 +26,7 @@ class Dictionary(base.Model):
 
     def url(self):
         from django.urls import reverse
-        return reverse('langs:words:list', kwargs={'code': self.language.code})))
+        return reverse('langs:words:list', kwargs={'code': self.language.code})
 
 
 class Word(base.Model):
@@ -40,10 +40,10 @@ class Word(base.Model):
         ('pc', 'Proclitic'),
         ('ec', 'Enclitic'),
     ]
-    dictionary = models.ForeignKey(Dictionary, related_name='words', related_query_name='word', on_delete=models.CASCADE)
+    dictionary = models.ForeignKey(Dictionary, related_name='words', related_query_name='word', on_delete=models.CASCADE, null=True)
     lemma = models.CharField(max_length=50)
     type = models.CharField(max_length=2, choices=TYPES, default='s')
-    isunattested = models.BooleanField()
+    isunattested = models.BooleanField(default=False)
     etymology = models.TextField(blank=True)
     descendents = models.TextField(blank=True)
     references = models.TextField(blank=True)
