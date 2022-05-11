@@ -12,7 +12,7 @@
     {%csrf_token%}
     <input type="hidden" name="_action" value="settings" />
     {{form.non_field_errors}}
-    {%include './snippets/form-fields.html'%}
+    {%include 'dragonlinguistics/snippets/form-fields.html'%}
     <button type="submit">Save changes</button>
     <a class="button" href=".">Cancel</a>
 </form>
