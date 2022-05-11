@@ -1,25 +1,25 @@
 from datetime import datetime
-from django.forms import DateTimeField, ModelForm, TextInput
+from django import forms
 
 from .. import models
 
-class Folder(ModelForm):
+class Folder(forms.ModelForm):
     class Meta:
         model = models.Folder
         fields = '__all__'
 
 
-class NewArticle(ModelForm):
-    created = DateTimeField(initial=datetime.now)
+class NewArticle(forms.ModelForm):
+    created = forms.DateTimeField(initial=datetime.now)
 
     class Meta:
         model = models.Article
         fields = ['title', 'description', 'number', 'content', 'tags', 'created']
-        widgets = {'tags': TextInput()}
+        widgets = {'tags': forms.TextInput()}
 
 
-class EditArticle(ModelForm):
+class EditArticle(forms.ModelForm):
     class Meta:
         model = models.Article
         fields = ['title', 'description', 'number', 'content', 'tags']
-        widgets = {'tags': TextInput()}
+        widgets = {'tags': forms.TextInput()}

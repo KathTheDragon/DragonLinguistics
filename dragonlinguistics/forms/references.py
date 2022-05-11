@@ -1,15 +1,15 @@
-from django.forms import CharField, Form, IntegerField, ModelForm, TextInput
+from django import forms
 
 from .. import models
 
-class Reference(ModelForm):
+class Reference(forms.ModelForm):
     class Meta:
         model = models.Reference
         fields = '__all__'
-        widgets = {'link': TextInput()}
+        widgets = {'link': forms.TextInput()}
 
 
-class Search(Form):
-    author = CharField(required=False, max_length=255)
-    year = IntegerField(required=False, min_value=0, max_value=32767)
-    title = CharField(required=False, max_length=255)
+class Search(forms.Form):
+    author = forms.CharField(required=False, max_length=255)
+    year = forms.IntegerField(required=False, min_value=0, max_value=32767)
+    title = forms.CharField(required=False, max_length=255)
