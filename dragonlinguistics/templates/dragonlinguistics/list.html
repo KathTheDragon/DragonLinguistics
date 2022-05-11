@@ -12,6 +12,7 @@
     <div class="controls">
         <a class="new" href="?new">Add {{type}}</a>
         {%if search%}<a class="search" href="?search">Search {{type}}s</a>{%endif%}
+        {%block controls%}{%endblock%}
     </div>
     {%endif%}
 </div>

@@ -67,6 +67,9 @@ class List(base.Actions):
         form = forms.WordSearch
         fieldname = 'lemma'
 
+        def get_folder(self):
+            return '/'.join(self.parts)
+
         def get_object_list(self, dictionary, **kwargs):
             query = self.request.GET
             return models.Word.objects.filter(
@@ -91,6 +94,16 @@ class List(base.Actions):
             breadcrumbs = super().get_breadcrumbs(**kwargs)
             breadcrumbs.append(('Search', ''))
             return breadcrumbs
+
+    class Settings(WordMixin, base.NewEdit):
+        instance = 'dictionary'
+        forms = {'form': forms.Dictionary}
+
+        def get_folder(self):
+            return '/'.join(self.parts)
+
+        def handle_forms(self, request, form, **kwargs):
+            return form.save()
 
     class New(WordMixin, base.NewEdit):
         forms = {'form': forms.Word, 'formset': forms.Variants}

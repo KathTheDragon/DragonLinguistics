@@ -11,6 +11,12 @@ from django.forms import (
 
 from .. import models
 
+class Dictionary(ModelForm):
+    class Meta:
+        model = models.Dictionary
+        exclude = ['language']
+
+
 class Word(ModelForm):
     isunattested = BooleanField(required=False, label='Unattested', label_suffix='?')
 

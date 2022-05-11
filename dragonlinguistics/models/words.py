@@ -9,7 +9,7 @@ class Dictionary(base.Model):
     order = models.TextField('alphabetical order', blank=True)  # Not using yet
 
     def __str__(self):
-        return 'Dictionary'
+        return f'{self.language} Dictionary'
 
     def get_class_list(self):
         classes = []
