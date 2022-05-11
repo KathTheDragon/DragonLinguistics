@@ -14,6 +14,8 @@ class Dictionary(base.Model):
     def get_class_list(self):
         classes = []
         for line in self.classes.splitlines():
+            if not line:
+                continue
             parts = line.split(',')
             if len(parts) == 1:
                 code, name, group = parts[0], parts[0], ''
