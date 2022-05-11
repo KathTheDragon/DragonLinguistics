@@ -23,14 +23,12 @@ class Word(ModelForm):
     class Meta:
         model = models.Word
         exclude = ['dictionary']
-        widgets = {'notes': Textarea()}
 
 
 Variants = inlineformset_factory(
     models.Word,
     models.Variant,
     exclude=['word'],
-    widgets={'defin': Textarea(), 'notes': Textarea()},
     extra=1
 )
 
