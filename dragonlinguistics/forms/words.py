@@ -25,7 +25,7 @@ class Word(forms.ModelForm):
 
 def make_variants_formset(dictionary):
     class Variant(forms.ModelForm):
-        lexclass = forms.Choices(label='Class', choices=dictionary.get_class_options())
+        lexclass = forms.ChoiceField(label='Class', choices=dictionary.get_class_options())
 
         class Meta:
             model = models.Variant
