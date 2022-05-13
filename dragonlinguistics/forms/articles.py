@@ -14,9 +14,8 @@ class NewArticle(forms.ModelForm):
 
     class Meta:
         model = models.Article
-        exclude = ['slug', 'edited']
+        exclude = ['folder', 'slug', 'edited']
         widgets = {
-            'folder': forms.HiddenInput(),
             'tags': forms.TextInput(),
         }
 
@@ -24,8 +23,7 @@ class NewArticle(forms.ModelForm):
 class EditArticle(forms.ModelForm):
     class Meta:
         model = models.Article
-        exclude = ['slug', 'created', 'edited']
+        exclude = ['folder', 'slug', 'created', 'edited']
         widgets = {
-            'folder': forms.HiddenInput(),
             'tags': forms.TextInput(),
         }

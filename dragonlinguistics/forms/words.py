@@ -5,10 +5,7 @@ from .. import models
 class Dictionary(forms.ModelForm):
     class Meta:
         model = models.Dictionary
-        fields = '__all__'
-        widgets = {
-            'language': forms.HiddenInput(),
-        }
+        exclude = ['language']
 
 
 class Word(forms.ModelForm):
@@ -16,9 +13,8 @@ class Word(forms.ModelForm):
 
     class Meta:
         model = models.Word
-        fields = '__all__'
+        exclude = ['dictionary']
         widgets = {
-            'dictionary': forms.HiddenInput(),
             'references': forms.TextInput(),
         }
 
@@ -29,8 +25,8 @@ def make_variants_formset(dictionary):
 
         class Meta:
             model = models.Variant
+            exclude = ['word']
             widgets = {
-                'word': forms.HiddenInput(),
                 'forms': forms.TextInput(),
             }
 
