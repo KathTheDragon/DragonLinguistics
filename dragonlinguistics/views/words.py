@@ -111,7 +111,7 @@ class List(base.Actions):
         def get_forms(self, **kwargs):
             return {
                 'form': forms.WordForm,
-                'formset': forms.words.make_variants_formset(kwargs['dictionary']),
+                'formset': forms.make_variants_formset(kwargs['dictionary']),
             }
 
         def handle_forms(self, request, dictionary, form, formset, **kwargs):
