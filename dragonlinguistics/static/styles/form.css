@@ -14,7 +14,6 @@ input, textarea {
 
 textarea {
     width: 100%;
-    height: 25rem;
     resize: vertical;
 }
 
