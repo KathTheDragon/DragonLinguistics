@@ -110,7 +110,7 @@ class List(base.Actions):
 
         def get_forms(self, **kwargs):
             return {
-                'form': forms.WordForm,
+                'form': forms.Word,
                 'formset': forms.make_variants_formset(kwargs['dictionary']),
             }
 
@@ -177,7 +177,7 @@ class View(base.Actions):
     class Edit(WordMixin, base.NewEdit):
         def get_forms(self, **kwargs):
             return {
-                'form': forms.WordForm,
+                'form': forms.Word,
                 'formset': forms.make_variants_formset(kwargs['dictionary']),
             }
 
