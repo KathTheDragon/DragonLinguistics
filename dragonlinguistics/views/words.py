@@ -175,7 +175,11 @@ class View(base.Actions):
         pass
 
     class Edit(WordMixin, base.NewEdit):
-        forms = {'form': forms.Word, 'formset': forms.Variants}
+        def get_forms(self, **kwargs):
+            return {
+                'form': forms.WordForm,
+                'formset': forms.make_variants_formset(kwargs['dictionary']),
+            }
 
         def handle_forms(self, request, form, formset, **kwargs):
             newword = form.save()
