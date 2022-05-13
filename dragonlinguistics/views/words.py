@@ -106,8 +106,13 @@ class List(base.Actions):
             return form.save()
 
     class New(WordMixin, base.NewEdit):
-        forms = {'form': forms.Word, 'formset': forms.Variants}
         use_addmore = True
+
+        def get_forms(self, **kwargs):
+            return {
+                'form': forms.WordForm,
+                'formset': forms.words.make_variants_formset(kwargs['dictionary']),
+            }
 
         def handle_forms(self, request, dictionary, form, formset, **kwargs):
             newword = form.save(commit=False)

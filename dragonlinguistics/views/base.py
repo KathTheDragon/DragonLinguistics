@@ -196,25 +196,24 @@ class NewEdit(SecureBase):
     extra_fields = []  # list[str]
     use_addmore = False  # bool
 
-    def get_context_data(self, **kwargs):
+    def get_forms(self, **kwargs):
         if self.forms is None:
             raise ValueError
+        return self.forms
 
+    def get_context_data(self, **kwargs):
         instance = kwargs.get(self.instance)
         kwargs['object'] = instance
-        for attr, form in self.forms.items():
+        for attr, form in self.get_forms(**kwargs).items():
             kwargs.setdefault(attr, form(instance=instance))
         kwargs['use_addmore'] = self.use_addmore
         return super().get_context_data(**kwargs)
 
     def post(self, request, **kwargs):
-        if self.forms is None:
-            raise ValueError
-
         instance = kwargs.get(self.instance)
         forms = {
             attr: form(request.POST, instance=instance)
-            for attr, form in self.forms.items()
+            for attr, form in self.get_forms(**kwargs).items()
         }
         extra_fields = {attr: request.POST.get(attr) for attr in self.extra_fields}
         if all(form.is_valid() for form in forms.values()):

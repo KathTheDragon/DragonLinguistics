@@ -7,7 +7,7 @@ class Dictionary(forms.ModelForm):
         model = models.Dictionary
         fields = '__all__'
         widgets = {
-            'language': forms.HiddenInput()
+            'language': forms.HiddenInput(),
         }
 
 
@@ -18,19 +18,28 @@ class Word(forms.ModelForm):
         model = models.Word
         fields = '__all__'
         widgets = {
-            'dictionary': forms.HiddenInput()
+            'dictionary': forms.HiddenInput(),
+            'references': forms.TextInput(),
         }
 
 
-Variants = forms.inlineformset_factory(
-    models.Word,
-    models.Variant,
-    fields = '__all__',
-    widgets = {
-        'word': forms.HiddenInput()
-    },
-    extra=1
-)
+def make_variants_formset(dictionary):
+    class Variant(forms.ModelForm):
+        lexclass = forms.Choices(label='Class', choices=dictionary.get_class_options())
+
+        class Meta:
+            model = models.Variant
+            widgets = {
+                'word': forms.HiddenInput(),
+                'forms': forms.TextInput(),
+            }
+
+    return forms.inlineformset_factory(
+        models.Word,
+        models.Variant,
+        form=Variant,
+        extra=1
+    )
 
 
 Search = type('Search', (forms.Form,), {
