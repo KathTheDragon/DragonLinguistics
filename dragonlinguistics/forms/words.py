@@ -5,7 +5,10 @@ from .. import models
 class Dictionary(forms.ModelForm):
     class Meta:
         model = models.Dictionary
-        exclude = ['language']
+        fields = '__all__'
+        widgets = {
+            'language': forms.HiddenInput()
+        }
 
 
 class Word(forms.ModelForm):
@@ -13,13 +16,19 @@ class Word(forms.ModelForm):
 
     class Meta:
         model = models.Word
-        exclude = ['dictionary']
+        fields = '__all__'
+        widgets = {
+            'dictionary': forms.HiddenInput()
+        }
 
 
 Variants = forms.inlineformset_factory(
     models.Word,
     models.Variant,
-    exclude=['word'],
+    fields = '__all__',
+    widgets = {
+        'word': forms.HiddenInput()
+    },
     extra=1
 )
 

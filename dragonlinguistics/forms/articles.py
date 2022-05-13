@@ -14,12 +14,18 @@ class NewArticle(forms.ModelForm):
 
     class Meta:
         model = models.Article
-        fields = ['title', 'description', 'number', 'content', 'tags', 'created']
-        widgets = {'tags': forms.TextInput()}
+        exclude = ['slug', 'edited']
+        widgets = {
+            'folder': forms.HiddenInput(),
+            'tags': forms.TextInput(),
+        }
 
 
 class EditArticle(forms.ModelForm):
     class Meta:
         model = models.Article
-        fields = ['title', 'description', 'number', 'content', 'tags']
-        widgets = {'tags': forms.TextInput()}
+        exclude = ['slug', 'created', 'edited']
+        widgets = {
+            'folder': forms.HiddenInput(),
+            'tags': forms.TextInput(),
+        }
