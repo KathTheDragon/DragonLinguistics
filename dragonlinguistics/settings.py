@@ -86,7 +86,7 @@ AUTH_USER_MODEL = 'dragonlinguistics.User'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.' + env('DATABASE_ENGINE'),
         'NAME': env('DATABASE_NAME'),
         'USER': env('DATABASE_USER'),
         'PASSWORD': env('DATABASE_PASSWORD'),
