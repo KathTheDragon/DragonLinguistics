@@ -21,5 +21,9 @@ class Language(base.Model):
         kwargs = {'code': self.code}
         return reverse(f'langs:view', kwargs=kwargs)
 
+    def list_url(self):
+        from django.urls import reverse
+        return reverse('langs:list')
+
     def get_classes(self):
         return ['lang', self.code]

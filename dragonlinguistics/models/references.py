@@ -42,3 +42,7 @@ class Reference(base.Model):
             f'references:view',
             kwargs={'author': self.author, 'year': self.year, 'index': self.index}
         )
+
+    def list_url(self):
+        from django.urls import reverse
+        return reverse('references:list')

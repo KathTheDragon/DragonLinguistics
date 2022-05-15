@@ -11,13 +11,10 @@
 <form method="post">
     {%csrf_token%}
     <input type="hidden" name="_action" value="edit" />
-    <button type="submit">Save changes</button>
-    <a class="button" href=".">Cancel</a>
+    {%include './snippets/form-save-buttons.html'%}
     {{form.non_field_errors}}
     {%include './snippets/form-fields.html'%}
     {%if formset%}{%include './snippets/formset-fields.html'%}{%endif%}
-    <button type="submit">Save changes</button>
-    <a class="button" href=".">Cancel</a>
+    {%include './snippets/form-save-buttons.html'%}
 </form>
-
 {%endblock%}

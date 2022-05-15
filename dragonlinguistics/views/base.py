@@ -218,11 +218,14 @@ class NewEdit(SecureBase):
         extra_fields = {attr: request.POST.get(attr) for attr in self.extra_fields}
         if all(form.is_valid() for form in forms.values()):
             obj = self.handle_forms(request, **kwargs, **forms, **extra_fields)
-            addmore = request.POST.get('addmore', False)
-            if addmore:
-                return self.get(request, **kwargs, addmore=addmore)
-            else:
+            if '_add-another' in request.POST:
+                return redirect(obj.list_url() + '?new')
+            elif '_keep-editing' in request.POST:
+                return redirect(obj.url() + '?edit')
+            elif '_save' in request.POST:
                 return redirect(obj)
+            else:
+                raise Http404
         else:
             return self.get(request, **kwargs, **forms, **extra_fields)
 

@@ -168,6 +168,9 @@ class Word(base.Model):
                 kwargs={'code': self.dictionary.language.code, 'lemma': self.lemma}
             )
 
+    def list_url(self):
+        return self.dictionary.url()
+
     def get_classes(self):
         return ['word', self.dictionary.language.code]
 

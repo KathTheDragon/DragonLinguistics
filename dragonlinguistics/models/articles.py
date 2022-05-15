@@ -65,6 +65,9 @@ class Article(base.Model):
             namespace, kwargs = parse_path(self.folder.path, kwargs)
         return reverse(f'{namespace}:view', kwargs=kwargs)
 
+    def list_url(self):
+        return self.folder.url()
+
     def get_classes(self):
         return ['article']
 
