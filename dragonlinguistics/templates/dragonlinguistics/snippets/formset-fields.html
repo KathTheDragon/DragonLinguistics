@@ -1,10 +1,10 @@
-<div>
+<fieldset class="hidden">
     {{formset.management_form}}
-</div>
+</fieldset>
 {%for form in formset%}
-<div>
-    <h2>{{formsetname}} {{forloop.counter}}</h2>
+<fieldset>
+    <legend><h2>{{formsetname}} {{forloop.counter}}</h2></legend>
     {{form.non_field_errors}}
     {%include './form-fields.html'%}
-</div>
+</fieldset>
 {%endfor%}
