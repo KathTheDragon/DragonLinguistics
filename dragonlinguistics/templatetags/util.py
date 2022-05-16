@@ -1,6 +1,11 @@
+import builtins
 from django import template
 
 register = template.Library()
+
+@register.filter
+def str(obj):
+    return builtins.str(obj)
 
 @register.filter
 @template.defaultfilters.stringfilter

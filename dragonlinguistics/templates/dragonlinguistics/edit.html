@@ -12,11 +12,8 @@
     {%csrf_token%}
     <input type="hidden" name="_action" value="edit" />
     {%include './snippets/form-save-buttons.html'%}
-    <fieldset>
-        {{form.non_field_errors}}
-        {%include './snippets/form-fields.html'%}
-    </fieldset>
-    {%if formset%}{%include './snippets/formset-fields.html'%}{%endif%}
+    {%include './snippets/form.html'%}
+    {%if formset%}{%include './snippets/formset.html'%}{%endif%}
     {%include './snippets/form-save-buttons.html'%}
 </form>
 {%endblock%}

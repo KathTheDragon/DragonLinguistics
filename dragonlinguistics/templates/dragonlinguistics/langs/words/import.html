@@ -9,8 +9,7 @@
 
 <form enctype="multipart/form-data" method="post">
     {%csrf_token%}
-    {{importform.non_field_errors}}
-    {%include 'dragonlinguistics/snippets/form-fields.html' with form=importform%}
+    {%include 'dragonlinguistics/snippets/form.html' with form=importform%}
     <button type="submit" name="_action" value="import">Import words</button>
 </form>
 {%endblock%}

@@ -1,0 +1,9 @@
+{%load util%}
+<fieldset class="hidden">
+    {{formset.management_form}}
+</fieldset>
+{%for form in formset%}
+{%with num=forloop.counter|str%}
+{%include './form.html' with legend=formsetname|add:' '|add:num %}
+{%endwith%}
+{%endfor%}
