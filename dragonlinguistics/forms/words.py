@@ -34,7 +34,8 @@ def make_variants_formset(dictionary):
         models.Word,
         models.Variant,
         form=Variant,
-        extra=1
+        min_num=1,
+        extra=0,
     )
 
 

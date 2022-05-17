@@ -202,10 +202,11 @@ class NewEdit(SecureBase):
         return self.forms
 
     def get_context_data(self, **kwargs):
+        form_data = kwargs.get('form_data')
         instance = kwargs.get(self.instance)
         kwargs['object'] = instance
         for attr, form in self.get_forms(**kwargs).items():
-            kwargs.setdefault(attr, form(instance=instance))
+            kwargs.setdefault(attr, form(form_data, instance=instance))
         kwargs['use_addmore'] = self.use_addmore
         return super().get_context_data(**kwargs)
 
@@ -217,6 +218,12 @@ class NewEdit(SecureBase):
         }
         extra_fields = {attr: request.POST.get(attr) for attr in self.extra_fields}
         if all(form.is_valid() for form in forms.values()):
+            if '_add-section' in request.POST:
+                formset = forms['formset']
+                form_data = request.POST.copy()
+                key = f'{formset.prefix}-TOTAL_FORMS'
+                form_data[key] = str(int(form_data[key]) + 1)
+                return self.get(request, **kwargs, form_data=form_data, **extra_fields)
             obj = self.handle_forms(request, **kwargs, **forms, **extra_fields)
             if '_add-another' in request.POST:
                 return redirect(obj.list_url() + '?new')
@@ -227,7 +234,7 @@ class NewEdit(SecureBase):
             else:
                 raise Http404
         else:
-            return self.get(request, **kwargs, **forms, **extra_fields)
+            return self.get(request, **kwargs, form_data=request.POST, **extra_fields)
 
 
 class Delete(SecureBase):
