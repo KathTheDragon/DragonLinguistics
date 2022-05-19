@@ -41,68 +41,9 @@ class Migration(migrations.Migration):
                 ('objects', django.contrib.auth.models.UserManager()),
             ],
         ),
-        migrations.CreateModel(
-            name='Language',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50, verbose_name='language name')),
-                ('code', models.CharField(max_length=5, unique=True, verbose_name='language code')),
-                ('blurb', models.TextField(default='')),
-            ],
-            options={
-                'ordering': ['name'],
-            },
-        ),
-        migrations.CreateModel(
-            name='Word',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('lemma', models.CharField(max_length=50)),
-                ('homonym', models.IntegerField(default=0)),
-                ('type', models.CharField(choices=[('r', 'Root'), ('br', 'Bound Root'), ('s', 'Stem'), ('pf', 'Prefix'), ('if', 'Infix'), ('sf', 'Suffix'), ('cf', 'Circumfix'), ('pc', 'Proclitic'), ('ec', 'Enclitic')], default='s', max_length=2)),
-                ('notes', models.TextField(blank=True)),
-                ('etymology', models.TextField(blank=True)),
-                ('lang', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dragonlinguistics.language', verbose_name='language')),
-            ],
-            options={
-                'ordering': ['lemma', 'homonym'],
-            },
-        ),
-        migrations.CreateModel(
-            name='Sense',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('gloss', models.CharField(max_length=20)),
-                ('defin', models.TextField(blank=True, verbose_name='definition')),
-                ('pos', models.CharField(choices=[('aff', 'Affix'), ('adj', 'Adjective'), ('adp', 'Adposition'), ('adv', 'Adverb'), ('conj', 'Conjunction'), ('det', 'Determiner'), ('intj', 'Interjection'), ('n', 'Noun'), ('num', 'Numeral'), ('part', 'Particle'), ('pron', 'Pronoun'), ('pn', 'Proper Noun'), ('unk', 'Unknown'), ('v', 'Verb')], default='unk', max_length=4, verbose_name='part of speech')),
-                ('grammclass', models.CharField(blank=True, max_length=20, verbose_name='class')),
-                ('notes', models.TextField(blank=True)),
-                ('word', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dragonlinguistics.word')),
-            ],
-        ),
-        migrations.AddConstraint(
-            model_name='word',
-            constraint=models.UniqueConstraint(fields=('lang', 'lemma', 'homonym'), name='unique-homonym'),
-        ),
-        migrations.CreateModel(
-            name='Folder',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('path', models.TextField(blank=True)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Article',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('slug', models.SlugField()),
-                ('title', models.CharField(max_length=255)),
-                ('description', models.CharField(blank=True, max_length=255)),
-                ('content', models.TextField()),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('edited', models.DateTimeField(auto_now=True)),
-                ('folder', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dragonlinguistics.folder')),
-                ('tags', models.TextField(blank=True)),
-            ],
+        migrations.AlterField(
+            model_name='user',
+            name='created_at',
+            field=models.DateTimeField(auto_now_add=True, db_index=True),
         ),
     ]

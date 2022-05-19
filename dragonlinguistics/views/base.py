@@ -1,5 +1,3 @@
-from pathlib import PurePath
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.http import Http404
@@ -104,16 +102,13 @@ class Actions(generic.View):
             raise Http404
 
 
-BASE_PATH = PurePath('dragonlinguistics')
-
-
 class Base(generic.TemplateView):
     parts = []
     name = None
     instance = None
 
     def get_folder(self):
-        return ''
+        return 'dragonlinguistics'
 
     def get_namespace(self):
         return ':'.join(self.parts)
@@ -123,7 +118,7 @@ class Base(generic.TemplateView):
             name = self.name
         else:
             name = self.__class__.__name__.lower().replace('_', '-')
-        return [(BASE_PATH / self.get_folder() / name).with_suffix('.html').as_posix()]
+        return [f'{self.get_folder()}/{name}.html'.lstrip('/')]
 
     def get_kwargs(self, **kwargs):
         return kwargs
@@ -151,9 +146,6 @@ class SecureBase(LoginRequiredMixin, Base):
 
 
 class List(PageMixin, Base):
-    def get_folder(self):
-        return ''
-
     def get_context_data(self, **kwargs):
         kwargs.setdefault('title', (kwargs['type'] + 's').title())
         return super().get_context_data(**kwargs)
@@ -161,7 +153,7 @@ class List(PageMixin, Base):
 
 class View(Base):
     def get_folder(self):
-        return '/'.join(self.parts)
+        return self.folder
 
 
 class Search(Base):

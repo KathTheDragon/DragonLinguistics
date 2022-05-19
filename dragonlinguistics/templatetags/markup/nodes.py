@@ -1,6 +1,8 @@
 from django.urls import reverse
 from django.utils.text import slugify
-from dragonlinguistics.models import Article, Language, Word
+from articles.models import Article
+from languages.models import Language
+from dictionaries.models import Word
 from markup import nodes
 from markup.nodes import html, Attributes, MarkupError, InvalidData
 
