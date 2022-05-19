@@ -2,7 +2,7 @@ import re
 
 from django.db import models
 
-from dragonlinguistics.models import base
+from common.models import BaseModel
 from languages.models import Language
 
 def parse_class_list(lines, index=0, indent=''):
@@ -61,7 +61,7 @@ def merge_group(options, code, name=''):
     return [(f'{_code} {code}', f'{_name} {name}' if name else _name) for _code, _name in options]
 
 
-class Dictionary(base.Model):
+class Dictionary(BaseModel):
     language = models.OneToOneField(Language, on_delete=models.CASCADE)
     classes = models.TextField('lexical classes', blank=True)
     order = models.TextField('alphabetical order', blank=True)  # Not using yet
@@ -88,7 +88,7 @@ class Dictionary(base.Model):
         return reverse('langs:words:list', kwargs={'code': self.language.code})
 
 
-class Word(base.Model):
+class Word(BaseModel):
     TYPES = [
         ('r', 'Root'),
         ('s', 'Stem'),

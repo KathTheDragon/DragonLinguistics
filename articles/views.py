@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 
-from dragonlinguistics.views import base
+from common import views as base
 from . import forms
 from .models import Folder, Article
 

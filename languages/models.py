@@ -1,9 +1,9 @@
 from django.db import models
 
-from dragonlinguistics.models import base
+from common.models import BaseModel
 from articles.models import Folder
 
-class Language(base.Model):
+class Language(BaseModel):
     name = models.CharField('language name', max_length=50)
     code = models.CharField('language code', max_length=5, unique=True)
     blurb = models.TextField(default='')

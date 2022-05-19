@@ -4,9 +4,9 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
-from dragonlinguistics.models import base
+from common.models import BaseModel
 
-class Reference(base.Model):
+class Reference(BaseModel):
     author = models.CharField(max_length=255)
     year = models.PositiveSmallIntegerField()
     title = models.CharField(max_length=255)

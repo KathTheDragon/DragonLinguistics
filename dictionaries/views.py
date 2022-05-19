@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 
-from dragonlinguistics.views import base
+from common import views as base
 from languages.views.langs import LangMixin
 from . import forms, models
 from .models import Dictionary, Word, Variant

@@ -1,5 +1,5 @@
 from django.urls import include, path, register_converter as register
-from dragonlinguistics.urls.base import ID
+from common.url_converters import ID
 from .views import List, View
 
 class Lemma(ID):

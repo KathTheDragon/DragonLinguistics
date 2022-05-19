@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 
 from articles.models import Folder
 from dictionaries.models import Dictionary
-from dragonlinguistics.views import base
+from common import views as base
 from .. import forms
 from ..models import Language
 

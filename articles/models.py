@@ -1,9 +1,9 @@
 from django.db import models
 from django.utils.text import slugify
 
-from dragonlinguistics.models import base
+from common.models import BaseModel
 
-class Folder(base.Model):
+class Folder(BaseModel):
     path = models.TextField(blank=True)
 
     @property
@@ -19,7 +19,7 @@ class Folder(base.Model):
         return reverse(f'{namespace}:list', kwargs=kwargs)
 
 
-class Article(base.Model):
+class Article(BaseModel):
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
     slug = models.SlugField()
     title = models.CharField(max_length=255)

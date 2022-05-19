@@ -1,4 +1,4 @@
-from dragonlinguistics.views import base
+from common import views as base
 from articles import views as articles
 from . import langs
 
