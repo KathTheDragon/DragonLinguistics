@@ -6,37 +6,6 @@ from . import forms, models
 from .models import Dictionary, Word, Variant
 from .utils import parse_csv
 
-# Helper functions
-def correcthomonyms(lang, lemma):
-    wordlist = list(Word.objects.filter(lang=lang, lemma=lemma))
-    if not wordlist:
-        pass
-    elif len(wordlist) == 1:
-        word = wordlist[0]
-        word.homonym = 0
-        word.save()
-    else:
-        for ix, word in enumerate(wordlist, start=1):
-            if word.homonym != ix:
-                word.homonym = ix
-                word.save()
-
-
-def setnewhomonym(lang, word):
-    wordlist = Word.objects.filter(lang=lang, lemma=word.lemma)
-    count = wordlist.count()
-    if count == 0:
-        word.homonym = 0
-    elif count == 1:
-        _word = wordlist.get()
-        _word.homonym = 1
-        _word.save()
-        word.homonym = 2
-    else:
-        word.homonym = count+1
-    word.save()
-
-
 # Views
 class WordMixin(LangMixin):
     parts = ['langs', 'words']
