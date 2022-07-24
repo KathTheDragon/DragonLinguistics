@@ -7,6 +7,11 @@ from django_hosts.resolvers import reverse
 
 from common.models import BaseModel
 
+ASCII_TRANS = str.maketrans({
+    'þ': 'th',
+    'Þ': 'Th',
+})
+
 class Author(BaseModel):
     forenames = models.CharField(max_length=255)
     surname = models.CharField(max_length=255)
@@ -25,7 +30,7 @@ class Author(BaseModel):
 
     def save(self, *args, **kwargs):
         import string
-        self.slug = slugify(self.short)
+        self.slug = slugify(self.short.translate(ASCII_TRANS))
         self.alphabetise = self.surname.lstrip(string.ascii_lowercase + ' ')
         super().save(*args, **kwargs)
 
