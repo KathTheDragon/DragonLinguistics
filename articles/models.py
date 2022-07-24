@@ -44,6 +44,12 @@ class Article(BaseModel):
     def __str__(self):
         return self.title
 
+    def get_string(self):
+        if self.folder.path == 'natlangs/':
+            return f'{super().get_string()} ({self.created.year})'
+        else:
+            return super().get_string()
+
     @property
     def tag_list(self):
         return list(filter(None, map(lambda t: t.strip(), self.tags.split(','))))
