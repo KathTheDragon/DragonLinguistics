@@ -1,6 +1,7 @@
 import re
 
 from django.db import models
+from django_hosts.resolvers import reverse
 
 from common.models import BaseModel
 from languages.models import Language
@@ -84,8 +85,7 @@ class Dictionary(BaseModel):
         return class_dict
 
     def url(self):
-        from django.urls import reverse
-        return reverse('langs:words:list', kwargs={'code': self.language.code})
+        return reverse('view-dictionary', kwargs={'name': self.language.name}, host=self.language.get_host())
 
 
 class Word(BaseModel):
@@ -155,18 +155,16 @@ class Word(BaseModel):
     definition.short_description = 'Definition'
 
     def url(self):
-        from django.urls import reverse
         homonym = self.get_homonym()
         if homonym:
-            return reverse(
-                f'langs:words:view-homonym',
-                kwargs={'code': self.dictionary.language.code, 'lemma': self.lemma, 'homonym': homonym}
-            )
+            lemma = f'{self.lemma}-{homonym}'
         else:
-            return reverse(
-                f'langs:words:view',
-                kwargs={'code': self.dictionary.language.code, 'lemma': self.lemma}
-            )
+            lemma = self.lemma
+        return reverse(
+            'view-word',
+            kwargs={'name': self.dictionary.language.name, 'lemma': lemma},
+            host=self.dictionary.language.get_host(),
+        )
 
     def list_url(self):
         return self.dictionary.url()
@@ -191,3 +189,12 @@ class Variant(models.Model):
 
     def get_definitions(self):
         return self.definition.splitlines() or ['']
+
+    def get_derivatives(self):
+        return self.derivatives.splitlines()
+
+    def get_classes(self):
+        return self.word.get_classes()
+
+    def get_string(self):
+        return self.forms or self.word.citation

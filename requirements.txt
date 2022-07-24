@@ -2,6 +2,7 @@ wheel
 django
 django-admin
 django-environ
+django-hosts
 mysqlclient
 python-slugify
 gunicorn

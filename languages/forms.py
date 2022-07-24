@@ -2,12 +2,13 @@ from django import forms
 
 from . import models
 
-class Language(forms.ModelForm):
+class NewLanguage(forms.ModelForm):
     code = forms.CharField(max_length=5, min_length=3)
     class Meta:
         model = models.Language
-        fields = ['name', 'code', 'blurb']
+        exclude = ['type']
         widgets = {'blurb': forms.Textarea()}
+EditLanguage = NewLanguage
 
 
 class Search(forms.Form):

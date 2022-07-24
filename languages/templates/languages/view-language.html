@@ -1,0 +1,31 @@
+{%extends 'dragonlinguistics/base.html'%}
+{%load markup%}
+
+{%block title%}{{language}}{%endblock%}
+
+{%block breadcrumbs%}
+<span><a href="{{host.get.url}}">{{host.get}}</a></span>
+<span><a href="{{host.url}}">{{host}}</a></span>
+<span><a href="{{language.list_url}}">Languages</a></span>
+<span><a>{{language.html}}</a></span>
+{%endblock%}
+
+{%block content%}
+<div id="content-header">
+    <h1>{{language.html}}</h1>
+    <div class="actions">
+        {%if user.is_authenticated%}<a class="edit" href="?edit">Edit</a>{%endif%}
+        {%if user.is_authenticated%}<a class="delete" href="?delete">Delete</a>{%endif%}
+    </div>
+</div>
+
+<p>{% markup language.blurb %}</p>
+
+<h2>Options</h2>
+<ul>
+    <li><a href="{{language.dictionary.url}}">View dictionary</a></li>
+    {%for name, folder in language.get_folders.items%}
+    {%if user.is_authenticated or folder.article_set.count%}<li><a href="{{folder.url}}">View {{name}}</a></li>{%endif%}
+    {%endfor%}
+</ul>
+{%endblock%}

@@ -1,7 +1,16 @@
 from django.db import models
 from django.utils.text import slugify
+from django_hosts.resolvers import reverse
 
 from common.models import BaseModel
+
+'''
+{conlangs, natlangs}/
+    <code>/
+        grammar
+        lessons
+        texts
+'''
 
 class Folder(BaseModel):
     path = models.TextField(blank=True)
@@ -14,9 +23,8 @@ class Folder(BaseModel):
         return self.path
 
     def url(self):
-        from django.urls import reverse
-        namespace, kwargs = parse_path(self.path)
-        return reverse(f'{namespace}:list', kwargs=kwargs)
+        host, kind, kwargs = parse_path(self.path)
+        return reverse(f'list-{kind}', kwargs=kwargs, host=host)
 
 
 class Article(BaseModel):
@@ -36,18 +44,6 @@ class Article(BaseModel):
     def __str__(self):
         return self.title
 
-    def html(self):
-        from django.utils.html import format_html
-        html = super().html()
-        if self.folder is None:
-            namespace, _ = parse_path('')
-        else:
-            namespace, _ = parse_path(self.folder.path)
-        if namespace == 'articles':
-            return format_html('{} ({})', html, self.created.year)
-        else:
-            return html
-
     @property
     def tag_list(self):
         return list(filter(None, map(lambda t: t.strip(), self.tags.split(','))))
@@ -57,13 +53,8 @@ class Article(BaseModel):
         super().save(*args, **kwargs)
 
     def url(self):
-        from django.urls import reverse
-        kwargs = {'slug': self.slug}
-        if self.folder is None:
-            namespace, kwargs = parse_path('', kwargs)
-        else:
-            namespace, kwargs = parse_path(self.folder.path, kwargs)
-        return reverse(f'{namespace}:view', kwargs=kwargs)
+        host, kind, kwargs = parse_path(self.folder.path, {'slug': self.slug})
+        return reverse(f'view-{kind.removesuffix("s")}', kwargs=kwargs, host=host)
 
     def list_url(self):
         return self.folder.url()
@@ -73,16 +64,20 @@ class Article(BaseModel):
 
 
 def parse_path(path, kwargs=None):
+    from languages.models import Language
     if kwargs is None:
         kwargs = {}
-    parts = path.split('/')
-    if parts[0] == 'langs':
-        kwargs['code'] = parts[1]
-        if len(parts) == 2:
-            kwargs['type'] = 'articles'
-        else:
-            kwargs['type'] = parts[2]
-        namespace = 'langs:articles'
+    parts = path.strip('/').split('/')
+    host = {
+        'conlangs': 'conlang',
+        'natlangs': 'hist',
+    }.get(parts[0], '')
+    if len(parts) == 1:
+        kind = 'articles'
     else:
-        namespace = 'articles'
-    return namespace, kwargs
+        kwargs['name'] = Language.objects.get(code=parts[1]).name
+        if len(parts) == 2:
+            kind = 'lang-articles'
+        else:
+            kind = parts[2]
+    return host, kind, kwargs

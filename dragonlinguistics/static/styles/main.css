@@ -100,23 +100,23 @@ body {
 
 /* Content header */
 
-#content-header {
+#content-header, .author-header {
     display: grid;
     grid-template-columns: 1fr auto auto;
     column-gap: var(--spacing);
     align-items: start;
 }
 
-/* Controls (really local navigation) */
+/* Actions (local navigation) */
 
-.controls {
+.actions {
     margin: 1px;
     padding: 0;
     display: flex;
     flex-direction: column;
 }
 
-.controls a {
+.actions a {
     padding: 2px 6px;
     margin: 0;
     font-size: .875rem;
@@ -124,55 +124,58 @@ body {
     width: 100%;
     height: 100%;
     border: 1px solid #e6e6e6;
+}
+
+.actions a {
     border-bottom: none;
 }
 
-.controls a:first-child {
+.actions a:first-child {
     border-top-left-radius: var(--border-radius);
     border-top-right-radius: var(--border-radius);
 }
 
-.controls a:last-child {
+.actions a:last-child {
     border-bottom: 1px solid #e6e6e6;
     border-bottom-left-radius: var(--border-radius);
     border-bottom-right-radius: var(--border-radius);
 }
 
-.controls a.edit {
+.actions a.edit {
     color: #1e74d7;
 }
 
-.controls a.edit:hover {
+.actions a.edit:hover {
     color: white;
     background-color: #1e74d7;
     border-color: #175ba8;
 }
 
-.controls a.delete {
+.actions a.delete {
     color: #dc3545;
 }
 
-.controls a.delete:hover {
+.actions a.delete:hover {
     color: white;
     background-color: #dc3545;
     border-color: #b02a37;
 }
 
-.controls a.new {
+.actions a.new {
     color: #128712;
 }
 
-.controls a.new:hover {
+.actions a.new:hover {
     color: white;
     background-color: #128712;
     border-color: #0e689e;
 }
 
-.controls a.search {
+.actions a.search {
     color: #1e74d7;
 }
 
-.controls a.search:hover {
+.actions a.search:hover {
     color: white;
     background-color: #1e74d7;
     border-color: #175ba8;
@@ -287,6 +290,10 @@ ol ol, ul ol {
 
 ul ul ol, ul ol ol, ol ul ol, ol ol ol {
     list-style-type: lower-alpha;
+}
+
+div + ul {
+    /* margin-top: 0; */
 }
 
 li > p {

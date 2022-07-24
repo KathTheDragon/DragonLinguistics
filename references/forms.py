@@ -2,11 +2,19 @@ from django import forms
 
 from . import models
 
-class Reference(forms.ModelForm):
+class NewAuthor(forms.ModelForm):
+    class Meta:
+        model = models.Author
+        exclude = ['slug', 'alphabetise']
+EditAuthor = NewAuthor
+
+
+class NewReference(forms.ModelForm):
     class Meta:
         model = models.Reference
-        fields = '__all__'
+        exclude = ['author']
         widgets = {'link': forms.TextInput()}
+EditReference = NewReference
 
 
 class Search(forms.Form):

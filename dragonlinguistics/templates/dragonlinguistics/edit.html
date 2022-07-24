@@ -1,19 +1,16 @@
 {%extends './base.html'%}
-{%load static%}
 
 {%block title%}Edit &lsquo;{{object}}&rsquo;{%endblock%}
 
-{%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/form.css'%}" type="text/css" />{%endblock%}
-
 {%block content%}
-<h1>Editing &lsquo;{{object.html}}&rsquo;</h1>
+<h1>Edit &lsquo;{{object.html}}&rsquo;</h1>
 
 <form method="post">
     {%csrf_token%}
     <input type="hidden" name="_action" value="edit" />
-    {%include './snippets/form-save-buttons.html'%}
+    {%include './snippets/edit-form-buttons.html'%}
     {%include './snippets/form.html'%}
     {%if formset%}{%include './snippets/formset.html'%}{%endif%}
-    {%include './snippets/form-save-buttons.html'%}
+    {%include './snippets/edit-form-buttons.html'%}
 </form>
 {%endblock%}

@@ -1,5 +1,5 @@
 from django.urls import include, path, register_converter as register
-from .views import List, View
+from . import views
 
 class Char:
     regex = '[a-z]'
@@ -12,9 +12,10 @@ class Char:
 
 register(Char, 'char')
 
-
-app_name = 'references'
 urlpatterns = [
-    path('', List.as_view(), name='list'),  # Includes new and search
-    path('<author>-<int:year><char:index>/', View.as_view(), name='view'),  # Includes edit and delete
+    path('', views.ViewBibliography.as_view(), name='view-bibliography'),
+    path('<str:name>/', include([
+        path('', views.ViewAuthor.as_view(), name='view-author'),
+        path('<int:year><char:index>/', views.ViewReference.as_view(), name='view-reference'),
+    ])),
 ]

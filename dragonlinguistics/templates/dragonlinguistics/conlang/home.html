@@ -1,0 +1,14 @@
+{%extends 'dragonlinguistics/home.html'%}
+
+{%block breadcrumbs%}
+<span><a href="{{host.get.url}}">{{host.get}}</a></span>
+<span><a>{{host}}</a></span>
+{%endblock%}
+
+{%block content%}
+<p>This is where all of my conlanging projects can be found.</p>
+<ul>
+    <li><a href="{%url 'list-articles' host host.name%}">Articles</a></li>
+    <li><a href="{%url 'list-languages' host host.name%}">Languages</a></li>
+</ul>
+{%endblock%}

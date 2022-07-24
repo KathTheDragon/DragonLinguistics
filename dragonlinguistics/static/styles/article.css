@@ -62,6 +62,10 @@
     font-size: .75rem;
 }
 
+#article-tags li:before {
+    content: "#";
+}
+
 /* Narrow screens */
 
 @media screen and (max-width: 64em) {

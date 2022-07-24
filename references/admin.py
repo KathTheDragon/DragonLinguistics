@@ -2,6 +2,8 @@ from django.contrib import admin
 
 from . import models
 
+admin.site.register(models.Author)
+
 @admin.register(models.Reference)
 class ReferenceAdmin(admin.ModelAdmin):
     list_display = ('author', 'year', 'title')

@@ -2,13 +2,13 @@ from django import forms
 
 from . import models
 
-class Dictionary(forms.ModelForm):
+class EditDictionary(forms.ModelForm):
     class Meta:
         model = models.Dictionary
         exclude = ['language']
 
 
-class Word(forms.ModelForm):
+class NewWord(forms.ModelForm):
     isunattested = forms.BooleanField(required=False, label='Unattested', label_suffix='?')
 
     class Meta:
@@ -17,6 +17,7 @@ class Word(forms.ModelForm):
         widgets = {
             'references': forms.TextInput(),
         }
+EditWord = NewWord
 
 
 def make_variants_formset(dictionary):

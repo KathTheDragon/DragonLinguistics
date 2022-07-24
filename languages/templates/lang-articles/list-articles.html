@@ -1,0 +1,13 @@
+{%extends 'dragonlinguistics/list.html'%}
+
+{%block title%}{%with title='Articles'%}{{block.super}}{%endwith%}{%endblock%}
+
+{%block breadcrumbs%}
+<span><a href="{{host.get.url}}">{{host.get}}</a></span>
+<span><a href="{{host.url}}">{{host}}</a></span>
+<span><a href="{{language.list_url}}">Languages</a></span>
+<span><a href="{{language.url}}">{{language.html}}</a></span>
+<span><a>Articles</a></span>
+{%endblock%}
+
+{%block content%}{%with title='Articles' type='article'%}{{block.super}}{%endwith%}{%endblock%}

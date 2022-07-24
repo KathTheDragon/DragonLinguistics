@@ -29,9 +29,6 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG') == 'TRUE'
 
-ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_hosts',
     'dragonlinguistics',
     'articles',
     'dictionaries',
@@ -49,6 +47,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django_hosts.middleware.HostsRequestMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -56,9 +55,16 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_hosts.middleware.HostsResponseMiddleware',
 ]
 
-ROOT_URLCONF = 'dragonlinguistics.urls'
+PARENT_HOST = env('PARENT_HOST')
+DEFAULT_HOST = 'www'
+ROOT_HOSTCONF = 'dragonlinguistics.hosts'
+ROOT_URLCONF = 'dragonlinguistics.domains.www.urls'
+
+ALLOWED_HOSTS = [f'.{PARENT_HOST}']
+SESSION_COOKIE_DOMAIN = f'.{PARENT_HOST}'
 
 TEMPLATES = [
     {
@@ -66,6 +72,9 @@ TEMPLATES = [
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
+            'builtins': [
+                'django_hosts.templatetags.hosts_override',
+            ],
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',

@@ -4,7 +4,7 @@
 </fieldset>
 {%for form in formset%}
 {%with num=forloop.counter|str%}
-{%include './form.html' with legend=formsetname|add:' '|add:num %}
+{%include './form.html' with legend=formsetname|title|add:' '|add:num %}
 {%endwith%}
 {%endfor%}
-<button type="submit" name="_add-section">Add {{formsetname}}</button>
+<button type="submit" name="_add-section" formnovalidate>Add {{formsetname}}</button>

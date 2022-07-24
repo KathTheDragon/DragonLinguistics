@@ -5,83 +5,79 @@ from django.shortcuts import redirect
 from django.views import generic
 from django.views.generic.base import ContextMixin
 
-## Helper functions
-def fuzzysearch(**kwargs):
-    params = {}
-    for term, value in kwargs.items():
-        if value == '*':
-            pass
-        elif value.startswith('*') and value.endswith('*'):
-            params[f'{term}__contains'] = value.strip('*')
-        elif value.startswith('*'):
-            params[f'{term}__endswith'] = value.strip('*')
-        elif value.endswith('*'):
-            params[f'{term}__startswith'] = value.strip('*')
-        elif value:
-            params[term] = value
-    return params
+from .models import Host
 
-
-def strictsearch(**kwargs):
-    return {term: value for term, value in kwargs.items() if value}
-
-
-def redirect_params(url, kwargs=None, params=None, exclude=set()):
-    from urllib.parse import urlencode
-    if kwargs is None:
-        kwargs = {}
-    response = redirect(url, **kwargs)
-    if params:
-        params = {key: value for key, value in params.items() if key not in exclude and value}
-    if params:
-        query_string = urlencode(params)
-        response['Location'] += '?' + query_string
-    return response
+# ## Helper functions
+# def fuzzysearch(**kwargs):
+#     params = {}
+#     for term, value in kwargs.items():
+#         if value == '*':
+#             pass
+#         elif value.startswith('*') and value.endswith('*'):
+#             params[f'{term}__contains'] = value.strip('*')
+#         elif value.startswith('*'):
+#             params[f'{term}__endswith'] = value.strip('*')
+#         elif value.endswith('*'):
+#             params[f'{term}__startswith'] = value.strip('*')
+#         elif value:
+#             params[term] = value
+#     return params
+#
+#
+# def strictsearch(**kwargs):
+#     return {term: value for term, value in kwargs.items() if value}
+#
+#
+# def redirect_params(url, kwargs=None, params=None, exclude=set()):
+#     from urllib.parse import urlencode
+#     if kwargs is None:
+#         kwargs = {}
+#     response = redirect(url, **kwargs)
+#     if params:
+#         params = {key: value for key, value in params.items() if key not in exclude and value}
+#     if params:
+#         query_string = urlencode(params)
+#         response['Location'] += '?' + query_string
+#     return response
 
 
 ## Views
-class PageMixin(ContextMixin):
-    page_length = 100
-
-    def get_object_list(self, **kwargs):
-        return []
-
-    def get_context_data(self, **kwargs):
-        from django.core.paginator import Paginator, InvalidPage
-        objectlist = self.get_object_list(**kwargs)
-        pagenum = self.request.GET.get('page', 1)
-        try:
-            page = Paginator(objectlist, self.page_length).page(pagenum)
-        except InvalidPage:
-            raise Http404
-        kwargs['page'] = page
-        return super().get_context_data(**kwargs)
-
-
-class SearchMixin(ContextMixin):
-    page_length = 100
-    form = None
-    fieldname = ''
-
-    def get_form(self):
-        if self.form is None:
-            raise ValueError
-        return self.form
-
-    def get_context_data(self, **kwargs):
-        query = self.request.GET
-        searchform = self.get_form()(query)
-        kwargs['query'] = query
-        kwargs['search'] = True
-        kwargs['searchfield'] = searchform[self.fieldname]
-        return super().get_context_data(**kwargs)
+# class SearchMixin(ContextMixin):
+#     page_length = 100
+#     form = None
+#     fieldname = ''
+#
+#     def get_form(self):
+#         if self.form is None:
+#             raise ValueError
+#         return self.form
+#
+#     def get_context_data(self, **kwargs):
+#         query = self.request.GET
+#         searchform = self.get_form()(query)
+#         kwargs['query'] = query
+#         kwargs['search'] = True
+#         kwargs['searchfield'] = searchform[self.fieldname]
+#         return super().get_context_data(**kwargs)
+def is_action(obj):
+    return isinstance(obj, type) and issubclass(obj, Action)
 
 
 class Actions(generic.View):
-    default_action = ''
+    template_folder = ''
 
     def get_default_action(self):
-        return self.default_action or self.__class__.__name__.lower()
+        return next(name for name, value in vars(type(self)).items() if is_action(value))
+
+    def get_template_folder(self):
+        return self.template_folder
+
+    def get_action_attrs(self):
+        return {'template_folder': self.get_template_folder()}
+
+    @staticmethod
+    def process_kwargs(self, **kwargs):
+        return kwargs
 
     def dispatch(self, request, **kwargs):
         default_action = self.get_default_action()
@@ -96,154 +92,178 @@ class Actions(generic.View):
             action = default_action
 
         view = getattr(self, action.capitalize(), None)
-        if isinstance(view, type) and issubclass(view, generic.View):
-            return view.as_view()(request, **kwargs)
+        if is_action(view):
+            return view.as_view(**self.get_action_attrs())(request, **self.process_kwargs(self, **kwargs))
         else:
             raise Http404
 
 
 class Base(generic.TemplateView):
-    parts = []
-    name = None
-    instance = None
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs) | {'host': Host.get(self.request.host.name)}
 
-    def get_folder(self):
-        return 'dragonlinguistics'
 
-    def get_namespace(self):
-        return ':'.join(self.parts)
+class Action(Base):
+    template_folder = ''
+    template_name = ''
+    instance = ''
+
+    def get_template_name(self):
+        return self.template_name.format(instance=self.instance)
 
     def get_template_names(self):
-        if self.name is not None:
-            name = self.name
-        else:
-            name = self.__class__.__name__.lower().replace('_', '-')
-        return [f'{self.get_folder()}/{name}.html'.lstrip('/')]
-
-    def get_kwargs(self, **kwargs):
-        return kwargs
-
-    def dispatch(self, request, **kwargs):
-        try:
-            return super().dispatch(request, **self.get_kwargs(**kwargs))
-        except (ObjectDoesNotExist, MultipleObjectsReturned):
-            raise Http404
-
-    def get_breadcrumbs(self, **kwargs):
-        from django.urls import reverse
-        return [('Home', reverse('home'))]
-
-    def get_context_data(self, **kwargs):
-        breadcrumbs = self.get_breadcrumbs(**kwargs)
-        breadcrumbs[-1] = (breadcrumbs[-1][0], '')
-        kwargs['breadcrumbs'] = breadcrumbs
-        kwargs['navbar_active'] = self.parts[0] if self.parts else 'home'
-        return super().get_context_data(**kwargs)
+        return [f'{self.template_folder}/{self.get_template_name()}.html'.lstrip('/')]
 
 
-class SecureBase(LoginRequiredMixin, Base):
+class SecureAction(LoginRequiredMixin, Action):
     pass
 
 
-class List(PageMixin, Base):
+class PageMixin(ContextMixin):
+    page_length = 100
+
+    def get_object_list(self, **kwargs):
+        return []
+
     def get_context_data(self, **kwargs):
-        kwargs.setdefault('title', (kwargs['type'] + 's').title())
-        return super().get_context_data(**kwargs)
+        from django.core.paginator import Paginator, InvalidPage
+        objectlist = self.get_object_list(**kwargs)
+        pagenum = self.request.GET.get('page', 1)
+        try:
+            page = Paginator(objectlist, self.page_length).page(pagenum)
+        except InvalidPage:
+            raise Http404
+        return super().get_context_data(**kwargs) | {'page': page}
 
 
-class View(Base):
-    def get_folder(self):
-        return self.folder
+class List(PageMixin, Action):
+    template_name = 'list-{instance}s'
 
 
-class Search(Base):
+class View(Action):
+    template_name = 'view-{instance}'
+
+
+# class Search(Action):
+#     form = None
+#     target = None
+#
+#     def get_form(self):
+#         if self.form is None:
+#             raise ValueError
+#         else:
+#             return self.form
+#
+#     def get_context_data(self, **kwargs):
+#         kwargs['form'] = self.get_form()()
+#         return super().get_context_data(**kwargs)
+#
+#     def get_target_url(self):
+#         if self.target is None:
+#             raise ValueError
+#         else:
+#             return self.target
+#
+#     def get(self, request, **kwargs):
+#         if list(request.GET.keys()) == ['search']:
+#             return super().get(request, **kwargs)
+#         else:
+#             return redirect_params(
+#                 self.get_target_url(),
+#                 kwargs=kwargs,
+#                 params=request.GET,
+#             )
+
+
+class NewEdit(SecureAction):
     form = None
+    formset = None
+    redirects = {
+        '_edit': '{obj.url()}?edit',
+        '_view': '{obj.url()}',
+        '_list': '{obj.list_url()}',
+    }
 
-    def get_form(self):
+    def get_form_class(self, **kwargs):
         if self.form is None:
             raise ValueError
         else:
             return self.form
 
-    def get_context_data(self, **kwargs):
-        kwargs['form'] = self.get_form()()
-        return super().get_context_data(**kwargs)
+    def get_formset_class(self, **kwargs):
+        return self.formset or (lambda data, initial, instance: None)
 
-    def get_target_url(self):
-        return f'{self.get_namespace()}:list'
-
-    def get(self, request, **kwargs):
-        if list(request.GET.keys()) == ['search']:
-            return super().get(request, **kwargs)
-        else:
-            return redirect_params(
-                self.get_target_url(),
-                kwargs=kwargs,
-                params=request.GET,
-            )
-
-
-class NewEdit(SecureBase):
-    forms = None  # dict[str, Form]
-    extra_fields = []  # list[str]
-    use_addmore = False  # bool
-
-    def get_forms(self, **kwargs):
-        if self.forms is None:
-            raise ValueError
-        return self.forms
-
-    def get_context_data(self, **kwargs):
-        form_data = kwargs.get('form_data')
+    def get_forms(self, form_data=None, initial_data=None, **kwargs):
         instance = kwargs.get(self.instance)
-        kwargs['object'] = instance
-        for attr, form in self.get_forms(**kwargs).items():
-            kwargs.setdefault(attr, form(form_data, instance=instance))
-        kwargs['use_addmore'] = self.use_addmore
-        return super().get_context_data(**kwargs)
+        return (
+            self.get_form_class(**kwargs)(form_data, initial=initial_data, instance=instance),
+            self.get_formset_class(**kwargs)(form_data, initial=initial_data, instance=instance)
+        )
+
+    def get_context_data(self, **kwargs):
+        form, formset = self.get_forms(**kwargs)
+        return super().get_context_data(**kwargs) | {'form': form, 'formset': formset}
+
+    def handle_forms(self, form, formset, **kwargs):
+        raise ValueError
+
+    def get_redirect(self, obj):
+        return obj.url()
 
     def post(self, request, **kwargs):
-        instance = kwargs.get(self.instance)
-        forms = {
-            attr: form(request.POST, instance=instance)
-            for attr, form in self.get_forms(**kwargs).items()
-        }
-        extra_fields = {attr: request.POST.get(attr) for attr in self.extra_fields}
-        if all(form.is_valid() for form in forms.values()):
-            if '_add-section' in request.POST:
-                formset = forms['formset']
-                form_data = request.POST.copy()
-                key = f'{formset.prefix}-TOTAL_FORMS'
-                form_data[key] = str(int(form_data[key]) + 1)
-                return self.get(request, **kwargs, form_data=form_data, **extra_fields)
-            obj = self.handle_forms(request, **kwargs, **forms, **extra_fields)
-            if '_add-another' in request.POST:
-                return redirect(obj.list_url() + '?new')
-            elif '_keep-editing' in request.POST:
-                return redirect(obj.url() + '?edit')
-            elif '_save' in request.POST:
-                return redirect(obj)
+        form, formset = self.get_forms(form_data=request.POST, **kwargs)
+        if '_add-section' in request.POST:
+            post_data = request.POST.copy()
+            key = f'{formset.prefix}-TOTAL_FORMS'
+            post_data[key] = str(int(post_data[key]) + 1)
+            return self.get(request, **kwargs, form_data=post_data)
+        elif all((f is None or f.is_valid()) for f in [form, formset]):
+            obj = self.handle_forms(form, formset, **kwargs)
+            for key, redirect_fmt in self.redirects.items():
+                if key in request.POST:
+                    return redirect(redirect_fmt.format(obj))
             else:
                 raise Http404
         else:
-            return self.get(request, **kwargs, form_data=request.POST, **extra_fields)
+            return self.get(request, **kwargs, form_data=request.POST)
 
 
-class Delete(SecureBase):
-    def get_context_data(self, **kwargs):
-        kwargs['object'] = kwargs.get(self.instance)
-        return super().get_context_data(**kwargs)
+class New(NewEdit):
+    template_name = 'new-{instance}'
+    parent = ''
+    extra_attrs = {}
+    redirects = NewEdit.redirects | {'_new': '{obj.list_url()}?new'}
 
-    def cleanup(self, **kwargs):
-        pass
+    def get_extra_attrs(self, **kwargs):
+        return self.extra_attrs
 
-    def get_redirect_to(self, **kwargs):
-        return f'{self.get_namespace()}:list'
+    def handle_forms(self, form, formset, **kwargs):
+        obj = form.save(commit=False)
+        if self.parent:
+            setattr(obj, self.parent, kwargs.get(self.parent))
+        for attr, value in self.get_extra_attrs(**kwargs).items():
+            setattr(obj, attr, value)
+        obj.save()
+        if formset is not None:
+            objs = formset.save(commit=False)
+            for _obj in objs:
+                setattr(_obj, self.instance, obj)
+                _obj.save()
+        return obj
 
-    def get_redirect_kwargs(self, **kwargs):
-        return {}
 
+class Edit(NewEdit):
+    template_name = 'edit-{instance}'
+
+    def handle_forms(self, form, formset, **kwargs):
+        obj = form.save()
+        if formset is not None:
+            formset.save()
+        return obj
+
+
+class Delete(SecureAction):
     def post(self, request, **kwargs):
-        kwargs.pop(self.instance).delete()
-        self.cleanup(**kwargs)
-        return redirect(self.get_redirect_to(**kwargs), **self.get_redirect_kwargs(**kwargs))
+        obj = kwargs[self.instance]
+        obj.delete()
+        return redirect(obj.list_url())

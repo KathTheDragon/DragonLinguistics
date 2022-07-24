@@ -1,19 +1,19 @@
 {%extends './base.html'%}
 {%load static%}
 
-{%block title%}Add {{type}}{%endblock%}
+{%block title%}New {{type|title}}{%endblock%}
 
 {%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/form.css'%}" type="text/css" />{%endblock%}
 
 {%block content%}
-<h1>Add {{type|title}}</h1>
+<h1>New {{type|title}}</h1>
 
 <form method="post">
     {%csrf_token%}
     <input type="hidden" name="_action" value="new" />
-    {%include './snippets/form-save-buttons.html'%}
+    {%include './snippets/new-form-buttons.html'%}
     {%include './snippets/form.html'%}
     {%if formset%}{%include './snippets/formset.html'%}{%endif%}
-    {%include './snippets/form-save-buttons.html'%}
+    {%include './snippets/new-form-buttons.html'%}
 </form>
 {%endblock%}

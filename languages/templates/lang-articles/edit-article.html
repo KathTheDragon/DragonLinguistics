@@ -1,0 +1,15 @@
+{%extends 'dragonlinguistics/edit.html'%}
+
+{%block title%}{%with object=article%}{{block.super}}{%endwith%}{%endblock%}
+
+{%block breadcrumbs%}
+<span><a href="{{host.get.url}}">{{host.get}}</a></span>
+<span><a href="{{host.url}}">{{host}}</a></span>
+<span><a href="{{language.list_url}}">Languages</a></span>
+<span><a href="{{language.url}}">{{language.html}}</a></span>
+<span><a href="{{folder.url}}">Articles</a></span>
+<span><a href="{{article.url}}">{{article.html}}</a></span>
+<span><a>Edit</a></span>
+{%endblock%}
+
+{%block content%}{%with object=article%}{{block.super}}{%endwith%}{%endblock%}

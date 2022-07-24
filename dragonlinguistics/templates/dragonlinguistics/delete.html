@@ -1,12 +1,9 @@
 {%extends './base.html'%}
-{%load static%}
 
 {%block title%}Delete &lsquo;{{object}}&rsquo;{%endblock%}
 
-{%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/form.css'%}" type="text/css" />{%endblock%}
-
 {%block content%}
-<h1>{{object.html}}</h1>
+<h1>Delete &lsquo;{{object.html}}&rsquo;</h1>
 
 Are you <i>sure</i> you want to delete this {{type}}?
 

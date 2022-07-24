@@ -1,10 +1,8 @@
 from django.urls import include, path
-from .views import List, View
+from . import views
 
-app_name = 'articles'
-urlpatterns = [
-    path('', List.as_view(), name='list'),  # Includes new
-    path('<slug:slug>/', include([
-        path('', View.as_view(), name='view'),  # Includes edit and delete
-    ])),
-]
+def make_urlpatterns(article_folder=''):
+    return [
+        path('', views.ListArticles.as_view(article_folder=article_folder), name='list-articles'),
+        path('<slug:slug>/', views.ViewArticle.as_view(article_folder=article_folder), name='view-article'),
+    ]

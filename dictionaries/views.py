@@ -1,176 +1,69 @@
 from django.shortcuts import redirect
 
 from common import views as base
-from languages.views.langs import LangMixin
-from . import forms, models
-from .models import Dictionary, Word, Variant
-from .utils import parse_csv
+from common.shortcuts import get_object_or_404
+from languages.views import process_language_kwargs
+from .forms import EditDictionary, NewWord, EditWord, make_variants_formset
+from .models import Dictionary, Word
+# from .utils import parse_csv
 
-# Views
-class WordMixin(LangMixin):
-    parts = ['langs', 'words']
-    folder = 'words'
-    instance = 'word'
-
-    def get_kwargs(self, code, lemma=None, homonym=1, **kwargs):
-        dictionary = Dictionary.objects.get(language__code=code)
-        if lemma is None:
-            return super().get_kwargs(code=code, dictionary=dictionary, **kwargs)
-        else:
-            word = Word.objects.filter(dictionary=dictionary, lemma=lemma)[homonym-1]
-            return super().get_kwargs(code=code, dictionary=dictionary, word=word, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        kwargs['type'] = 'word'
-        return super().get_context_data(**kwargs)
-
-    def get_breadcrumbs(self, dictionary, word=None, **kwargs):
-        from django.urls import reverse
-        breadcrumbs = super().get_breadcrumbs(**kwargs)
-        breadcrumbs.append(('Dictionary', dictionary.url()))
-        if word is not None:
-            breadcrumbs.append((word.html(), word.url()))
-        return breadcrumbs
+def process_dictionary_kwargs(view, name, type):
+    kwargs = process_language_kwargs(view, name, type)
+    return kwargs | {'dictionary': get_object_or_404(Dictionary, language=kwargs['language'])}
 
 
-class List(base.Actions):
-    class List(WordMixin, base.SearchMixin, base.List):
-        form = forms.Search
-        fieldname = 'lemma'
+def process_word_kwargs(view, name, type, lemma):
+    kwargs = process_dictionary_kwargs(view, name, type)
+    homonym = 1
+    if '-' in lemma:
+        _lemma, _homonym = lemma.rsplit('-', maxsplit=1)
+        if _homonym.isdecimal():
+            lemma, homonym = _lemma, int(_homonym)
+    return kwargs | {'word': get_object_or_404(Word, dictionary=kwargs['dictionary'], lemma=lemma, index=homonym-1)}
 
-        def get_folder(self):
-            return self.folder
+
+class ViewDictionary(base.Actions):
+    template_folder = 'dictionary'
+    process_kwargs = staticmethod(process_dictionary_kwargs)
+
+    class View(base.PageMixin, base.View):
+        instance = 'dictionary'
 
         def get_object_list(self, dictionary, **kwargs):
-            query = self.request.GET
-            return Word.objects.filter(
-                dictionary=dictionary,
-                # word-level search terms
-                **base.fuzzysearch(lemma=query.get('lemma', '')),
-                **base.strictsearch(type=query.get('type', ''))
-            ).filter(  # Variant-level search terms
-                **base.strictsearch(variant__definition__contains=query.get('definition', ''))
-            ).filter(
-                **base.strictsearch(variant__lexclass=query.get('class', ''))
-            )
+            return Word.objects.filter(dictionary=dictionary)
 
-        def get_context_data(self, **kwargs):
-            kwargs['title'] = f'{kwargs["lang"].name} Dictionary'
-            return super().get_context_data(**kwargs)
-
-    class Search(WordMixin, base.Search):
-        form = forms.Search
-
-        def get_breadcrumbs(self, **kwargs):
-            breadcrumbs = super().get_breadcrumbs(**kwargs)
-            breadcrumbs.append(('Search', ''))
-            return breadcrumbs
-
-    class Settings(WordMixin, base.NewEdit):
+    class Settings(base.Edit):
+        form = EditDictionary
         instance = 'dictionary'
-        forms = {'form': forms.Dictionary}
 
-        def get_folder(self):
-            return self.folder
+    # class Import(base.SecureAction):
+    #     template_name = 'import-dictionary'
 
-        def handle_forms(self, request, form, **kwargs):
-            return form.save()
+    # class Export(base.View):
+    #     template_name = 'export-dictionary'
 
-    class New(WordMixin, base.NewEdit):
-        use_addmore = True
+    class New(base.New):
+        form = NewWord
+        instance = 'word'
+        parent = 'dictionary'
 
-        def get_forms(self, **kwargs):
-            return {
-                'form': forms.Word,
-                'formset': forms.make_variants_formset(kwargs['dictionary']),
-            }
-
-        def handle_forms(self, request, dictionary, form, formset, **kwargs):
-            newword = form.save(commit=False)
-            newword.dictionary = dictionary
-            newword.save()
-            variants = formset.save(commit=False)
-            for variant in variants:
-                variant.word = newword
-                variant.save()
-            return newword
-
-        def get_breadcrumbs(self, **kwargs):
-            breadcrumbs = super().get_breadcrumbs(**kwargs)
-            breadcrumbs.append(('New', ''))
-            return breadcrumbs
-
-        def get_context_data(self, **kwargs):
-            kwargs['formsetname'] = 'Variant'
-            return super().get_context_data(**kwargs)
-
-    class Import(WordMixin, base.SecureBase):
-        def get_folder(self):
-            return self.folder
-
-        def get_context_data(self, **kwargs):
-            kwargs.setdefault('importform', forms.Import(initial={'delimiter': ',', 'quotechar': '"'}))
-            return super().get_context_data(**kwargs)
-
-        def post(self, request, **kwargs):
-            importform = forms.Import(request.POST, request.FILES)
-            if importform.is_valid():
-                try:
-                    entries = parse_csv(
-                        file=importform.cleaned_data['file'],
-                        delimiter=importform.cleaned_data['delimiter'],
-                        quotechar=importform.cleaned_data['quotechar']
-                    )
-                except csv.Error:
-                    return self.get(request, importform=importform, **kwargs)
-
-                dictionary = kwargs['dictionary']
-                if importform.cleaned_data['action'] == 'replace':
-                    Word.objects.filter(dictionary=dictionary).delete()
-                for entry in entries:
-                    word = Word(dictionary=dictionary, **entry['word'])
-                    word.save()
-                    for variant in entry['variants']:
-                        Variant(word=word, **variant).save()
-            else:
-                return self.get(request, importform=importform, **kwargs)
-
-        def get_breadcrumbs(self, **kwargs):
-            breadcrumbs = super().get_breadcrumbs(**kwargs)
-            breadcrumbs.append(('Import', ''))
-            return breadcrumbs
+        def get_formset_class(self, dictionary, **kwargs):
+            return make_variants_formset(dictionary)
 
 
-class View(base.Actions):
-    class View(WordMixin, base.View):
-        pass
+class ViewWord(base.Actions):
+    template_folder = 'dictionary'
+    process_kwargs = staticmethod(process_word_kwargs)
 
-    class Edit(WordMixin, base.NewEdit):
-        def get_forms(self, **kwargs):
-            return {
-                'form': forms.Word,
-                'formset': forms.make_variants_formset(kwargs['dictionary']),
-            }
+    class View(base.View):
+        instance = 'word'
 
-        def handle_forms(self, request, form, formset, **kwargs):
-            newword = form.save()
-            formset.save()
-            return newword
+    class Edit(base.Edit):
+        form = EditWord
+        instance = 'word'
 
-        def get_breadcrumbs(self, **kwargs):
-            breadcrumbs = super().get_breadcrumbs(**kwargs)
-            breadcrumbs.append(('Edit', ''))
-            return breadcrumbs
+        def get_formset_class(self, dictionary, **kwargs):
+            return make_variants_formset(dictionary)
 
-        def get_context_data(self, **kwargs):
-            kwargs['formsetname'] = 'Variant'
-            return super().get_context_data(**kwargs)
-
-    class Delete(WordMixin, base.Delete):
-        def get_redirect_to(self, dictionary, **kwargs):
-            return dictionary
-
-        def get_breadcrumbs(self, **kwargs):
-            breadcrumbs = super().get_breadcrumbs(**kwargs)
-            breadcrumbs.append(('Delete', ''))
-            return breadcrumbs
+    class Delete(base.Delete):
+        instance = 'word'

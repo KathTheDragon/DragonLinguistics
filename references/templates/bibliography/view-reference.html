@@ -1,0 +1,26 @@
+{%extends 'dragonlinguistics/base.html'%}
+
+{%block title%}{{reference}}{%endblock%}
+
+{%block breadcrumbs%}
+<span><a href="{{host.get.url}}">{{host.get}}</a></span>
+<span><a href="{{host.url}}">{{host}}</a></span>
+<span><a href="{{author.list_url}}">Bibliography</a></span>
+<span><a href="{{author.url}}">{{author.html}}</a></span>
+<span><a>{{reference.html}}</a></span>
+{%endblock%}
+
+{%block content%}
+<div id="content-header">
+    <h1>{{reference.html}}</h1>
+    <div class="actions">
+        {%if user.is_authenticated%}<a class="edit" href="?edit">Edit reference</a>{%endif%}
+        {%if user.is_authenticated%}<a class="delete" href="?delete">Delete reference</a>{%endif%}
+        {%if user.is_authenticated%}<!-- To-do: add a download -->{%endif%}
+    </div>
+</div>
+
+<p>Title: {{reference.title}}</p>
+<p>Link: <a href="{{reference.link}}">{{reference.link}}</a></p>
+<p>Comment: {{reference.comment}}</p>
+{%endblock%}
