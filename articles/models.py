@@ -68,6 +68,10 @@ class Article(BaseModel):
     def get_classes(self):
         return ['article']
 
+    @property
+    def citeable(self):
+        return self.folder.path == 'natlangs/'
+
 
 def parse_path(path, kwargs=None):
     from languages.models import Language

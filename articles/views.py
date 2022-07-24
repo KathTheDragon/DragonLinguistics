@@ -10,11 +10,10 @@ def process_folder_kwargs(view, **kwargs):
     return {'folder': folder}
 
 
-def process_article_kwargs(view, slug, citeable=False, **kwargs):
+def process_article_kwargs(view, slug, **kwargs):
     kwargs = process_folder_kwargs(view, **kwargs)
     return kwargs | {
         'article': get_object_or_404(Article, folder=kwargs['folder'], slug=slug),
-        'citeable': citeable,
     }
 
 

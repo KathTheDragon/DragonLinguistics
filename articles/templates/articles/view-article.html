@@ -38,7 +38,7 @@
         {% markup article.content depth=2 section=article.number %}
     </div>
     <footer id="article-footer">
-        {%if citeable%}<p>This article can be cited as:</p>
+        {%if article.citeable%}<p>This article can be cited as:</p>
         <blockquote>
             Spence, Kathryn ({{article.created.year}}). {{article.title}}. Dragon Linguistics (www.dragonlinguistics.net{{article.url}}).
         </blockquote>{%endif%}
