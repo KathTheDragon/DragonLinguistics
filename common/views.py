@@ -263,6 +263,8 @@ class Edit(NewEdit):
 
 
 class Delete(SecureAction):
+    template_name = 'delete-{instance}'
+
     def post(self, request, **kwargs):
         obj = kwargs[self.instance]
         obj.delete()
