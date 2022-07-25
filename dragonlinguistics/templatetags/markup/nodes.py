@@ -194,10 +194,15 @@ class ArticleObject(Object):
 
 class LangArticleObject(ArticleObject):
     params = {'code': None} | ArticleObject.params
-    type = ''
+    type = 'articles'
 
     def make_data(self, data: Attributes) -> Attributes:
-        data['path'] = f'langs/{data["code"]}/{self.type}'
+        try:
+            lang = Language.objects.get(code=data['code'])
+        except Language.DoesNotExist:
+            raise InvalidData(f'language {data["code"]!r} does not exist')
+
+        data['path'] = lang.get_folders()[self.type]
         return super().make_data(data)
 
 
