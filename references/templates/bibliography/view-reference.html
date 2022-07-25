@@ -10,16 +10,15 @@
 <span><a>{{reference.html}}</a></span>
 {%endblock%}
 
-{%block content%}
-<div id="content-header">
-    <h1>{{reference.html}}</h1>
-    <div class="actions">
-        {%if user.is_authenticated%}<a class="edit" href="?edit">Edit reference</a>{%endif%}
-        {%if user.is_authenticated%}<a class="delete" href="?delete">Delete reference</a>{%endif%}
-        {%if user.is_authenticated%}<!-- To-do: add a download -->{%endif%}
-    </div>
-</div>
+{%block heading%}{{reference.html}}{%endblock%}
 
+{%block actions%}
+{%if user.is_authenticated%}<a class="edit" href="?edit">Edit reference</a>{%endif%}
+{%if user.is_authenticated%}<a class="delete" href="?delete">Delete reference</a>{%endif%}
+{%if user.is_authenticated%}<!-- To-do: add a download -->{%endif%}
+{%endblock%}
+
+{%block content%}
 <p>Title: {{reference.title}}</p>
 <p>Link: <a href="{{reference.link}}">{{reference.link}}</a></p>
 <p>Comment: {{reference.comment}}</p>

@@ -8,14 +8,13 @@
 <span><a>Bibliography</a></span>
 {%endblock%}
 
-{%block content%}
-<div id="content-header">
-    <h1>Bibliography</h1>
-    <div class="actions">
-        {%if user.is_authenticated%}<a class="new" href="?new">New author</a>{%endif%}
-    </div>
-</div>
+{%block heading%}Bibliography{%endblock%}
 
+{%block actions%}
+{%if user.is_authenticated%}<a class="new" href="?new">New author</a>{%endif%}
+{%endblock%}
+
+{%block content%}
 {%for author in authors%}
 <h3 id="{{author.slug}}"><a href="{{author.url}}">{{author.html}}</a></h3>
 

@@ -2,9 +2,9 @@
 
 {%block title%}New {{type|title}}{%endblock%}
 
-{%block content%}
-<h1>New {{type|title}}</h1>
+{%block heading%}New {{type|title}}{%endblock%}
 
+{%block content%}
 <form method="post">
     {%csrf_token%}
     <input type="hidden" name="_action" value="new" />

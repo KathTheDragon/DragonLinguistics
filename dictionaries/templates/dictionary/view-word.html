@@ -12,14 +12,14 @@
 <span><a>{{word.html}}</a></span>
 {%endblock%}
 
+{%block heading%}{{word.html}}{%endblock%}
+
+{%block actions%}
+{%if user.is_authenticated%}<a class="edit" href="?edit">Edit</a>{%endif%}
+{%if user.is_authenticated%}<a class="delete" href="?delete">Delete</a>{%endif%}
+{%endblock%}
+
 {%block content%}
-<div id="content-header">
-    <h1>{{word.html}}</h1>
-    <div class="actions">
-        {%if user.is_authenticated%}<a class="edit" href="?edit">Edit</a>{%endif%}
-        {%if user.is_authenticated%}<a class="delete" href="?delete">Delete</a>{%endif%}
-    </div>
-</div>
 <dl>
     {%if word.etymology%}
     <dt><h3>Etymology</h3></dt>

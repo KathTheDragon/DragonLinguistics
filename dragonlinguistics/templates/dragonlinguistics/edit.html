@@ -2,9 +2,9 @@
 
 {%block title%}Edit &lsquo;{{object}}&rsquo;{%endblock%}
 
-{%block content%}
-<h1>Edit &lsquo;{{object.html}}&rsquo;</h1>
+{%block heading%}Edit &lsquo;{{object.html}}&rsquo;{%endblock%}
 
+{%block content%}
 <form method="post">
     {%csrf_token%}
     <input type="hidden" name="_action" value="edit" />

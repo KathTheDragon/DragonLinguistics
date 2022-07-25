@@ -10,4 +10,6 @@
 <span><a>Delete</a></span>
 {%endblock%}
 
-{%block content%}{%with object=author type='author'%}{{block.super}}{%endwith%}{%endblock%}
+{%block heading%}{%with object=author%}{{block.super}}{%endwith%}{%endblock%}
+
+{%block content%}{%with type='author'%}{{block.super}}{%endwith%}{%endblock%}

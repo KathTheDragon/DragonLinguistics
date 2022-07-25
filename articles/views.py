@@ -42,6 +42,9 @@ class ViewArticle(base.Actions):
     class View(base.View):
         instance = 'article'
 
+        def get_context_data(self, **kwargs):
+            return super().get_context_data(**kwargs) | {'no_content_header': True}
+
     class Edit(base.Edit):
         form = EditArticle
         instance = 'article'

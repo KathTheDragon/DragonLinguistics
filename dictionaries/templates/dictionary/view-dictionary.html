@@ -11,8 +11,11 @@
 <span><a>Dictionary</a></span>
 {%endblock%}
 
-{%block content%}{%with title=dictionary type='word'%}{{block.super}}{%endwith%}{%endblock%}
+{%block heading%}{%with title=dictionary%}{{block.super}}{%endwith%}{%endblock%}
 
-{%block actions}
+{%block actions%}
+{{block.super}}
 {%if user.is_authenticated%}<a class="edit" href="?settings">Settings</a>{%endif%}
-{%endblock}
+{%endblock%}
+
+{%block content%}{%with type='word'%}{{block.super}}{%endwith%}{%endblock%}

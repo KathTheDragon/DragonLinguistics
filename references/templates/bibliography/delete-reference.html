@@ -11,4 +11,6 @@
 <span><a>Delete</a></span>
 {%endblock%}
 
-{%block content%}{%with object=reference type='reference'%}{{block.super}}{%endwith%}{%endblock%}
+{%block heading%}{%with object=reference%}{{block.super}}{%endwith%}{%endblock%}
+
+{%block content%}{%with type='reference'%}{{block.super}}{%endwith%}{%endblock%}

@@ -9,16 +9,15 @@
 <span><a>{{author.html}}</a></span>
 {%endblock%}
 
-{%block content%}
-<div id="content-header">
-    <h1>{{author.html}}</h1>
-    <div class="actions">
-        {%if user.is_authenticated%}<a class="edit" href="?edit">Edit author</a>{%endif%}
-        {%if user.is_authenticated%}<a class="delete" href="?delete">Delete author</a>{%endif%}
-        {%if user.is_authenticated%}<a class="new" href="?new">New reference</a>{%endif%}
-    </div>
-</div>
+{%block heading%}{{author.html}}{%endblock%}
 
+{%block actions%}
+{%if user.is_authenticated%}<a class="edit" href="?edit">Edit author</a>{%endif%}
+{%if user.is_authenticated%}<a class="delete" href="?delete">Delete author</a>{%endif%}
+{%if user.is_authenticated%}<a class="new" href="?new">New reference</a>{%endif%}
+{%endblock%}
+
+{%block content%}
 <ul>
     {%for reference in references%}
     <li id="{{reference|slugify}}">{{reference.as_html}}</li>

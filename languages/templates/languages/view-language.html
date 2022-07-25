@@ -10,15 +10,14 @@
 <span><a>{{language.html}}</a></span>
 {%endblock%}
 
-{%block content%}
-<div id="content-header">
-    <h1>{{language.html}}</h1>
-    <div class="actions">
-        {%if user.is_authenticated%}<a class="edit" href="?edit">Edit</a>{%endif%}
-        {%if user.is_authenticated%}<a class="delete" href="?delete">Delete</a>{%endif%}
-    </div>
-</div>
+{%block heading%}{{language.html}}{%endblock%}
 
+{%block actions%}
+{%if user.is_authenticated%}<a class="edit" href="?edit">Edit</a>{%endif%}
+{%if user.is_authenticated%}<a class="delete" href="?delete">Delete</a>{%endif%}
+{%endblock%}
+
+{%block content%}
 <p>{% markup language.blurb %}</p>
 
 <h2>Options</h2>

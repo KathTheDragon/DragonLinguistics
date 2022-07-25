@@ -10,4 +10,6 @@
 <span><a>Articles</a></span>
 {%endblock%}
 
-{%block content%}{%with title='Articles' type='article'%}{{block.super}}{%endwith%}{%endblock%}
+{%block heading%}{%with title='Articles'%}{{block.super}}{%endwith%}{%endblock%}
+
+{%block content%}{%with type='article'%}{{block.super}}{%endwith%}{%endblock%}

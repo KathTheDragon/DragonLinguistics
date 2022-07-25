@@ -2,15 +2,13 @@
 
 {%block title%}{{title}}{%endblock%}
 
-{%block content%}
-<div id="content-header">
-    <h1>{{title}}</h1>
-    <div class="actions">
-        {%if user.is_authenticated%}<a class="new" href="?new">New {{type}}</a>{%endif%}
-        {%block actions%}{%endblock%}
-    </div>
-</div>
+{%block heading%}{{title}}{%endblock%}
 
+{%block actions%}
+{%if user.is_authenticated%}<a class="new" href="?new">New {{type}}</a>{%endif%}
+{%endblock%}
+
+{%block content%}
 {%include './snippets/prevpage.html'%}
 <ul>
     {%for object in page.object_list%}

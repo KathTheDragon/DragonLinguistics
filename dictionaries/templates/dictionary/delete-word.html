@@ -12,4 +12,6 @@
 <span><a>Delete</a></span>
 {%endblock%}
 
-{%block content%}{%with object=word type='word'%}{{block.super}}{%endwith%}{%endblock%}
+{%block heading%}{%with object=word%}{{block.super}}{%endwith%}{%endblock%}
+
+{%block content%}{%with type='word'%}{{block.super}}{%endwith%}{%endblock%}
