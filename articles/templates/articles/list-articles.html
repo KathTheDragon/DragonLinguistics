@@ -1,6 +1,6 @@
 {%extends 'dragonlinguistics/list.html'%}
 
-{%block title%}{%with title='Articles'%}{{block.super}}{%endwith%}{%endblock%}
+{%block title%}{%with title=folder.kind|title%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block breadcrumbs%}
 <span><a href="{{host.get.url}}">{{host.get}}</a></span>
@@ -8,6 +8,6 @@
 <span><a>Articles</a></span>
 {%endblock%}
 
-{%block heading%}{%with title='Articles'%}{{block.super}}{%endwith%}{%endblock%}
+{%block heading%}{%with title=folder.kind|title%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block content%}{%with type='article'%}{{block.super}}{%endwith%}{%endblock%}

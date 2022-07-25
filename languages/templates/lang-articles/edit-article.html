@@ -1,6 +1,4 @@
-{%extends 'dragonlinguistics/edit.html'%}
-
-{%block title%}{%with object=article%}{{block.super}}{%endwith%}{%endblock%}
+{%extends 'articles/edit-article.html'%}
 
 {%block breadcrumbs%}
 <span><a href="{{host.get.url}}">{{host.get}}</a></span>
@@ -11,5 +9,3 @@
 <span><a href="{{article.url}}">{{article.html}}</a></span>
 <span><a>Edit</a></span>
 {%endblock%}
-
-{%block heading%}{%with object=article%}{{block.super}}{%endwith%}{%endblock%}

@@ -26,6 +26,19 @@ class Folder(BaseModel):
         host, kind, kwargs = parse_path(self.path)
         return reverse(f'list-{kind}', kwargs=kwargs, host=host)
 
+    def kind(self):
+        _, kind, _ = parse_path(self.path)
+        if kind == 'lang-articles':
+            kind = 'articles'
+        return kind
+
+    def kind_singular(self):
+        kind = self.kind()
+        if kind.endswith('s'):
+            return kind.removesuffix('s')
+        else:
+            return f'{kind} article'
+
 
 class Article(BaseModel):
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE)

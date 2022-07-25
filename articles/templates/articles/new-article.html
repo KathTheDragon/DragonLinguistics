@@ -1,6 +1,6 @@
 {%extends 'dragonlinguistics/new.html'%}
 
-{%block title%}{%with type='article'%}{{block.super}}{%endwith%}{%endblock%}
+{%block title%}{%with type=folder.kind_singular%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block breadcrumbs%}
 <span><a href="{{host.get.url}}">{{host.get}}</a></span>
@@ -9,4 +9,4 @@
 <span><a>New</a></span>
 {%endblock%}
 
-{%block heading%}{%with type='article'%}{{block.super}}{%endwith%}{%endblock%}
+{%block heading%}{%with type=folder.kind_singular%}{{block.super}}{%endwith%}{%endblock%}
