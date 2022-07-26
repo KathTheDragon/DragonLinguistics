@@ -2,11 +2,7 @@
 {%load static%}
 {%load markup%}
 
-{%block title%}{%with object=article%}{{block.super}}{%endwith%}{%endblock%}
-
 {%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/article.css'%}" type="text/css" />{%endblock%}
-
-{%block breadcrumbs%}{%with object=article%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block content%}
 <article>

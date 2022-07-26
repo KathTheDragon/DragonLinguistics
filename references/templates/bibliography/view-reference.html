@@ -1,13 +1,7 @@
 {%extends 'dragonlinguistics/view.html'%}
 
-{%block title%}{%with object=reference%}{{block.super}}{%endwith%}{%endblock%}
-
-{%block breadcrumbs%}{%with object=reference%}{{block.super}}{%endwith%}{%endblock%}
-
-{%block heading%}{%with object=reference%}{{block.super}}{%endwith%}{%endblock%}
-
 {%block actions%}
-{%with object=reference%}{{block.super}}{%endwith%}
+{{block.super}}
 {%if user.is_authenticated%}<!-- To-do: add a download -->{%endif%}
 {%endblock%}
 

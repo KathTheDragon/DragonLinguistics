@@ -1,7 +1,3 @@
 {%extends 'dragonlinguistics/edit.html'%}
 
-{%block title%}{%with object=dictionary%}{{block.super}}{%endwith%}{%endblock%}
-
-{%block breadcrumbs%}{%with object=dictionary page_crumb='Settings'%}{{block.super}}{%endwith%}{%endblock%}
-
-{%block heading%}{%with object=dictionary%}{{block.super}}{%endwith%}{%endblock%}
+{%block breadcrumbs%}{%with page_crumb='Settings'%}{{block.super}}{%endwith%}{%endblock%}

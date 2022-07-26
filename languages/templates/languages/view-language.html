@@ -1,12 +1,6 @@
 {%extends 'dragonlinguistics/view.html'%}
 {%load markup%}
 
-{%block title%}{%with object=language%}{{block.super}}{%endwith%}{%endblock%}
-
-{%block breadcrumbs%}{%with object=language%}{{block.super}}{%endwith%}{%endblock%}
-
-{%block heading%}{%with object=language%}{{block.super}}{%endwith%}{%endblock%}
-
 {%block content%}
 <p>{% markup language.blurb %}</p>
 

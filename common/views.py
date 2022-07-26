@@ -114,6 +114,9 @@ class Action(Base):
     def get_template_names(self):
         return [f'{self.template_folder}/{self.get_template_name()}.html'.lstrip('/')]
 
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs) | {'object': kwargs.get(self.instance)}
+
 
 class SecureAction(LoginRequiredMixin, Action):
     pass
