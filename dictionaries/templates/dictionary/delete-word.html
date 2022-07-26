@@ -2,15 +2,7 @@
 
 {%block title%}{%with object=word%}{{block.super}}{%endwith%}{%endblock%}
 
-{%block breadcrumbs%}
-<span><a href="{{host.get.url}}">{{host.get}}</a></span>
-<span><a href="{{host.url}}">{{host}}</a></span>
-<span><a href="{{language.list_url}}">Languages</a></span>
-<span><a href="{{language.url}}">{{language.html}}</a></span>
-<span><a href="{{dictionary.url}}">Dictionary</a></span>
-<span><a href="{{word.url}}">{{word.html}}</a></span>
-<span><a>Delete</a></span>
-{%endblock%}
+{%block breadcrumbs%}{%with object=word%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block heading%}{%with object=word%}{{block.super}}{%endwith%}{%endblock%}
 

@@ -87,6 +87,10 @@ class Dictionary(BaseModel):
     def url(self):
         return reverse('view-dictionary', kwargs={'name': self.language.name}, host=self.language.get_host())
 
+    def breadcrumbs(self):
+        yield from self.language.breadcrumbs()
+        yield (self.url(), 'Dictionary')
+
 
 class Word(BaseModel):
     TYPES = [
@@ -168,6 +172,10 @@ class Word(BaseModel):
 
     def list_url(self):
         return self.dictionary.url()
+
+    def breadcrumbs(self):
+        yield from self.dictionary.breadcrumbs()
+        yield (self.url(), self.html())
 
     def get_classes(self):
         return ['word', self.dictionary.language.code]

@@ -7,10 +7,10 @@ from . import views
 def make_article_urlpatterns(type='articles', article_folder=''):
     return [
         path('', articles.views.ListArticles.as_view(
-            process_kwargs=views.process_lang_folder_kwargs, template_folder=type,
+            process_kwargs=views.process_lang_folder_kwargs,
             article_folder=article_folder), name=f'list-{type}'),
         path('<slug:slug>', articles.views.ViewArticle.as_view(
-            process_kwargs=views.process_lang_article_kwargs, template_folder=type,
+            process_kwargs=views.process_lang_article_kwargs,
             article_folder=article_folder), name=f'view-{type.removesuffix("s")}'),
     ]
 

@@ -2,13 +2,6 @@
 
 {%block title%}{%with object=dictionary%}{{block.super}}{%endwith%}{%endblock%}
 
-{%block breadcrumbs%}
-<span><a href="{{host.get.url}}">{{host.get}}</a></span>
-<span><a href="{{host.url}}">{{host}}</a></span>
-<span><a href="{{language.list_url}}">Languages</a></span>
-<span><a href="{{language.url}}">{{language.html}}</a></span>
-<span><a href="{{dictionary.url}}">Dictionary</a></span>
-<span><a>Settings</a></span>
-{%endblock%}
+{%block breadcrumbs%}{%with object=dictionary page_crumb='Settings'%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block heading%}{%with object=dictionary%}{{block.super}}{%endwith%}{%endblock%}

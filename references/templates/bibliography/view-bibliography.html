@@ -3,8 +3,7 @@
 {%block title%}Bibliography{%endblock%}
 
 {%block breadcrumbs%}
-<span><a href="{{host.get.url}}">{{host.get}}</a></span>
-<span><a href="{{host.url}}">{{host}}</a></span>
+{%include 'dragonlinguistics/snippets/breadcrumbs.html' with breadcrumbs=host.breadcrumbs%}
 <span><a>Bibliography</a></span>
 {%endblock%}
 

@@ -3,10 +3,8 @@
 {%block title%}{%with type='reference'%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block breadcrumbs%}
-<span><a href="{{host.get.url}}">{{host.get}}</a></span>
-<span><a href="{{host.url}}">{{host}}</a></span>
-<span><a href="{{author.list_url}}">Bibliography</a></span>
-<span><a href="{{author.url}}">{{author.html}}</a></span>
+{%include 'dragonlinguistics/snippets/breadcrumbs.html' with breadcrumbs=host.breadcrumbs%}
+{%include 'dragonlinguistics/snippets/breadcrumbs.html' with breadcrumbs=author.breadcrumbs%}
 <span><a>New Reference</a></span>
 {%endblock%}
 

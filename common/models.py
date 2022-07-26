@@ -42,3 +42,8 @@ class Host:
 
     def url(self):
         return reverse('home', host=self.name)
+
+    def breadcrumbs(self):
+        if self.name != 'www':
+            yield from Host.get().breadcrumbs()
+        yield (self.url(), str(self))

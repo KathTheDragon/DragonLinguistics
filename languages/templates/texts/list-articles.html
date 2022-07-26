@@ -1,9 +1,0 @@
-{%extends 'articles/list-articles.html'%}
-
-{%block breadcrumbs%}
-<span><a href="{%url 'home' host 'www'%}">Home</a></span>
-<span><a href="{%url 'home' host 'conlang'%}">Conlanging</a></span>
-<span><a href="{{language.list_url}}">Languages</a></span>
-<span><a href="{{language.url}}">{{language.html}}</a></span>
-<span><a>Texts</a></span>
-{%endblock%}

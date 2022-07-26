@@ -1,20 +1,13 @@
-{%extends 'dragonlinguistics/base.html'%}
+{%extends 'dragonlinguistics/view.html'%}
 
-{%block title%}{{reference}}{%endblock%}
+{%block title%}{%with object=reference%}{{block.super}}{%endwith%}{%endblock%}
 
-{%block breadcrumbs%}
-<span><a href="{{host.get.url}}">{{host.get}}</a></span>
-<span><a href="{{host.url}}">{{host}}</a></span>
-<span><a href="{{author.list_url}}">Bibliography</a></span>
-<span><a href="{{author.url}}">{{author.html}}</a></span>
-<span><a>{{reference.html}}</a></span>
-{%endblock%}
+{%block breadcrumbs%}{%with object=reference%}{{block.super}}{%endwith%}{%endblock%}
 
-{%block heading%}{{reference.html}}{%endblock%}
+{%block heading%}{%with object=reference%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block actions%}
-{%if user.is_authenticated%}<a class="edit" href="?edit">Edit reference</a>{%endif%}
-{%if user.is_authenticated%}<a class="delete" href="?delete">Delete reference</a>{%endif%}
+{%with object=reference%}{{block.super}}{%endwith%}
 {%if user.is_authenticated%}<!-- To-do: add a download -->{%endif%}
 {%endblock%}
 

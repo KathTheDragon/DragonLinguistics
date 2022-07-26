@@ -1,3 +1,7 @@
 {%extends './base.html'%}
 
 {%block title%}{{host}}{%endblock%}
+
+{%block breadcrumbs%}
+{%include './snippets/breadcrumbs.html' with breadcrumbs=host.breadcrumbs last=True%}
+{%endblock%}

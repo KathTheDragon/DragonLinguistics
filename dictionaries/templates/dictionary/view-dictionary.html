@@ -4,11 +4,8 @@
 {%block title%}{%with title=dictionary%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block breadcrumbs%}
-<span><a href="{{host.get.url}}">{{host.get}}</a></span>
-<span><a href="{{host.url}}">{{host}}</a></span>
-<span><a href="{{language.list_url}}">Languages</a></span>
-<span><a href="{{language.url}}">{{language.html}}</a></span>
-<span><a>Dictionary</a></span>
+{%include 'dragonlinguistics/snippets/breadcrumbs.html' with breadcrumbs=host.breadcrumbs%}
+{%include 'dragonlinguistics/snippets/breadcrumbs.html' with breadcrumbs=dictionary.breadcrumbs last=True%}
 {%endblock%}
 
 {%block heading%}{%with title=dictionary%}{{block.super}}{%endwith%}{%endblock%}

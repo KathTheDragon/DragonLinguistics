@@ -1,17 +1,12 @@
-{%extends 'dragonlinguistics/base.html'%}
+{%extends 'dragonlinguistics/view.html'%}
 {%load static%}
 {%load markup%}
 
-{%block title%}{{article}}{%endblock%}
+{%block title%}{%with object=article%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/article.css'%}" type="text/css" />{%endblock%}
 
-{%block breadcrumbs%}
-<span><a href="{{host.get.url}}">{{host.get}}</a></span>
-<span><a href="{{host.url}}">{{host}}</a></span>
-<span><a href="{{folder.url}}">Articles</a></span>
-<span><a>{{article.html}}</a></span>
-{%endblock%}
+{%block breadcrumbs%}{%with object=article%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block content%}
 <article>

@@ -40,6 +40,10 @@ class Author(BaseModel):
     def list_url(self):
         return reverse('view-bibliography', host='hist')
 
+    def breadcrumbs(self):
+        yield (self.list_url(), 'Bibliography')
+        yield (self.url(), self.html())
+
 
 class Reference(BaseModel):
     author = models.ForeignKey(Author, on_delete=models.CASCADE, null=True)
@@ -78,3 +82,7 @@ class Reference(BaseModel):
 
     def list_url(self):
         return self.author.url()
+
+    def breadcrumbs(self):
+        yield from self.author.breadcrumbs()
+        yield (self.url(), self.html())

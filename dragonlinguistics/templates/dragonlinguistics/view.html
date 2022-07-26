@@ -1,0 +1,15 @@
+{%extends './base.html'%}
+
+{%block title%}{{object}}{%endblock%}
+
+{%block breadcrumbs%}
+{%include './snippets/breadcrumbs.html' with breadcrumbs=host.breadcrumbs%}
+{%include './snippets/breadcrumbs.html' with breadcrumbs=object.breadcrumbs last=True%}
+{%endblock%}
+
+{%block heading%}{{object.html}}{%endblock%}
+
+{%block actions%}
+{%if user.is_authenticated%}<a class="edit" href="?edit">Edit {{type}}</a>{%endif%}
+{%if user.is_authenticated%}<a class="delete" href="?delete">Delete {{type}}</a>{%endif%}
+{%endblock%}

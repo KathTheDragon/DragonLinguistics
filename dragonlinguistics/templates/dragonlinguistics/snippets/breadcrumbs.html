@@ -1,0 +1,3 @@
+{%for url, html in breadcrumbs%}
+<span><a{%if not last or not forloop.last%} href="{{url}}"{%endif%}>{{html}}</a></span>
+{%endfor%}

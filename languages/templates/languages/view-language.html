@@ -1,21 +1,11 @@
-{%extends 'dragonlinguistics/base.html'%}
+{%extends 'dragonlinguistics/view.html'%}
 {%load markup%}
 
-{%block title%}{{language}}{%endblock%}
+{%block title%}{%with object=language%}{{block.super}}{%endwith%}{%endblock%}
 
-{%block breadcrumbs%}
-<span><a href="{{host.get.url}}">{{host.get}}</a></span>
-<span><a href="{{host.url}}">{{host}}</a></span>
-<span><a href="{{language.list_url}}">Languages</a></span>
-<span><a>{{language.html}}</a></span>
-{%endblock%}
+{%block breadcrumbs%}{%with object=language%}{{block.super}}{%endwith%}{%endblock%}
 
-{%block heading%}{{language.html}}{%endblock%}
-
-{%block actions%}
-{%if user.is_authenticated%}<a class="edit" href="?edit">Edit</a>{%endif%}
-{%if user.is_authenticated%}<a class="delete" href="?delete">Delete</a>{%endif%}
-{%endblock%}
+{%block heading%}{%with object=language%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block content%}
 <p>{% markup language.blurb %}</p>

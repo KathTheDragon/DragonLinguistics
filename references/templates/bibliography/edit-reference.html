@@ -2,13 +2,6 @@
 
 {%block title%}{%with object=reference%}{{block.super}}{%endwith%}{%endblock%}
 
-{%block breadcrumbs%}
-<span><a href="{{host.get.url}}">{{host.get}}</a></span>
-<span><a href="{{host.url}}">{{host}}</a></span>
-<span><a href="{{author.list_url}}">Bibliography</a></span>
-<span><a href="{{author.url}}">{{author.html}}</a></span>
-<span><a href="{{reference.url}}">{{reference.html}}</a></span>
-<span><a>Edit</a></span>
-{%endblock%}
+{%block breadcrumbs%}{%with object=reference%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block heading%}{%with object=reference%}{{block.super}}{%endwith%}{%endblock%}

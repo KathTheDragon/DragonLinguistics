@@ -51,6 +51,10 @@ class Language(BaseModel):
     def list_url(self):
         return reverse('list-languages', host=self.get_host())
 
+    def breadcrumbs(self):
+        yield (self.list_url(), 'Languages')
+        yield (self.url(), self.html())
+
     def get_classes(self):
         return ['lang', self.code]
 

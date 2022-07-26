@@ -3,9 +3,8 @@
 {%block title%}{%with title=folder.kind|title%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block breadcrumbs%}
-<span><a href="{{host.get.url}}">{{host.get}}</a></span>
-<span><a href="{{host.url}}">{{host}}</a></span>
-<span><a>Articles</a></span>
+{%include 'dragonlinguistics/snippets/breadcrumbs.html' with breadcrumbs=host.breadcrumbs%}
+{%include 'dragonlinguistics/snippets/breadcrumbs.html' with breadcrumbs=folder.breadcrumbs last=True%}
 {%endblock%}
 
 {%block heading%}{%with title=folder.kind|title%}{{block.super}}{%endwith%}{%endblock%}

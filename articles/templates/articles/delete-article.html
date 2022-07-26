@@ -2,13 +2,7 @@
 
 {%block title%}{%with object=article%}{{block.super}}{%endwith%}{%endblock%}
 
-{%block breadcrumbs%}
-<span><a href="{{host.get.url}}">{{host.get}}</a></span>
-<span><a href="{{host.url}}">{{host}}</a></span>
-<span><a href="{{folder.url}}">Articles</a></span>
-<span><a href="{{article.url}}">{{article.html}}</a></span>
-<span><a>Delete</a></span>
-{%endblock%}
+{%block breadcrumbs%}{%with object=article%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block heading%}{%with object=article%}{{block.super}}{%endwith%}{%endblock%}
 

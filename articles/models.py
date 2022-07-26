@@ -26,14 +26,22 @@ class Folder(BaseModel):
         host, kind, kwargs = parse_path(self.path)
         return reverse(f'list-{kind}', kwargs=kwargs, host=host)
 
-    def kind(self):
-        _, kind, _ = parse_path(self.path)
+    def breadcrumbs(self):
+        from languages.models import Language
+        _, kind, kwargs = parse_path(self.path)
+        if 'name' in kwargs:
+            yield from Language.objects.get(name=kwargs['name']).breadcrumbs()
+        yield (self.url(), self.kind(kind).title())
+
+    def kind(self, kind=None):
+        if kind is None:
+            _, kind, _ = parse_path(self.path)
         if kind == 'lang-articles':
             kind = 'articles'
         return kind
 
-    def kind_singular(self):
-        kind = self.kind()
+    def kind_singular(self, kind=None):
+        kind = self.kind(kind)
         if kind.endswith('s'):
             return kind.removesuffix('s')
         else:
@@ -77,6 +85,10 @@ class Article(BaseModel):
 
     def list_url(self):
         return self.folder.url()
+
+    def breadcrumbs(self):
+        yield from self.folder.breadcrumbs()
+        yield (self.url(), self.html())
 
     def get_classes(self):
         return ['article']
