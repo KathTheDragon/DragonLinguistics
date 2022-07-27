@@ -1,6 +1,7 @@
 {%extends 'dragonlinguistics/view.html'%}
 {%load static%}
 {%load markup%}
+{%load util%}
 
 {%block stylesheets%}<link rel="stylesheet" href="{%static 'styles/article.css'%}" type="text/css" />{%endblock%}
 
@@ -31,7 +32,7 @@
     <footer id="article-footer">
         {%if article.citeable%}<p>This article can be cited as:</p>
         <blockquote>
-            Spence, Kathryn ({{article.created.year}}). {{article.title}}. Dragon Linguistics (www.dragonlinguistics.net{{article.url}}).
+            Spence, Kathryn ({{article.created.year}}). {{article.title}}. Dragon Linguistics ({{article.url|lstrip:'/'}}).
         </blockquote>{%endif%}
     </footer>
 </article>

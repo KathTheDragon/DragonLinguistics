@@ -27,6 +27,11 @@ def endswith(string, suffix):
 
 @register.filter
 @template.defaultfilters.stringfilter
+def lstrip(string, chars):
+    return string.lstrip(chars)
+
+@register.filter
+@template.defaultfilters.stringfilter
 def singular(string, countnoun):
     if string.endswith('s'):
         return string[:-1]
