@@ -182,9 +182,9 @@ class NewEdit(SecureAction):
     form = None
     formset = None
     redirects = {
-        '_edit': '{obj.url()}?edit',
-        '_view': '{obj.url()}',
-        '_list': '{obj.list_url()}',
+        '_edit': lambda obj: f'{obj.url()}?edit',
+        '_view': lambda obj: f'{obj.url()}',
+        '_list': lambda obj: f'{obj.list_url()}',
     }
 
     def get_form_class(self, **kwargs):
@@ -222,9 +222,9 @@ class NewEdit(SecureAction):
             return self.get(request, **kwargs, form_data=post_data)
         elif all((f is None or f.is_valid()) for f in [form, formset]):
             obj = self.handle_forms(form, formset, **kwargs)
-            for key, redirect_fmt in self.redirects.items():
+            for key, redirect_fn in self.redirects.items():
                 if key in request.POST:
-                    return redirect(redirect_fmt.format(obj))
+                    return redirect(redirect_fn(obj))
             else:
                 raise Http404
         else:
@@ -235,7 +235,7 @@ class New(NewEdit):
     template_name = 'new-{instance}'
     parent = ''
     extra_attrs = {}
-    redirects = NewEdit.redirects | {'_new': '{obj.list_url()}?new'}
+    redirects = NewEdit.redirects | {'_new': lambda obj: f'{obj.list_url()}?new'}
 
     def get_extra_attrs(self, **kwargs):
         return self.extra_attrs
