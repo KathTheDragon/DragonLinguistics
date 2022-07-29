@@ -3,8 +3,10 @@ from django.utils.text import slugify
 from articles.models import Article
 from languages.models import Language
 from dictionaries.models import Word
+from common.shortcuts import get
 from markup import nodes
 from markup.nodes import html, Attributes, MarkupError, InvalidData
+from markup.utils import partition, strip
 
 class LinkNode(nodes.LinkNode):
     params = nodes.LinkNode.params | {'*=': None}
@@ -109,7 +111,7 @@ class Object(nodes.Node):
         return text or [str(self.data[self.name])]
 
 
-class LangObject(nodes.Node):
+class LangObject(Object):
     params = {'code': None}
     name = 'lang'
 
@@ -127,18 +129,19 @@ class LangObject(nodes.Node):
         return text or [str(self.data['lang'])]
 
 
-class WordObject(nodes.Node):
+class WordObject(Object):
     params = {'code': None, 'lemma': None, 'homonym': '0'}
     name = 'word'
 
     def make_data(self, data: Attributes) -> Attributes:
         try:
-            lang = Language.objects.get(code=data['code'])
+            language = Language.objects.get(code=data['code'])
         except Language.DoesNotExist:
             raise InvalidData(f'language {data["code"]!r} does not exist')
 
         try:
-            data['word'] = Word.objects.get(lang=lang, lemma=data['lemma'], homonym=int(data['homonym']))
+            data['word'] = get(
+                Word, dictionary__language=language, lemma=data['lemma'], index=int(data['homonym']) or None)
         except Word.DoesNotExist:
             raise InvalidData(f'word {data["lemma"]!r} does not exist in language {data["code"]!r}')
 
@@ -149,7 +152,7 @@ class WordObject(nodes.Node):
         return html('span', {'class': ['word', self.data['code']]}, word)
 
     def _make_gloss(self, gloss: list[str]) -> str:
-        gloss = gloss or [self.data['word'].firstgloss()]
+        gloss = gloss or [self.data['word'].definition()]
         return f'"{"".join(gloss)}"'
 
     def make_content(self, text: list[str]) -> list[str]:
@@ -158,7 +161,7 @@ class WordObject(nodes.Node):
 
 class WordGlossObject(WordObject):
     def make_content(self, text: list[str]) -> list[str]:
-        parts = [strip(part)[1] for part in partition(text, '|')]
+        parts = partition(text, '|')
         word = self._make_word(parts.pop(0) if parts else [])
         gloss = self._make_gloss(parts.pop(0) if parts else [])
         if parts:
