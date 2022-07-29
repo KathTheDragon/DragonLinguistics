@@ -1,6 +1,10 @@
+import csv
+
 from django import forms
+from django.core.exceptions import ValidationError
 
 from . import models
+from .utils import parse_csv
 
 class EditDictionary(forms.ModelForm):
     class Meta:
@@ -48,8 +52,21 @@ Search = type('Search', (forms.Form,), {
 })
 
 
-class Import(forms.Form):
+class ImportDictionary(forms.Form):
     file = forms.FileField()
-    delimiter = forms.CharField(min_length=1, max_length=1)
-    quotechar = forms.CharField(min_length=1, max_length=1, label='Quote Character')
+    delimiter = forms.CharField(min_length=1, max_length=1, initial=',')
+    quotechar = forms.CharField(min_length=1, max_length=1, initial='"', label='Quote Character')
     action = forms.ChoiceField(choices=[('append', 'Append'), ('replace', 'Replace')])
+
+    def clean(self):
+        cleaned_data = super().clean().copy()
+        file = cleaned_data.pop('file', None)
+        delimiter = cleaned_data.pop('delimiter', None)
+        quotechar = cleaned_data.pop('quotechar', None)
+
+        if file and delimiter and quotechar:
+            try:
+                entries = parse_csv(file, delimiter, quotechar)
+            except csv.Error as e:
+                raise ValidationError(f'Could not parse the file: {e}') from None
+            return cleaned_data | {'entries': entries}

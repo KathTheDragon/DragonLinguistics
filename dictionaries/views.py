@@ -3,8 +3,8 @@ from django.shortcuts import redirect
 from common import views as base
 from common.shortcuts import get_object_or_404
 from languages.views import process_language_kwargs
-from .forms import EditDictionary, NewWord, EditWord, make_variants_formset
-from .models import Dictionary, Word
+from . import forms
+from .models import Dictionary, Word, Variant
 # from .utils import parse_csv
 
 def process_dictionary_kwargs(view, name, type):
@@ -33,22 +33,36 @@ class ViewDictionary(base.Actions):
             return Word.objects.filter(dictionary=dictionary)
 
     class Settings(base.Edit):
-        form = EditDictionary
+        form = forms.EditDictionary
         instance = 'dictionary'
 
-    # class Import(base.SecureAction):
-    #     template_name = 'import-dictionary'
+    class Import(base.FormAction):
+        template_name = 'import-dictionary'
+        form = forms.ImportDictionary
+        instance = 'dictionary'
 
-    # class Export(base.View):
+        def handle_forms(self, form, formset, dictionary, **kwargs):
+            action = form.cleaned_data['action']
+            entries = form.cleaned_data['entries']
+            if action == 'replace':
+                Word.objects.filter(dictionary=dictionary).delete()
+            for entry in entries:
+                word = Word(dictionary=dictionary, **entry['word'])
+                word.save()
+                for variant in entry['variants']:
+                    Variant(word=word, **variant).save()
+            return dictionary
+
+    # class Export(base.SecureAction):
     #     template_name = 'export-dictionary'
 
     class New(base.New):
-        form = NewWord
+        form = forms.NewWord
         instance = 'word'
         parent = 'dictionary'
 
         def get_formset_class(self, dictionary, **kwargs):
-            return make_variants_formset(dictionary)
+            return forms.make_variants_formset(dictionary)
 
 
 class ViewWord(base.Actions):
@@ -59,11 +73,11 @@ class ViewWord(base.Actions):
         instance = 'word'
 
     class Edit(base.Edit):
-        form = EditWord
+        form = forms.EditWord
         instance = 'word'
 
         def get_formset_class(self, dictionary, **kwargs):
-            return make_variants_formset(dictionary)
+            return forms.make_variants_formset(dictionary)
 
     class Delete(base.Delete):
         instance = 'word'

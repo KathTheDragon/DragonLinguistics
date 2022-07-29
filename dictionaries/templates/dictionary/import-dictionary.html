@@ -1,0 +1,14 @@
+{%extends 'dragonlinguistics/base.html'%}
+
+{%block title%}Import {{dictionary}}{%endblock%}
+
+{%block heading%}Import {{dictionary}}{%endblock%}
+
+{%block content%}
+<form enctype="multipart/form-data" method="post">
+    {%csrf_token%}
+    <input type="hidden" name="_action" value="import" />
+    {%include 'dragonlinguistics/snippets/form.html'%}
+    <button type="submit" name="_view">Import</button>
+</form>
+{%endblock%}

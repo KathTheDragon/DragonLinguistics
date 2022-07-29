@@ -178,7 +178,7 @@ class View(Action):
 #             )
 
 
-class NewEdit(SecureAction):
+class FormAction(SecureAction):
     form = None
     formset = None
     redirects = {
@@ -194,13 +194,12 @@ class NewEdit(SecureAction):
             return self.form
 
     def get_formset_class(self, **kwargs):
-        return self.formset or (lambda data, initial, instance: None)
+        return self.formset or (lambda data, files, initial, instance=None: None)
 
-    def get_forms(self, form_data=None, initial_data=None, **kwargs):
-        instance = kwargs.get(self.instance)
+    def get_forms(self, form_data=None, form_files=None, form_initial=None, form_kwargs={}, **kwargs):
         return (
-            self.get_form_class(**kwargs)(form_data, initial=initial_data, instance=instance),
-            self.get_formset_class(**kwargs)(form_data, initial=initial_data, instance=instance)
+            self.get_form_class(**kwargs)(form_data, form_files, initial=form_initial, **form_kwargs),
+            self.get_formset_class(**kwargs)(form_data, form_files, initial=form_initial, **form_kwargs)
         )
 
     def get_context_data(self, **kwargs):
@@ -214,12 +213,12 @@ class NewEdit(SecureAction):
         return obj.url()
 
     def post(self, request, **kwargs):
-        form, formset = self.get_forms(form_data=request.POST, **kwargs)
+        form, formset = self.get_forms(form_data=request.POST, form_files=request.FILES, **kwargs)
         if '_add-section' in request.POST:
             post_data = request.POST.copy()
             key = f'{formset.prefix}-TOTAL_FORMS'
             post_data[key] = str(int(post_data[key]) + 1)
-            return self.get(request, **kwargs, form_data=post_data)
+            return self.get(request, **kwargs, form_data=post_data, form_files=request.FILES)
         elif all((f is None or f.is_valid()) for f in [form, formset]):
             obj = self.handle_forms(form, formset, **kwargs)
             for key, redirect_fn in self.redirects.items():
@@ -228,14 +227,14 @@ class NewEdit(SecureAction):
             else:
                 raise Http404
         else:
-            return self.get(request, **kwargs, form_data=request.POST)
+            return self.get(request, **kwargs, form_data=request.POST, form_files=request.FILES)
 
 
-class New(NewEdit):
+class New(FormAction):
     template_name = 'new-{instance}'
     parent = ''
     extra_attrs = {}
-    redirects = NewEdit.redirects | {'_new': lambda obj: f'{obj.list_url()}?new'}
+    redirects = FormAction.redirects | {'_new': lambda obj: f'{obj.list_url()}?new'}
 
     def get_extra_attrs(self, **kwargs):
         return self.extra_attrs
@@ -255,8 +254,12 @@ class New(NewEdit):
         return obj
 
 
-class Edit(NewEdit):
+class Edit(FormAction):
     template_name = 'edit-{instance}'
+
+    def get_forms(self, form_kwargs={}, **kwargs):
+        return super().get_forms(
+            **kwargs, form_kwargs=form_kwargs | {'instance': kwargs.get(self.instance)})
 
     def handle_forms(self, form, formset, **kwargs):
         obj = form.save()
