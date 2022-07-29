@@ -13,7 +13,7 @@
 {%block content%}
 <form method="post">
     {%csrf_token%}
-    <input type="hidden" name="_action" value="edit" />
+    <input type="hidden" name="_action" value="{{action|default:'edit'}}" />
     {%include './snippets/edit-form-buttons.html'%}
     {%include './snippets/form.html'%}
     {%if formset%}{%include './snippets/formset.html'%}{%endif%}
