@@ -70,3 +70,9 @@ class ImportDictionary(forms.Form):
             except csv.Error as e:
                 raise ValidationError(f'Could not parse the file: {e}') from None
             return cleaned_data | {'entries': entries}
+
+
+class ExportDictionary(forms.Form):
+    delimiter = forms.CharField(min_length=1, max_length=1, initial=',')
+    quotechar = forms.CharField(min_length=1, max_length=1, initial='"', label='Quote Character')
+    

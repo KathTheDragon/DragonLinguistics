@@ -209,6 +209,13 @@ class FormAction(SecureAction):
     def handle_forms(self, form, formset, **kwargs):
         raise ValueError
 
+    def get_response(self, request, obj, **kwargs):
+        for key, redirect_fn in self.redirects.items():
+            if key in request.POST:
+                return redirect(redirect_fn(obj))
+        else:
+            raise Http404
+
     def get_redirect(self, obj):
         return obj.url()
 
@@ -220,12 +227,7 @@ class FormAction(SecureAction):
             post_data[key] = str(int(post_data[key]) + 1)
             return self.get(request, **kwargs, form_data=post_data, form_files=request.FILES)
         elif all((f is None or f.is_valid()) for f in [form, formset]):
-            obj = self.handle_forms(form, formset, **kwargs)
-            for key, redirect_fn in self.redirects.items():
-                if key in request.POST:
-                    return redirect(redirect_fn(obj))
-            else:
-                raise Http404
+            return self.get_response(request, self.handle_forms(form=form, formset=formset, **kwargs), **kwargs)
         else:
             return self.get(request, **kwargs, form_data=request.POST, form_files=request.FILES)
 

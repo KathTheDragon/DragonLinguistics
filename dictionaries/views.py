@@ -1,11 +1,13 @@
+from django.http import FileResponse, StreamingHttpResponse
 from django.shortcuts import redirect
+from urllib.parse import quote
 
 from common import views as base
 from common.shortcuts import get_object_or_404
 from languages.views import process_language_kwargs
 from . import forms
 from .models import Dictionary, Word, Variant
-# from .utils import parse_csv
+from .utils import make_csv
 
 def process_dictionary_kwargs(view, name, type):
     kwargs = process_language_kwargs(view, name, type)
@@ -53,8 +55,18 @@ class ViewDictionary(base.Actions):
                     Variant(word=word, **variant).save()
             return dictionary
 
-    # class Export(base.SecureAction):
-    #     template_name = 'export-dictionary'
+    class Export(base.FormAction):
+        template_name = 'export-dictionary'
+        form = forms.ExportDictionary
+        instance = 'dictionary'
+
+        def handle_forms(self, form, dictionary, **kwargs):
+            return make_csv(dictionary, form.cleaned_data['delimiter'], form.cleaned_data['quotechar'])
+
+        def get_response(self, request, entries, language, **kwargs):
+            return StreamingHttpResponse(entries, content_type='text/csv', headers={
+                'Content-Disposition': f'attachment; filename="{quote(language.name)}.csv"'})
+
 
     class New(base.New):
         form = forms.NewWord
