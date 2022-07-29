@@ -2,6 +2,12 @@
 
 {%block title%}Import {{dictionary}}{%endblock%}
 
+{%block breadcrumbs%}
+{%include 'dragonlinguistics/snippets/breadcrumbs.html' with breadcrumbs=host.breadcrumbs%}
+{%include 'dragonlinguistics/snippets/breadcrumbs.html' with breadcrumbs=dictionary.breadcrumbs%}
+<span><a>Import</a></span>
+{%endblock%}
+
 {%block heading%}Import {{dictionary}}{%endblock%}
 
 {%block content%}
