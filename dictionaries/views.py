@@ -64,8 +64,14 @@ class ViewDictionary(base.Actions):
             return make_csv(dictionary, form.cleaned_data['delimiter'], form.cleaned_data['quotechar'])
 
         def get_response(self, request, entries, language, **kwargs):
+            filename = f'{language.name}.csv'
+            try:
+                filename.encode('ascii')
+                file_expr = 'filename="{}"'.format(filename)
+            except UnicodeEncodeError:
+                file_expr = "filename*=utf-8''{}".format(quote(filename))
             return StreamingHttpResponse(entries, content_type='text/csv', headers={
-                'Content-Disposition': f'attachment; filename="{quote(language.name)}.csv"'})
+                'Content-Disposition': f'attachment; {file_expr}'})
 
 
     class New(base.New):
