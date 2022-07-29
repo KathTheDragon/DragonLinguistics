@@ -11,12 +11,12 @@
     {%endif%}
     {%for variant in word.variants.all%}<dt><h3>{{variant.get_lexclass}}</h3></dt>
     <dd>
-        {%if variant.notes%}<p>{% markup variant.notes %}</p>{%endif%}
         <p>{{variant.html}}</p>
         <ol>
             {%for definition in variant.get_definitions%}<li>{%markup definition%}</li>
             {%endfor%}
         </ol>
+        {%if variant.notes%}<p>{% markup variant.notes %}</p>{%endif%}
         {%if variant.derivatives%}<dl>
             <dt>Derivatives:</dt>
             <dd>
