@@ -63,6 +63,10 @@ def is_action(obj):
     return isinstance(obj, type) and issubclass(obj, Action)
 
 
+def raise_Http404():
+    raise Http404
+
+
 class Actions(generic.View):
     template_folder = ''
 
@@ -95,7 +99,7 @@ class Actions(generic.View):
         if is_action(view):
             return view.as_view(**self.get_action_attrs())(request, **self.process_kwargs(self, **kwargs))
         else:
-            raise Http404
+            raise Http404(f'{action!r} is not a valid action for this page')
 
 
 class Base(generic.TemplateView):
@@ -182,9 +186,9 @@ class FormAction(SecureAction):
     form = None
     formset = None
     redirects = {
-        '_edit': lambda obj: f'{obj.url()}?edit',
-        '_view': lambda obj: f'{obj.url()}',
-        '_list': lambda obj: f'{obj.list_url()}',
+        'edit': lambda obj: f'{obj.url()}?edit',
+        'view': lambda obj: f'{obj.url()}',
+        'list': lambda obj: f'{obj.list_url()}',
     }
 
     def get_form_class(self, **kwargs):
@@ -210,14 +214,8 @@ class FormAction(SecureAction):
         raise ValueError
 
     def get_response(self, request, obj, **kwargs):
-        for key, redirect_fn in self.redirects.items():
-            if key in request.POST:
-                return redirect(redirect_fn(obj))
-        else:
-            raise Http404
-
-    def get_redirect(self, obj):
-        return obj.url()
+        redirect_fn = self.redirects.get(request.POST.get('_redirect'), lambda obj: raise_Http404())
+        return redirect(redirect_fn(obj))
 
     def post(self, request, **kwargs):
         form, formset = self.get_forms(form_data=request.POST, form_files=request.FILES, **kwargs)
@@ -236,7 +234,7 @@ class New(FormAction):
     template_name = 'new-{instance}'
     parent = ''
     extra_attrs = {}
-    redirects = FormAction.redirects | {'_new': lambda obj: f'{obj.list_url()}?new'}
+    redirects = FormAction.redirects | {'new': lambda obj: f'{obj.list_url()}?new'}
 
     def get_extra_attrs(self, **kwargs):
         return self.extra_attrs

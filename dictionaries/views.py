@@ -37,6 +37,7 @@ class ViewDictionary(base.Actions):
     class Settings(base.Edit):
         form = forms.EditDictionary
         instance = 'dictionary'
+        redirects = base.Edit.redirects | {'edit': lambda obj: f'{obj.url()}?settings'}
 
     class Import(base.FormAction):
         template_name = 'import-dictionary'
