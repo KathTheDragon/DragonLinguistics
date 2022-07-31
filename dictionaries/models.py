@@ -125,17 +125,7 @@ class Word(BaseModel):
             return ids.index(self.id) + 1
 
     def __str__(self):
-        from django.utils.html import format_html
-        citation = self.citation()
-        homonym = self.get_homonym()
-        if homonym:
-            return format_html(
-                '{}<sub>{}</sub>',
-                citation,
-                homonym
-            )
-        else:
-            return citation
+        return self.citation()
 
     def citation(self):
         citation = {
@@ -176,6 +166,14 @@ class Word(BaseModel):
     def breadcrumbs(self):
         yield from self.dictionary.breadcrumbs()
         yield (self.url(), self.html())
+
+    def get_string(self):
+        from django.utils.html import format_html
+        homonym = self.get_homonym()
+        if homonym:
+            return format_html('{}<sub>{}</sub>', str(self), homonym)
+        else:
+            return str(self)
 
     def get_classes(self):
         return ['word', self.dictionary.language.code]
