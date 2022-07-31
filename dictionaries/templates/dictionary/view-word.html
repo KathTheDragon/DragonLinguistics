@@ -11,7 +11,7 @@
     {%endif%}
     {%for variant in word.variants.all%}<dt><h3>{{variant.get_lexclass}}</h3></dt>
     <dd>
-        <p>{{variant.html}}</p>
+        <p>{%markup variant.get_forms%}</p>
         <ol>
             {%for definition in variant.get_definitions%}<li>{%markup definition%}</li>
             {%endfor%}

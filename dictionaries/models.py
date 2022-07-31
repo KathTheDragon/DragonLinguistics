@@ -201,8 +201,5 @@ class Variant(models.Model):
     def get_derivatives(self):
         return self.derivatives.splitlines()
 
-    def get_classes(self):
-        return self.word.get_classes()
-
-    def get_string(self):
-        return self.forms or self.word.citation
+    def get_forms(self):
+        return self.forms or f'$word{{{self.word.citation()}}}'
