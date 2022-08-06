@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'dragonlinguistics',
     'articles',
     'dictionaries',
+    'families',
     'languages',
     'references',
 ]

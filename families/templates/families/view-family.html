@@ -1,0 +1,8 @@
+{%extends 'dragonlinguistics/view.html'%}
+{%load markup%}
+
+{%block content%}
+<p>{% markup family.blurb %}</p>
+
+<pre class="family-tree">{{family.draw_clades_html}}</pre>
+{%endblock%}
