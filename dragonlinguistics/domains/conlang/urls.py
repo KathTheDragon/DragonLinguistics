@@ -7,5 +7,5 @@ import languages.urls
 urlpatterns = [
     path('', views.Home.as_view(), name='home'),
     path('articles/', include(articles.urls.make_urlpatterns(article_folder='conlangs/'))),
-    path('languages/', kwargs={'type': 'conlang'}, view=include(languages.urls.urlpatterns)),
+    path('languages/', include(languages.urls.urlpatterns)),
 ]

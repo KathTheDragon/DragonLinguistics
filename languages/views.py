@@ -6,39 +6,42 @@ from common.shortcuts import get_object_or_404
 from .forms import NewLanguage, EditLanguage
 from .models import Language
 
-def process_language_kwargs(view, name, type):
-    return {'language': get_object_or_404(Language, name=name, type=type)}
+def get_language_type(view):
+    return {
+        'conlang': 'conlang',
+        'hist': 'natlang',
+    }.get(view.request.host.name)
 
 
-def process_lang_folder_kwargs(view, name, type):
-    kwargs = process_language_kwargs(view, name, type)
+def process_language_kwargs(view, name):
+    return {'language': get_object_or_404(Language, name=name, type=get_language_type(view))}
+
+
+def process_lang_folder_kwargs(view, name):
+    kwargs = process_language_kwargs(view, name)
     return kwargs | process_folder_kwargs(view, **kwargs)
 
 
-def process_lang_article_kwargs(view, name, type, slug):
-    kwargs = process_language_kwargs(view, name, type)
+def process_lang_article_kwargs(view, name, slug):
+    kwargs = process_language_kwargs(view, name)
     return kwargs | process_article_kwargs(view, slug, **kwargs)
 
 
 class ListLanguages(base.Actions):
     template_folder = 'languages'
 
-    @staticmethod
-    def process_kwargs(self, type):
-        return {'type': type}
-
     class List(base.List):
         instance = 'language'
 
-        def get_object_list(self, type, **kwargs):
-            return Language.objects.filter(type=type)
+        def get_object_list(self, **kwargs):
+            return Language.objects.filter(type=get_language_type(self))
 
     class New(base.New):
         form = NewLanguage
         instance = 'language'
 
-        def get_extra_attrs(self, type, **kwargs):
-            return {'type': type}
+        def get_extra_attrs(self, **kwargs):
+            return {'type': get_language_type(self)}
 
 
 class ViewLanguage(base.Actions):

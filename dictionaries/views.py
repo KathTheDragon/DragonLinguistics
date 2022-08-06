@@ -9,13 +9,13 @@ from . import forms
 from .models import Dictionary, Word, Variant
 from .utils import make_csv
 
-def process_dictionary_kwargs(view, name, type):
-    kwargs = process_language_kwargs(view, name, type)
+def process_dictionary_kwargs(view, name):
+    kwargs = process_language_kwargs(view, name)
     return kwargs | {'dictionary': get_object_or_404(Dictionary, language=kwargs['language'])}
 
 
-def process_word_kwargs(view, name, type, lemma):
-    kwargs = process_dictionary_kwargs(view, name, type)
+def process_word_kwargs(view, name, lemma):
+    kwargs = process_dictionary_kwargs(view, name)
     homonym = 1
     if '-' in lemma:
         _lemma, _homonym = lemma.rsplit('-', maxsplit=1)
