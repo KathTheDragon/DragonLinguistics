@@ -1,6 +1,8 @@
 import builtins
 from django import template
 
+from common import utils
+
 register = template.Library()
 
 @register.filter
@@ -45,3 +47,8 @@ def plural(string, countnouns):
         return string
     else:
         return f'{string} {countnouns}'
+
+@register.filter
+@template.defaultfilters.stringfilter
+def pluralise(string):
+    return utils.pluralise(string)

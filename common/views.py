@@ -6,6 +6,7 @@ from django.views import generic
 from django.views.generic.base import ContextMixin
 
 from .models import Host
+from .utils import pluralise
 
 # ## Helper functions
 # def fuzzysearch(**kwargs):
@@ -144,7 +145,10 @@ class PageMixin(ContextMixin):
 
 
 class List(PageMixin, Action):
-    template_name = 'list-{instance}s'
+    template_name = 'list-{instances}'
+
+    def get_template_name(self):
+        return self.template_name.format(instances=pluralise(self.instance))
 
 
 class View(Action):
