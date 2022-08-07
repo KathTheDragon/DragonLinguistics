@@ -1,5 +1,6 @@
 import re
 
+from django.contrib import admin
 from django.db import models
 from django_hosts.resolvers import reverse
 
@@ -107,6 +108,7 @@ class Word(BaseModel):
     lemma = models.CharField(max_length=50)
     type = models.CharField(max_length=2, choices=TYPES, default='s')
     isunattested = models.BooleanField(default=False)
+    gloss = models.CharField(max_length=50, blank=True)
     etymology = models.TextField(blank=True)
     descendents = models.TextField(blank=True)
     references = models.TextField(blank=True)
@@ -140,14 +142,6 @@ class Word(BaseModel):
             citation = '*' + citation
         return citation
 
-    def definition(self):
-        variants = self.variants.all()
-        if variants:
-            return str(variants[0])
-        else:
-            return ''
-    definition.short_description = 'Definition'
-
     def url(self):
         homonym = self.get_homonym()
         if homonym:
@@ -165,7 +159,7 @@ class Word(BaseModel):
 
     def breadcrumbs(self):
         yield from self.dictionary.breadcrumbs()
-        yield (self.url(), self.html())
+        yield (self.url(), super().html())
 
     def get_string(self):
         from django.utils.html import format_html
@@ -178,17 +172,34 @@ class Word(BaseModel):
     def get_classes(self):
         return ['word', self.dictionary.language.code]
 
+    def html(self):
+        from django.utils.html import format_html
+        word = super().html()
+        return format_html('{} &lsquo;{}&rsquo;', word, self.get_gloss())
+
+    @admin.display(description='Gloss')
+    def get_gloss(self):
+        if self.gloss:
+            return self.gloss
+        else:
+            variants = self.variants.all()
+            if variants:
+                return variants[0].get_definitions()[0].split(',', maxsplit=1)[0]
+            else:
+                return ''
+
 
 class Variant(models.Model):
     word = models.ForeignKey(Word, on_delete=models.CASCADE, related_name='variants', related_query_name='variant')
     lexclass = models.CharField('class', max_length=20)
-    forms = models.TextField(blank=True)
+    form = models.CharField(max_length=50, blank=True)
+    extra_forms = models.TextField(blank=True)
     definition = models.TextField()
     notes = models.TextField(blank=True)
     derivatives = models.TextField(blank=True)
 
     def __str__(self):
-        return self.get_definitions()[0]
+        return self.get_form()
 
     def get_lexclass(self):
         return self.word.dictionary.get_class_dict().get(self.lexclass, 'Unknown')
@@ -199,5 +210,13 @@ class Variant(models.Model):
     def get_derivatives(self):
         return self.derivatives.splitlines()
 
+    def get_form(self):
+        return self.form or self.word.citation()
+
     def get_forms(self):
-        return self.forms or f'$word{{{self.word.citation()}}}'
+        langcode = self.word.dictionary.language.code
+        form_markup = f'$word[{langcode}]{{ {self.get_form()} }}'
+        if self.extra_forms:
+            return f'{form_markup}, {self.extra_forms}'
+        else:
+            return form_markup

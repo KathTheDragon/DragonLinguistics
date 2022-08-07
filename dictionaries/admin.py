@@ -52,9 +52,14 @@ class WordForm(ModelForm):
 
 @admin.register(models.Word)
 class WordAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'definition', lambda word: str(word.dictionary.language))
+    list_display = ('__str__', 'get_gloss', 'language_name')
     list_filter = ('dictionary__language__name',)
     search_fields = ('lemma',)
     inlines = (VariantInline,)
     form = WordForm
     save_on_top = True
+
+    @staticmethod
+    @admin.display(description='Language')
+    def language_name(word):
+        return str(word.dictionary.language)

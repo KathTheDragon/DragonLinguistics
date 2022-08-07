@@ -1,8 +1,8 @@
 import csv
 
-_WORD_HEADERS = ['lemma', 'type', 'isunattested', 'etymology', 'descendents', 'references']
+_WORD_HEADERS = ['lemma', 'type', 'isunattested', 'gloss', 'etymology', 'descendents', 'references']
 WORD_HEADERS = set(_WORD_HEADERS)
-_VARIANT_HEADERS = ['class', 'forms', 'definition', 'notes', 'derivatives']
+_VARIANT_HEADERS = ['class', 'form', 'extra_forms', 'definition', 'notes', 'derivatives']
 VARIANT_HEADERS = set(_VARIANT_HEADERS)
 HEADERS_LIST = _WORD_HEADERS + _VARIANT_HEADERS
 HEADERS = WORD_HEADERS | VARIANT_HEADERS
