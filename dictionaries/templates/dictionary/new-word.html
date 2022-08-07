@@ -1,10 +1,10 @@
-{%extends 'dragonlinguistics/new.html'%}
+{%extends 'common/new.html'%}
 
 {%block title%}{%with type='word'%}{{block.super}}{%endwith%}{%endblock%}
 
 {%block breadcrumbs%}
-{%include 'dragonlinguistics/snippets/breadcrumbs.html' with breadcrumbs=host.breadcrumbs%}
-{%include 'dragonlinguistics/snippets/breadcrumbs.html' with breadcrumbs=dictionary.breadcrumbs%}
+{%include 'common/snippets/breadcrumbs.html' with breadcrumbs=host.breadcrumbs%}
+{%include 'common/snippets/breadcrumbs.html' with breadcrumbs=dictionary.breadcrumbs%}
 <span><a>New Word</a></span>
 {%endblock%}
 

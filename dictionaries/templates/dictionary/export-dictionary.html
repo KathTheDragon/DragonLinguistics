@@ -1,10 +1,10 @@
-{%extends 'dragonlinguistics/base.html'%}
+{%extends 'common/base.html'%}
 
 {%block title%}Export {{dictionary}}{%endblock%}
 
 {%block breadcrumbs%}
-{%include 'dragonlinguistics/snippets/breadcrumbs.html' with breadcrumbs=host.breadcrumbs%}
-{%include 'dragonlinguistics/snippets/breadcrumbs.html' with breadcrumbs=dictionary.breadcrumbs%}
+{%include 'common/snippets/breadcrumbs.html' with breadcrumbs=host.breadcrumbs%}
+{%include 'common/snippets/breadcrumbs.html' with breadcrumbs=dictionary.breadcrumbs%}
 <span><a>Export</a></span>
 {%endblock%}
 
@@ -14,7 +14,7 @@
 <form method="post">
     {%csrf_token%}
     <input type="hidden" name="_action" value="export" />
-    {%include 'dragonlinguistics/snippets/form.html'%}
+    {%include 'common/snippets/form.html'%}
     <button type="submit">Export</button>
     <a class="button" href=".">Back</a>
 </form>
