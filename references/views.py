@@ -21,7 +21,11 @@ class ViewBibliography(base.Actions):
         instance = 'bibliography'
 
         def get_context_data(self, **kwargs):
-            return super().get_context_data(**kwargs) | {'authors': Author.objects.all()}
+            return super().get_context_data(**kwargs) | {
+                'title': 'Bibliography',
+                'type': 'author',
+                'authors': Author.objects.all(),
+            }
 
     class New(base.New):
         form = NewAuthor

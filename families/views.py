@@ -17,6 +17,9 @@ class ListFamilies(base.Actions):
         def get_object_list(self, **kwargs):
             return Family.objects.filter(type=get_language_type(self))
 
+        def get_context_data(self, **kwargs):
+            return super().get_context_data(**kwargs) | {'title': 'Families'}
+
     class New(base.New):
         form = NewFamily
         instance = 'family'

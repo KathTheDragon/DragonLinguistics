@@ -36,6 +36,9 @@ class ListLanguages(base.Actions):
         def get_object_list(self, **kwargs):
             return Language.objects.filter(type=get_language_type(self))
 
+        def get_context_data(self, **kwargs):
+            return super().get_context_data(**kwargs) | {'title': 'Languages'}
+
     class New(base.New):
         form = NewLanguage
         instance = 'language'

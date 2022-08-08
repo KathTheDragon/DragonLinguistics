@@ -10,6 +10,6 @@
 {%block heading%}{{object.html}}{%endblock%}
 
 {%block actions%}
-{%if user.is_authenticated%}<a class="edit" href="?edit">Edit {{type}}</a>{%endif%}
-{%if user.is_authenticated%}<a class="delete" href="?delete">Delete {{type}}</a>{%endif%}
+{%if user.is_authenticated%}<a class="edit" href="?edit">Edit</a>{%endif%}
+{%if user.is_authenticated%}<a class="delete" href="?delete">Delete</a>{%endif%}
 {%endblock%}

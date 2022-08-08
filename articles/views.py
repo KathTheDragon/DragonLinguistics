@@ -28,10 +28,16 @@ class ListArticles(base.Actions):
         def get_object_list(self, folder, **kwargs):
             return Article.objects.filter(folder=folder)
 
+        def get_context_data(self, **kwargs):
+            return super().get_context_data(**kwargs) | {'title': kwargs['folder'].kind().title()}
+
     class New(base.New):
         form = NewArticle
         instance = 'article'
         parent = 'folder'
+
+        def get_context_data(self, **kwargs):
+            return super().get_context_data(**kwargs) | {'type': kwargs['folder'].kind_singular()}
 
 
 class ViewArticle(base.Actions):

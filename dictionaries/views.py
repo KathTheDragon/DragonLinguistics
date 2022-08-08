@@ -31,6 +31,9 @@ class ViewDictionary(base.Actions):
     class View(base.PageMixin, base.View):
         instance = 'dictionary'
 
+        def get_context_data(self, **kwargs):
+            return super().get_context_data(**kwargs) | {'type': 'word', 'title': str(dictionary)}
+
         def get_object_list(self, dictionary, **kwargs):
             return Word.objects.filter(dictionary=dictionary)
 

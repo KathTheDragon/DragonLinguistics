@@ -1,16 +1,8 @@
-{%extends 'common/base.html'%}
-
-{%block title%}Bibliography{%endblock%}
+{%extends 'common/list.html'%}
 
 {%block breadcrumbs%}
 {%include 'common/snippets/breadcrumbs.html' with breadcrumbs=host.breadcrumbs%}
 <span><a>Bibliography</a></span>
-{%endblock%}
-
-{%block heading%}Bibliography{%endblock%}
-
-{%block actions%}
-{%if user.is_authenticated%}<a class="new" href="?new">New author</a>{%endif%}
 {%endblock%}
 
 {%block content%}
