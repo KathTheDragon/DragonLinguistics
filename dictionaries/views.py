@@ -32,7 +32,7 @@ class ViewDictionary(base.Actions):
         instance = 'dictionary'
 
         def get_context_data(self, **kwargs):
-            return super().get_context_data(**kwargs) | {'type': 'word', 'title': str(dictionary)}
+            return super().get_context_data(**kwargs) | {'type': 'word', 'title': str(kwargs['dictionary'])}
 
         def get_object_list(self, dictionary, **kwargs):
             return Word.objects.filter(dictionary=dictionary)
