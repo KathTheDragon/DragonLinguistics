@@ -152,7 +152,7 @@ class WordObject(Object):
         return html('span', {'class': ['word', self.data['code']]}, word)
 
     def _make_gloss(self, gloss: list[str]) -> str:
-        gloss = gloss or [self.data['word'].definition()]
+        gloss = gloss or [self.data['word'].get_gloss()]
         return f'"{"".join(gloss)}"'
 
     def make_content(self, text: list[str]) -> list[str]:
