@@ -85,6 +85,9 @@ class Dictionary(BaseModel):
                     class_dict[key] = f'{group} ({value})'
         return class_dict
 
+    def get_class_list(self):
+        return list(self.get_class_dict())
+
     def url(self):
         return reverse('view-dictionary', kwargs={'name': self.language.name}, host=self.language.get_host())
 
@@ -187,6 +190,11 @@ class Word(BaseModel):
                 return variants[0].get_definitions()[0].split(',', maxsplit=1)[0]
             else:
                 return ''
+
+    def get_variants(self):
+        '''Used for ordering the variants.'''
+        class_list = self.dictionary.get_class_list()
+        return sorted(self.variants.all(), key=lambda variant: class_list.index(variant.lexclass))
 
 
 class Variant(models.Model):

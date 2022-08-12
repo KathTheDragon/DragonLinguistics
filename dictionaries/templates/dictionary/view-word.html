@@ -7,7 +7,7 @@
     <dt><h3>Etymology</h3></dt>
     <dd>{% markup word.etymology %}</dd>
     {%endif%}
-    {%for variant in word.variants.all%}<dt><h3>{{variant.get_lexclass}}</h3></dt>
+    {%for variant in word.get_variants%}<dt><h3>{{variant.get_lexclass}}</h3></dt>
     <dd>
         <p>{%markup variant.get_forms%}</p>
         <ol>
