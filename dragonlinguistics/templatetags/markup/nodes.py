@@ -111,16 +111,33 @@ class Object(nodes.Node):
         return text or [str(self.data[self.name])]
 
 
+def _get_language(code: str) -> Language:
+    try:
+        return Language.objects.get(code=code)
+    except Language.DoesNotExist:
+        raise InvalidData(f'language {code!r} does not exist')
+
+
+def _get_word(language: Language, lemma: str, homonym: str) -> Word:
+    try:
+        return get(Word, dictionary__language=language, lemma=lemma, index=int(homonym) or None)
+    except Word.DoesNotExist:
+        raise InvalidData(f'word {lemma!r} does not exist in language {language.code!r}')
+
+
+def _get_article(path: str, title: str) -> Article:
+    try:
+        return Article.objects.get(folder__path=path, slug=slugify(title))
+    except Article.DoesNotExist:
+        raise InvalidData(f'article {title!r} at path {path!r} does not exist')
+
+
 class LangObject(Object):
     params = {'code': None}
     name = 'lang'
 
     def make_data(self, data: Attributes) -> Attributes:
-        try:
-            data['lang'] = Language.objects.get(code=data['code'])
-        except Language.DoesNotExist:
-            raise InvalidData(f'language {data["code"]!r} does not exist')
-        return data
+        return data | {'lang': _get_language(data['code'])}
 
     def make_attributes(self) -> Attributes:
         return super().make_attributes() | {'class': [*self.attributes['class'], 'lang', self.data['code']]}
@@ -134,18 +151,7 @@ class WordObject(Object):
     name = 'word'
 
     def make_data(self, data: Attributes) -> Attributes:
-        try:
-            language = Language.objects.get(code=data['code'])
-        except Language.DoesNotExist:
-            raise InvalidData(f'language {data["code"]!r} does not exist')
-
-        try:
-            data['word'] = get(
-                Word, dictionary__language=language, lemma=data['lemma'], index=int(data['homonym']) or None)
-        except Word.DoesNotExist:
-            raise InvalidData(f'word {data["lemma"]!r} does not exist in language {data["code"]!r}')
-
-        return data
+        return data | {'word': _get_word(_get_language(data['code']), data['lemma'], data['homonym'])}
 
     def _make_word(self, word: list[str]) -> str:
         word = word or [str(self.data['word'])]
@@ -179,11 +185,7 @@ class ArticleObject(Object):
     name = 'article'
 
     def make_data(self, data: Attributes) -> Attributes:
-        try:
-            data['article'] = Article.objects.get(folder__path=data.get('path', ''), slug=slugify(data['title']))
-        except Article.DoesNotExist:
-            raise InvalidData(f'article {data["title"]!r} at path {data.get("path", "")!r} does not exist')
-        return data
+        return data | {'article': _get_article(data.get('path', ''), data['title'])}
 
     def make_attributes(self) -> Attributes:
         attributes = super().make_attributes()
@@ -200,13 +202,8 @@ class LangArticleObject(ArticleObject):
     type = 'articles'
 
     def make_data(self, data: Attributes) -> Attributes:
-        try:
-            lang = Language.objects.get(code=data['code'])
-        except Language.DoesNotExist:
-            raise InvalidData(f'language {data["code"]!r} does not exist')
-
-        data['path'] = lang.get_folders()[self.type]
-        return super().make_data(data)
+        return super().make_data(
+            data | {'path': _get_language(data['code']).get_folders()[self.type]})
 
 
 class GrammarObject(LangArticleObject):
