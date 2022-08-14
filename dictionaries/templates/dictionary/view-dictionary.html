@@ -1,5 +1,17 @@
 {%extends 'common/list.html'%}
 
+{%block stylesheets%}
+<style>
+    #page-content ul {
+        list-style-type: none;
+        column-count: 5;
+        column-width: 6.875em;
+        column-gap: 1.875em;
+        column-rule: 1px solid #eaecef;
+    }
+</style>
+{%endblock%}
+
 {%block breadcrumbs%}
 {%include 'common/snippets/breadcrumbs.html' with breadcrumbs=host.breadcrumbs%}
 {%include 'common/snippets/breadcrumbs.html' with breadcrumbs=dictionary.breadcrumbs last=True%}
