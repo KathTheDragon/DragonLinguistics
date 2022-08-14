@@ -100,18 +100,12 @@ body {
 
 /* Content header */
 
-#content-header, .author-header {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    column-gap: var(--spacing);
-    align-items: start;
-}
-
 /* Actions (local navigation) */
 
 .actions {
     margin: 1px;
     padding: 0;
+    float: right;
     display: flex;
     flex-direction: column;
 }

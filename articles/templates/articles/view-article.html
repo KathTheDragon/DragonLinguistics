@@ -12,13 +12,13 @@
             <h1 id="article-title">{{article.html}}</h1>
             <h3 id="article-subtitle">{{article.description}}</h3>
         </hgroup>
-        <div class="actions">
-            {%if user.is_authenticated%}<a class="edit" href="?edit">Edit</a>{%endif%}
-            {%if user.is_authenticated%}<a class="delete" href="?delete">Delete</a>{%endif%}
-        </div>
         <div id="article-meta">
             <div id="article-written">Created {{article.created|date:'j M Y, H:i'}}.</div>
             <!-- <div id="article-edited">Last updated {{article.edited|date:'j M Y, H:i'}}.</div> -->
+        </div>
+        <div class="actions">
+            {%if user.is_authenticated%}<a class="edit" href="?edit">Edit</a>{%endif%}
+            {%if user.is_authenticated%}<a class="delete" href="?delete">Delete</a>{%endif%}
         </div>
         {%if article.tag_list%}
         <ul id="article-tags">
