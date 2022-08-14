@@ -162,7 +162,7 @@ class Word(BaseModel):
 
     def breadcrumbs(self):
         yield from self.dictionary.breadcrumbs()
-        yield (self.url(), super().html())
+        yield (self.url(), self.word_html())
 
     def get_string(self):
         from django.utils.html import format_html
@@ -175,10 +175,18 @@ class Word(BaseModel):
     def get_classes(self):
         return ['word', self.dictionary.language.code]
 
+    def word_html(self, word=''):
+        from django.utils.html import format_html
+        return format_html(
+            '<span class="{}">{}</span>', ' '.join(self.get_classes()), word or self.get_string())
+
+    def gloss_html(self, gloss=''):
+        from django.utils.html import format_html
+        return format_html('<span class="gloss">{}</span>', gloss or self.get_gloss())
+
     def html(self):
         from django.utils.html import format_html
-        word = super().html()
-        return format_html('{} &lsquo;{}&rsquo;', word, self.get_gloss())
+        return format_html('{} {}', self.word_html(), self.gloss_html())
 
     @admin.display(description='Gloss')
     def get_gloss(self):

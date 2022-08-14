@@ -154,12 +154,11 @@ class WordObject(Object):
         return data | {'word': _get_word(_get_language(data['code']), data['lemma'], data['homonym'])}
 
     def _make_word(self, word: list[str]) -> str:
-        word = word or [str(self.data['word'])]
-        return html('span', {'class': ['word', self.data['code']]}, word)
+        return self.data['word'].word_html(' '.join(word))
 
     def _make_gloss(self, gloss: list[str]) -> str:
         gloss = gloss or [self.data['word'].get_gloss()]
-        return f'"{"".join(gloss)}"'
+        return self.data['word'].gloss_html(' '.join(gloss))
 
     def make_content(self, text: list[str]) -> list[str]:
         return [self._make_word(text)]
