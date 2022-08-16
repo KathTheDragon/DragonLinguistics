@@ -2,6 +2,7 @@ import re
 
 from django.contrib import admin
 from django.db import models
+from django.utils.html import format_html
 from django_hosts.resolvers import reverse
 
 from common.models import BaseModel
@@ -165,7 +166,6 @@ class Word(BaseModel):
         yield (self.url(), self.word_html())
 
     def get_string(self):
-        from django.utils.html import format_html
         homonym = self.get_homonym()
         if homonym:
             return format_html('{}<sub>{}</sub>', str(self), homonym)
@@ -176,16 +176,13 @@ class Word(BaseModel):
         return ['word', self.dictionary.language.code]
 
     def word_html(self, word=''):
-        from django.utils.html import format_html
         return format_html(
             '<span class="{}">{}</span>', ' '.join(self.get_classes()), word or self.get_string())
 
     def gloss_html(self, gloss=''):
-        from django.utils.html import format_html
         return format_html('<span class="gloss">{}</span>', gloss or self.get_gloss())
 
     def html(self):
-        from django.utils.html import format_html
         return format_html('{} {}', self.word_html(), self.gloss_html())
 
     @admin.display(description='Gloss')
