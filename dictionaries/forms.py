@@ -46,7 +46,7 @@ def make_variants_formset(dictionary):
 
 Search = type('Search', (forms.Form,), {
     'lemma': forms.CharField(required=False, max_length=50),
-    'type': forms.ChoiceField(required=False, choices=[('','Any'), *models.Word.TYPES]),
+    'type': forms.ChoiceField(required=False, choices=[('', 'Any'), *models.Variant.TYPES]),
     'class': forms.CharField(required=False, label='Class', max_length=20),
     'definition': forms.CharField(required=False, max_length=50),
 })
@@ -75,4 +75,3 @@ class ImportDictionary(forms.Form):
 class ExportDictionary(forms.Form):
     delimiter = forms.CharField(min_length=1, max_length=1, initial=',')
     quotechar = forms.CharField(min_length=1, max_length=1, initial='"', label='Quote Character')
-    

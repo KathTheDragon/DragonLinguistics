@@ -3,6 +3,7 @@ import re
 from django.contrib import admin
 from django.db import models
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from django_hosts.resolvers import reverse
 
 from common.models import BaseModel
@@ -64,10 +65,17 @@ def merge_group(options, code, name=''):
     return [(f'{_code} {code}', f'{_name} {name}' if name else _name) for _code, _name in options]
 
 
+DERIVATIONS = {
+    'LOAN': ('loan', 'from'),
+    'FROM': ('inherited', 'from'),
+}
+
 class Dictionary(BaseModel):
     language = models.OneToOneField(Language, on_delete=models.CASCADE)
     classes = models.TextField('lexical classes', blank=True)
     order = models.TextField('alphabetical order', blank=True)  # Not using yet
+    derivations = models.TextField(blank=True)
+    # words
 
     def __str__(self):
         return f'{self.language} Dictionary'
@@ -89,6 +97,15 @@ class Dictionary(BaseModel):
     def get_class_list(self):
         return list(self.get_class_dict())
 
+    def get_derivation_dict(self):
+        return DERIVATIONS | {
+            code: (kind, 'of')
+            for derivation in self.derivations.splitlines()
+            for code, kind in map(str.strip, derivation.split(','))}
+
+    def get_derivation_options(self):
+        return [(code, kind) for code, (kind, _) in self.get_derivation_dict().items()]
+
     def url(self):
         return reverse('view-dictionary', kwargs={'name': self.language.name}, host=self.language.get_host())
 
@@ -98,24 +115,13 @@ class Dictionary(BaseModel):
 
 
 class Word(BaseModel):
-    TYPES = [
-        ('r', 'Root'),
-        ('s', 'Stem'),
-        ('pf', 'Prefix'),
-        ('if', 'Infix'),
-        ('sf', 'Suffix'),
-        ('cf', 'Circumfix'),
-        ('pc', 'Proclitic'),
-        ('ec', 'Enclitic'),
-    ]
     dictionary = models.ForeignKey(Dictionary, related_name='words', related_query_name='word', on_delete=models.CASCADE, null=True)
     lemma = models.CharField(max_length=50)
-    type = models.CharField(max_length=2, choices=TYPES, default='s')
     isunattested = models.BooleanField(default=False)
     gloss = models.CharField(max_length=50, blank=True)
-    etymology = models.TextField(blank=True)
-    descendents = models.TextField(blank=True)
+    # etymology
     references = models.TextField(blank=True)
+    # variants
 
     class Meta:
         ordering = ['lemma', 'id']
@@ -136,12 +142,13 @@ class Word(BaseModel):
     def citation(self):
         citation = {
             'r': '√{}',
+            's': '{}-',
             'pf': '{}-',
             'if': '<{}>',
             'sf': '-{}',
             'pc': '{}=',
             'ec': '={}',
-        }.get(self.type, '{}').format(self.lemma)
+        }.get(self.get_type(), '{}').format(self.lemma)
         if self.isunattested:
             citation = '*' + citation
         return citation
@@ -182,8 +189,18 @@ class Word(BaseModel):
     def gloss_html(self, gloss=''):
         return format_html('<span class="gloss">{}</span>', gloss or self.get_gloss())
 
-    def html(self):
-        return format_html('{} {}', self.word_html(), self.gloss_html())
+    def html(self, word='', gloss=''):
+        return format_html('{} {}', self.word_html(word), self.gloss_html(gloss))
+
+    def link(self, word='', gloss=''):
+        return format_html('<a href="{}">{}</a>', self.url(), self.html(word, gloss))
+
+    def get_type(self):
+        variants = self.variants.all()
+        if variants:
+            return variants[0].type
+        else:
+            return ''
 
     @admin.display(description='Gloss')
     def get_gloss(self):
@@ -192,7 +209,7 @@ class Word(BaseModel):
         else:
             variants = self.variants.all()
             if variants:
-                return variants[0].get_definitions()[0].split(',', maxsplit=1)[0]
+                return variants[0].get_gloss()
             else:
                 return ''
 
@@ -203,16 +220,34 @@ class Word(BaseModel):
 
 
 class Variant(models.Model):
+    TYPES = [
+        ('r', 'Root'),
+        ('s', 'Stem'),
+        ('w', 'Word'),
+        ('pf', 'Prefix'),
+        ('if', 'Infix'),
+        ('sf', 'Suffix'),
+        ('cf', 'Circumfix'),
+        ('pc', 'Proclitic'),
+        ('ec', 'Enclitic'),
+    ]
     word = models.ForeignKey(Word, on_delete=models.CASCADE, related_name='variants', related_query_name='variant')
+    type = models.CharField(max_length=2, choices=TYPES, default='s')
     lexclass = models.CharField('class', max_length=20)
     form = models.CharField(max_length=50, blank=True)
     extra_forms = models.TextField(blank=True)
     definition = models.TextField()
     notes = models.TextField(blank=True)
-    derivatives = models.TextField(blank=True)
+    # derivatives
 
     def __str__(self):
         return self.get_form()
+
+    def html(self):
+        return self.word.html(word=self.get_form(), gloss=self.get_gloss())
+
+    def link(self):
+        return format_html('<a href="{}">{}</a>', self.word.url(), self.html())
 
     def get_lexclass(self):
         return self.word.dictionary.get_class_dict().get(self.lexclass, 'Unknown')
@@ -221,7 +256,10 @@ class Variant(models.Model):
         return self.definition.splitlines() or ['']
 
     def get_derivatives(self):
-        return self.derivatives.splitlines()
+        return [derivative for derivative in self.derivatives.all() if derivative.kind not in DERIVATIONS]
+
+    def get_descendents(self):
+        return [derivative for derivative in self.derivatives.all() if derivative.kind in DERIVATIONS]
 
     def get_form(self):
         return self.form or self.word.citation()
@@ -233,3 +271,40 @@ class Variant(models.Model):
             return f'{form_markup}, {self.extra_forms}'
         else:
             return form_markup
+
+    def get_gloss(self):
+        return self.get_definitions()[0].split(',', maxsplit=1)[0]
+
+
+class Etymology(models.Model):
+    word = models.OneToOneField(Word, on_delete=models.CASCADE)
+    kind = models.CharField(max_length=7)
+    notes = models.TextField(blank=True)
+    components = models.ManyToManyField(Variant, related_name='derivatives', related_query_name='derivative')
+    order = models.TextField()
+
+    def html(self):
+        kind, prep = self.word.dictionary.get_derivation_dict().get(self.kind, ('', ''))
+        if kind:
+            kind = kind.capitalize()
+            components = [component.link() for component in self.get_components()]
+            if len(components) == 0:
+                etymology = f'{kind}.'
+            else:
+                if len(components) == 1:
+                    components_html = components[0]
+                elif len(components) == 2:
+                    components_html = mark_safe(' and '.join(components))
+                else:
+                    last = components.pop()
+                    components_html = mark_safe(', '.join(components) + f', and {last}')
+                etymology = format_html('{} {} {}.', kind, prep, components_html)
+        else:
+            etymology = 'Unknown etymology.'
+        if self.notes:
+            etymology = format_html('<p>{}</p><p>{}</p>', etymology, self.notes)
+        return etymology
+
+    def get_components(self):
+        components = list(self.components.all())
+        return [components[int(i)] for i in self.order.split(',')]

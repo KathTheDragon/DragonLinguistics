@@ -52,3 +52,8 @@ def plural(string, countnouns):
 @template.defaultfilters.stringfilter
 def pluralise(string):
     return utils.pluralise(string)
+
+
+@register.filter
+def hasattr(obj, name):
+    return builtins.hasattr(obj, name)

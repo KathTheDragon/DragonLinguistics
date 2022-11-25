@@ -77,7 +77,6 @@ class ViewDictionary(base.Actions):
             return StreamingHttpResponse(entries, content_type='text/csv', headers={
                 'Content-Disposition': f'attachment; {file_expr}'})
 
-
     class New(base.New):
         form = forms.NewWord
         instance = 'word'

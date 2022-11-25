@@ -1,11 +1,12 @@
 {%extends 'common/view.html'%}
 {%load markup%}
+{%load util%}
 
 {%block content%}
 <dl>
-    {%if word.etymology%}
+    {%if word|hasattr:'etymology'%}
     <dt><h3>Etymology</h3></dt>
-    <dd>{% markup word.etymology %}</dd>
+    <dd>{{word.etymology.html}}</dd>
     {%endif%}
     {%for variant in word.get_variants%}<dt><h3>{{variant.get_lexclass}}</h3></dt>
     <dd>
@@ -15,11 +16,20 @@
             {%endfor%}
         </ol>
         {%if variant.notes%}<p>{% markup variant.notes %}</p>{%endif%}
-        {%if variant.derivatives%}<dl>
+        {%with derivatives=variant.get_derivatives%}{%if derivatives%}<dl>
             <dt>Derivatives:</dt>
             <dd>
                 <ul>
-                    {%for derivative in variant.get_derivatives%}<li>{%markup derivative%}</li>
+                    {%for derivative in derivatives%}<li>{{derivative.link}}</li>
+                    {%endfor%}
+                </ul>
+            </dd>
+        </dl>{%endif%}
+        {%with descendents=variant.get_descendents%}{%if descendents%}<dl>
+            <dt>Descendents:</dt>
+            <dd>
+                <ul>
+                    {%for descendent in descendents%}<li>{{descendent.link}}</li>
                     {%endfor%}
                 </ul>
             </dd>
