@@ -31,13 +31,13 @@ class ListArticles(base.Actions):
         def get_context_data(self, **kwargs):
             return super().get_context_data(**kwargs) | {'title': kwargs['folder'].kind().title()}
 
-    class New(base.New):
-        form = NewArticle
-        instance = 'article'
-        parent = 'folder'
-
-        def get_context_data(self, **kwargs):
-            return super().get_context_data(**kwargs) | {'type': kwargs['folder'].kind_singular()}
+    # class New(base.New):
+    #     form = NewArticle
+    #     instance = 'article'
+    #     parent = 'folder'
+    #
+    #     def get_context_data(self, **kwargs):
+    #         return super().get_context_data(**kwargs) | {'type': kwargs['folder'].kind_singular()}
 
 
 class ViewArticle(base.Actions):
@@ -51,9 +51,9 @@ class ViewArticle(base.Actions):
         def get_context_data(self, **kwargs):
             return super().get_context_data(**kwargs) | {'no_content_header': True}
 
-    class Edit(base.Edit):
-        form = EditArticle
-        instance = 'article'
+    # class Edit(base.Edit):
+    #     form = EditArticle
+    #     instance = 'article'
 
-    class Delete(base.Delete):
-        instance = 'article'
+    # class Delete(base.Delete):
+    #     instance = 'article'

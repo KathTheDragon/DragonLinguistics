@@ -27,9 +27,9 @@ class ViewBibliography(base.Actions):
                 'authors': Author.objects.all(),
             }
 
-    class New(base.New):
-        form = NewAuthor
-        instance = 'author'
+    # class New(base.New):
+    #     form = NewAuthor
+    #     instance = 'author'
 
 
 class ViewAuthor(base.Actions):
@@ -43,17 +43,17 @@ class ViewAuthor(base.Actions):
             return super().get_context_data(**kwargs) | {
                 'references': Reference.objects.filter(author=kwargs['author'])}
 
-    class Edit(base.Edit):
-        form = EditAuthor
-        instance = 'author'
+    # class Edit(base.Edit):
+    #     form = EditAuthor
+    #     instance = 'author'
 
-    class Delete(base.Delete):
-        instance = 'author'
+    # class Delete(base.Delete):
+    #     instance = 'author'
 
-    class New(base.New):
-        form = NewReference
-        instance = 'reference'
-        parent = 'author'
+    # class New(base.New):
+    #     form = NewReference
+    #     instance = 'reference'
+    #     parent = 'author'
 
 
 class ViewReference(base.Actions):
@@ -63,9 +63,9 @@ class ViewReference(base.Actions):
     class View(base.View):
         instance = 'reference'
 
-    class Edit(base.Edit):
-        form = EditReference
-        instance = 'reference'
+    # class Edit(base.Edit):
+    #     form = EditReference
+    #     instance = 'reference'
 
-    class Delete(base.Delete):
-        instance = 'reference'
+    # class Delete(base.Delete):
+    #     instance = 'reference'

@@ -1,9 +1,9 @@
 {%extends 'common/view.html'%}
 
-{%block actions%}
+{#{%block actions%}
 {{block.super}}
 {%if user.is_authenticated%}<!-- To-do: add a download -->{%endif%}
-{%endblock%}
+{%endblock%}#}
 
 {%block content%}
 <p>Title: {{reference.title}}</p>

@@ -39,12 +39,12 @@ class ListLanguages(base.Actions):
         def get_context_data(self, **kwargs):
             return super().get_context_data(**kwargs) | {'title': 'Languages'}
 
-    class New(base.New):
-        form = NewLanguage
-        instance = 'language'
-
-        def get_extra_attrs(self, **kwargs):
-            return {'type': get_language_type(self)}
+    # class New(base.New):
+    #     form = NewLanguage
+    #     instance = 'language'
+    #
+    #     def get_extra_attrs(self, **kwargs):
+    #         return {'type': get_language_type(self)}
 
 
 class ViewLanguage(base.Actions):
@@ -54,9 +54,9 @@ class ViewLanguage(base.Actions):
     class View(base.View):
         instance = 'language'
 
-    class Edit(base.Edit):
-        form = EditLanguage
-        instance = 'language'
+    # class Edit(base.Edit):
+    #     form = EditLanguage
+    #     instance = 'language'
 
-    class Delete(base.Delete):
-        instance = 'language'
+    # class Delete(base.Delete):
+    #     instance = 'language'

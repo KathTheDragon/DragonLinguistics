@@ -5,9 +5,9 @@
 
 {%block heading%}{{title}}{%endblock%}
 
-{%block actions%}
+{#{%block actions%}
 {%if user.is_authenticated%}<a class="new" href="?new">New {{type}}</a>{%endif%}
-{%endblock%}
+{%endblock%}#}
 
 {%block content%}
 {%include './snippets/prevpage.html'%}

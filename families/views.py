@@ -20,17 +20,17 @@ class ListFamilies(base.Actions):
         def get_context_data(self, **kwargs):
             return super().get_context_data(**kwargs) | {'title': 'Families'}
 
-    class New(base.New):
-        form = NewFamily
-        instance = 'family'
-
-        def get_extra_attrs(self, **kwargs):
-            return {'type': get_language_type(self)}
-
-        def handle_forms(self, form, **kwargs):
-            family = super().handle_forms(form=form, **kwargs)
-            family.parse_clades(form.cleaned_data['tree'])
-            return family
+    # class New(base.New):
+    #     form = NewFamily
+    #     instance = 'family'
+    #
+    #     def get_extra_attrs(self, **kwargs):
+    #         return {'type': get_language_type(self)}
+    #
+    #     def handle_forms(self, form, **kwargs):
+    #         family = super().handle_forms(form=form, **kwargs)
+    #         family.parse_clades(form.cleaned_data['tree'])
+    #         return family
 
 
 class ViewFamily(base.Actions):
@@ -40,21 +40,21 @@ class ViewFamily(base.Actions):
     class View(base.View):
         instance = 'family'
 
-    class Edit(base.Edit):
-        form = EditFamily
-        instance = 'family'
+    # class Edit(base.Edit):
+    #     form = EditFamily
+    #     instance = 'family'
+    #
+    #     def get_forms(self, form_initial={}, **kwargs):
+    #         tree = kwargs['family'].draw_clades(use_pipes=False)
+    #         return super().get_forms(**kwargs, form_initial=form_initial | {'tree': tree})
+    #
+    #     def handle_forms(self, form, **kwargs):
+    #         family = super().handle_forms(form=form, **kwargs)
+    #         tree = family.draw_clades(use_pipes=False)
+    #         if form.cleaned_data['tree'].replace('\r\n', '\n') != tree:
+    #             family.root.delete()
+    #             family.parse_clades(form.cleaned_data['tree'])
+    #         return family
 
-        def get_forms(self, form_initial={}, **kwargs):
-            tree = kwargs['family'].draw_clades(use_pipes=False)
-            return super().get_forms(**kwargs, form_initial=form_initial | {'tree': tree})
-
-        def handle_forms(self, form, **kwargs):
-            family = super().handle_forms(form=form, **kwargs)
-            tree = family.draw_clades(use_pipes=False)
-            if form.cleaned_data['tree'].replace('\r\n', '\n') != tree:
-                family.root.delete()
-                family.parse_clades(form.cleaned_data['tree'])
-            return family
-
-    class Delete(base.Delete):
-        instance = 'family'
+    # class Delete(base.Delete):
+    #     instance = 'family'
