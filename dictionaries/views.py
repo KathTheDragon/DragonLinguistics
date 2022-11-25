@@ -85,6 +85,15 @@ class ViewDictionary(base.Actions):
         def get_formset_class(self, dictionary, **kwargs):
             return forms.make_variants_formset(dictionary)
 
+        def get_form_classes(self, dictionary, **kwargs):
+            return super().get_form_classes(dictionary=dictionary, **kwargs) | {
+                'etymology_form': forms.make_etymology_form(dictionary)
+            }
+
+        def handle_forms(self, etymology_form, **kwargs):
+            word = super().handle_forms(**kwargs)
+            ...
+
 
 class ViewWord(base.Actions):
     template_folder = 'dictionary'

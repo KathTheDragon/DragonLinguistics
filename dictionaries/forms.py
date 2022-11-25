@@ -24,6 +24,17 @@ class NewWord(forms.ModelForm):
 EditWord = NewWord
 
 
+def make_etymology_form(dictionary):
+    class Etymology(forms.Form):
+        kind = forms.ChoiceField(required=False, choices=dictionary.get_derivation_options())
+        components = forms.CharField(required=False)
+        notes = forms.CharField(required=False, widget=forms.TextInput)
+
+        prefix = 'etymology'
+
+    return Etymology
+
+
 def make_variants_formset(dictionary):
     class Variant(forms.ModelForm):
         lexclass = forms.ChoiceField(label='Class', choices=dictionary.get_class_options())

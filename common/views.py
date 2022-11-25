@@ -207,15 +207,19 @@ class FormAction(SecureAction):
     def get_formset_class(self, **kwargs):
         return self.formset or (lambda data, files, initial, instance=None: None)
 
+    def get_form_classes(self, **kwargs):
+        return {
+            'form': self.get_form_class(**kwargs),
+            'formset': self.get_formset_class(**kwargs),
+        }
+
     def get_forms(self, form_data=None, form_files=None, form_initial=None, form_kwargs={}, **kwargs):
-        return (
-            self.get_form_class(**kwargs)(form_data, form_files, initial=form_initial, **form_kwargs),
-            self.get_formset_class(**kwargs)(form_data, form_files, initial=form_initial, **form_kwargs)
-        )
+        return {
+            key: form_class(form_data, form_files, initial=form_initial, **form_kwargs)
+            for key, form_class in self.get_form_classes(**kwargs)}
 
     def get_context_data(self, **kwargs):
-        form, formset = self.get_forms(**kwargs)
-        return super().get_context_data(**kwargs) | {'form': form, 'formset': formset}
+        return super().get_context_data(**kwargs) | self.get_forms(**kwargs)
 
     def handle_forms(self, form, formset, **kwargs):
         raise ValueError
@@ -225,14 +229,14 @@ class FormAction(SecureAction):
         return redirect(redirect_fn(obj))
 
     def post(self, request, **kwargs):
-        form, formset = self.get_forms(form_data=request.POST, form_files=request.FILES, **kwargs)
+        forms = self.get_forms(form_data=request.POST, form_files=request.FILES, **kwargs)
         if '_add-section' in request.POST:
             post_data = request.POST.copy()
-            key = f'{formset.prefix}-TOTAL_FORMS'
+            key = f'{forms["formset"].prefix}-TOTAL_FORMS'
             post_data[key] = str(int(post_data[key]) + 1)
             return self.get(request, **kwargs, form_data=post_data, form_files=request.FILES)
-        elif all((f is None or f.is_valid()) for f in [form, formset]):
-            return self.get_response(request, self.handle_forms(form=form, formset=formset, **kwargs), **kwargs)
+        elif all((f is None or f.is_valid()) for f in forms.values()):
+            return self.get_response(request, self.handle_forms(**forms, **kwargs), **kwargs)
         else:
             return self.get(request, **kwargs, form_data=request.POST, form_files=request.FILES)
 
