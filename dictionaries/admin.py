@@ -21,6 +21,18 @@ class DictionaryAdmin(admin.ModelAdmin):
     save_on_top = True
 
 
+class EtymologyForm(ModelForm):
+    class Meta:
+        model = models.Etymology
+        fields = '__all__'
+
+
+@admin.register(models.Etymology)
+class EtymologyAdmin(admin.ModelAdmin):
+    form = EtymologyForm
+    save_on_top = True
+
+
 class VariantForm(ModelForm):
     class Meta:
         model = models.Variant
@@ -44,8 +56,6 @@ class WordForm(ModelForm):
         model = models.Word
         fields = '__all__'
         widgets = {
-            'etymology': Textarea(attrs=textarea_attrs),
-            'descendents': Textarea(attrs=textarea_attrs),
             'references': Textarea(attrs=textarea_attrs),
         }
 
