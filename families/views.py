@@ -1,10 +1,12 @@
+from typing import Any
+
 from common import views as base
 from common.shortcuts import get_object_or_404
 from languages.views import get_language_type
 from .forms import NewFamily, EditFamily
 from .models import Clade, Family
 
-def process_family_kwargs(view, name):
+def process_family_kwargs(view, name: str) -> dict[str, Any]:
     return {'family': get_object_or_404(Family, name=name, type=get_language_type(view))}
 
 
@@ -17,7 +19,7 @@ class ListFamilies(base.Actions):
         def get_object_list(self, **kwargs):
             return Family.objects.filter(type=get_language_type(self))
 
-        def get_context_data(self, **kwargs):
+        def get_context_data(self, **kwargs) -> dict[str, Any]:
             return super().get_context_data(**kwargs) | {'title': 'Families'}
 
     # class New(base.New):

@@ -1,15 +1,17 @@
 import re
+from collections.abc import Iterator
 
 from django.contrib import admin
 from django.db import models
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
+from django.utils.safestring import mark_safe, SafeString
 from django_hosts.resolvers import reverse
 
 from common.models import BaseModel
 from languages.models import Language
 
-def parse_class_list(lines, index=0, indent=''):
+def parse_class_list(lines: list[str], index: int = 0, indent: str = '') -> tuple[
+        list[tuple[str, str | list[tuple[str, str]]]], int]:
     options = []
     groups = []
     while index < len(lines):
@@ -52,7 +54,7 @@ def parse_class_list(lines, index=0, indent=''):
     return options, index
 
 
-def parse_class(line):
+def parse_class(line: str) -> tuple[str, str]:
     parts = line.split(',')
     if len(parts) == 1:
         code = name = parts[0]
@@ -61,7 +63,7 @@ def parse_class(line):
     return code.strip(), name.strip()
 
 
-def merge_group(options, code, name=''):
+def merge_group(options: list[tuple[str, str]], code: str, name: str = '') -> list[tuple[str, str]]:
     return [(f'{_code} {code}', f'{_name} {name}' if name else _name) for _code, _name in options]
 
 
@@ -71,19 +73,19 @@ DERIVATIONS = {
 }
 
 class Dictionary(BaseModel):
-    language = models.OneToOneField(Language, on_delete=models.CASCADE)
-    classes = models.TextField('lexical classes', blank=True)
-    order = models.TextField('alphabetical order', blank=True)  # Not using yet
-    derivations = models.TextField(blank=True)
+    language: Language = models.OneToOneField(Language, on_delete=models.CASCADE)
+    classes: str = models.TextField('lexical classes', blank=True)
+    order: str = models.TextField('alphabetical order', blank=True)  # Not using yet
+    derivations: str = models.TextField(blank=True)
     # words
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.language} Dictionary'
 
-    def get_class_options(self):
+    def get_class_options(self) -> list[tuple[str, str | list[tuple[str, str]]]]:
         return parse_class_list(self.classes.splitlines())[0]
 
-    def get_class_dict(self):
+    def get_class_dict(self) -> dict[str, str]:
         class_dict = {}
         for option in self.get_class_options():
             if isinstance(option[1], str):
@@ -94,39 +96,40 @@ class Dictionary(BaseModel):
                     class_dict[key] = f'{group} ({value})'
         return class_dict
 
-    def get_class_list(self):
+    def get_class_list(self) -> list[str]:
         return list(self.get_class_dict())
 
-    def get_derivation_dict(self):
+    def get_derivation_dict(self) -> dict[str, tuple[str, str]]:
         return DERIVATIONS | {
             code: (kind, 'of')
             for derivation in self.derivations.splitlines()
             for code, kind in map(str.strip, derivation.split(','))}
 
-    def get_derivation_options(self):
+    def get_derivation_options(self) -> list[tuple[str, str]]:
         return [(code, kind) for code, (kind, _) in self.get_derivation_dict().items()]
 
-    def url(self):
+    def url(self) -> str:
         return reverse('view-dictionary', kwargs={'name': self.language.name}, host=self.language.get_host())
 
-    def breadcrumbs(self):
+    def breadcrumbs(self) -> Iterator[tuple[str, str]]:
         yield from self.language.breadcrumbs()
-        yield (self.url(), 'Dictionary')
+        yield self.url(), 'Dictionary'
 
 
 class Word(BaseModel):
-    dictionary = models.ForeignKey(Dictionary, related_name='words', related_query_name='word', on_delete=models.CASCADE, null=True)
-    lemma = models.CharField(max_length=50)
-    isunattested = models.BooleanField(default=False)
-    gloss = models.CharField(max_length=50, blank=True)
+    dictionary: Dictionary = models.ForeignKey(
+        Dictionary, related_name='words', related_query_name='word', on_delete=models.CASCADE, null=True)
+    lemma: str = models.CharField(max_length=50)
+    isunattested: bool = models.BooleanField(default=False)
+    gloss: str = models.CharField(max_length=50, blank=True)
     # etymology
-    references = models.TextField(blank=True)
+    references: str = models.TextField(blank=True)
     # variants
 
     class Meta:
         ordering = ['lemma', 'id']
 
-    def get_homonym(self):
+    def get_homonym(self) -> int:
         ids = [
             id for (id,) in
             Word.objects.filter(dictionary=self.dictionary, lemma=self.lemma).values_list('id')
@@ -136,10 +139,10 @@ class Word(BaseModel):
         else:
             return ids.index(self.id) + 1
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.citation()
 
-    def citation(self):
+    def citation(self) -> str:
         citation = {
             'r': '√{}',
             's': '{}-',
@@ -153,7 +156,7 @@ class Word(BaseModel):
             citation = '*' + citation
         return citation
 
-    def url(self):
+    def url(self) -> str:
         homonym = self.get_homonym()
         if homonym:
             lemma = f'{self.lemma}-{homonym}'
@@ -165,37 +168,37 @@ class Word(BaseModel):
             host=self.dictionary.language.get_host(),
         )
 
-    def list_url(self):
+    def list_url(self) -> str:
         return self.dictionary.url()
 
-    def breadcrumbs(self):
+    def breadcrumbs(self) -> Iterator[tuple[str, str]]:
         yield from self.dictionary.breadcrumbs()
-        yield (self.url(), self.word_html())
+        yield self.url(), self.word_html()
 
-    def get_string(self):
+    def get_string(self) -> str:
         homonym = self.get_homonym()
         if homonym:
             return format_html('{}<sub>{}</sub>', str(self), homonym)
         else:
             return str(self)
 
-    def get_classes(self):
+    def get_classes(self) -> list[str]:
         return ['word', self.dictionary.language.code]
 
-    def word_html(self, word=''):
+    def word_html(self, word: str = '') -> SafeString:
         return format_html(
             '<span class="{}">{}</span>', ' '.join(self.get_classes()), word or self.get_string())
 
-    def gloss_html(self, gloss=''):
+    def gloss_html(self, gloss: str = '') -> SafeString:
         return format_html('<span class="gloss">{}</span>', gloss or self.get_gloss())
 
-    def html(self, word='', gloss=''):
+    def html(self, word: str = '', gloss: str = '') -> SafeString:
         return format_html('{} {}', self.word_html(word), self.gloss_html(gloss))
 
-    def link(self, word='', gloss=''):
+    def link(self, word: str = '', gloss: str = '') -> SafeString:
         return format_html('<a href="{}">{}</a>', self.url(), self.html(word, gloss))
 
-    def get_type(self):
+    def get_type(self) -> str:
         variants = self.variants.all()
         if variants:
             return variants[0].type
@@ -203,7 +206,7 @@ class Word(BaseModel):
             return ''
 
     @admin.display(description='Gloss')
-    def get_gloss(self):
+    def get_gloss(self) -> str:
         if self.gloss:
             return self.gloss
         else:
@@ -213,7 +216,7 @@ class Word(BaseModel):
             else:
                 return ''
 
-    def get_variants(self):
+    def get_variants(self) -> list['Variant']:
         '''Used for ordering the variants.'''
         class_list = self.dictionary.get_class_list()
         return sorted(self.variants.all(), key=lambda variant: class_list.index(variant.lexclass))
@@ -231,40 +234,41 @@ class Variant(models.Model):
         ('pc', 'Proclitic'),
         ('ec', 'Enclitic'),
     ]
-    word = models.ForeignKey(Word, on_delete=models.CASCADE, related_name='variants', related_query_name='variant')
-    type = models.CharField(max_length=2, choices=TYPES, default='s')
-    lexclass = models.CharField('class', max_length=20)
-    form = models.CharField(max_length=50, blank=True)
-    extra_forms = models.TextField(blank=True)
-    definition = models.TextField()
-    notes = models.TextField(blank=True)
+    word: Word = models.ForeignKey(
+        Word, on_delete=models.CASCADE, related_name='variants', related_query_name='variant')
+    type: str = models.CharField(max_length=2, choices=TYPES, default='s')
+    lexclass: str = models.CharField('class', max_length=20)
+    form: str = models.CharField(max_length=50, blank=True)
+    extra_forms: str = models.TextField(blank=True)
+    definition: str = models.TextField()
+    notes: str = models.TextField(blank=True)
     # derivatives
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.get_form()
 
-    def html(self):
+    def html(self) -> SafeString:
         return self.word.html(word=self.get_form(), gloss=self.get_gloss())
 
-    def link(self):
+    def link(self) -> SafeString:
         return format_html('<a href="{}">{}</a>', self.word.url(), self.html())
 
-    def get_lexclass(self):
+    def get_lexclass(self) -> str:
         return self.word.dictionary.get_class_dict().get(self.lexclass, 'Unknown')
 
-    def get_definitions(self):
+    def get_definitions(self) -> list[str]:
         return self.definition.splitlines() or ['']
 
-    def get_derivatives(self):
+    def get_derivatives(self) -> list['Etymology']:
         return [derivative for derivative in self.derivatives.all() if derivative.kind not in DERIVATIONS]
 
-    def get_descendents(self):
+    def get_descendents(self) -> list['Etymology']:
         return [derivative for derivative in self.derivatives.all() if derivative.kind in DERIVATIONS]
 
-    def get_form(self):
+    def get_form(self) -> str:
         return self.form or self.word.citation()
 
-    def get_forms(self):
+    def get_forms(self) -> str:
         langcode = self.word.dictionary.language.code
         form_markup = f'$word[{langcode}]{{ {self.get_form()} }}'
         if self.extra_forms:
@@ -272,16 +276,16 @@ class Variant(models.Model):
         else:
             return form_markup
 
-    def get_gloss(self):
+    def get_gloss(self) -> str:
         return self.get_definitions()[0].split(',', maxsplit=1)[0]
 
 
 class Etymology(models.Model):
-    word = models.OneToOneField(Word, on_delete=models.CASCADE)
-    kind = models.CharField(max_length=7)
-    notes = models.TextField(blank=True)
+    word: Word = models.OneToOneField(Word, on_delete=models.CASCADE)
+    kind: str = models.CharField(max_length=7)
+    notes: str = models.TextField(blank=True)
     components = models.ManyToManyField(Variant, related_name='derivatives', related_query_name='derivative')
-    order = models.TextField()
+    order: str = models.TextField()
 
     def html(self):
         kind, prep = self.word.dictionary.get_derivation_dict().get(self.kind, ('', ''))

@@ -1,3 +1,5 @@
+from collections.abc import Iterator
+
 from django.db import models
 from django_hosts.resolvers import reverse
 
@@ -10,18 +12,18 @@ class Language(BaseModel):
         ('conlang', 'Conlang'),
         ('other',   'Other'),
     ]
-    type = models.CharField(max_length=7, choices=TYPES, default='other')
-    name = models.CharField('language name', max_length=50)
-    code = models.CharField('language code', max_length=5, unique=True)
-    blurb = models.TextField(default='')
+    type: str = models.CharField(max_length=7, choices=TYPES, default='other')
+    name: str = models.CharField('language name', max_length=50)
+    code: str = models.CharField('language code', max_length=5, unique=True)
+    blurb: str = models.TextField(default='')
 
     class Meta:
         ordering = ['name']
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         from dictionaries.models import Dictionary
         folders = Language.objects.get(pk=self.pk).get_folders()
         prefix = folders['articles'].path
@@ -37,7 +39,7 @@ class Language(BaseModel):
             folder.delete()
         return super().delete(*args, **kwargs)
 
-    def get_host(self):
+    def get_host(self) -> str:
         if self.type == 'natlang':
             return 'hist'
         elif self.type == 'conlang':
@@ -45,20 +47,20 @@ class Language(BaseModel):
         else:
             return ''
 
-    def url(self):
+    def url(self) -> str:
         return reverse('view-language', kwargs={'name': self.name}, host=self.get_host())
 
-    def list_url(self):
+    def list_url(self) -> str:
         return reverse('list-languages', host=self.get_host())
 
-    def breadcrumbs(self):
-        yield (self.list_url(), 'Languages')
-        yield (self.url(), self.html())
+    def breadcrumbs(self) -> Iterator[tuple[str, str]]:
+        yield self.list_url(), 'Languages'
+        yield self.url(), self.html()
 
-    def get_classes(self):
+    def get_classes(self) -> list[str]:
         return ['lang', self.code]
 
-    def get_folders(self):
+    def get_folders(self) -> dict[str, Folder]:
         return {
             'articles': Folder.objects.get_or_create(path=f'{self.type}s/{self.code}/')[0],
             'grammar': Folder.objects.get_or_create(path=f'{self.type}s/{self.code}/grammar/')[0],

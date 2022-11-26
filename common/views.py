@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.http import Http404
@@ -71,17 +73,17 @@ def raise_Http404():
 class Actions(generic.View):
     template_folder = ''
 
-    def get_default_action(self):
+    def get_default_action(self) -> str:
         return next(name for name, value in vars(type(self)).items() if is_action(value))
 
-    def get_template_folder(self):
+    def get_template_folder(self) -> str:
         return self.template_folder
 
-    def get_action_attrs(self):
+    def get_action_attrs(self) -> dict[str, str]:
         return {'template_folder': self.get_template_folder()}
 
     @staticmethod
-    def process_kwargs(self, **kwargs):
+    def process_kwargs(self, **kwargs) -> dict[str, Any]:
         return kwargs
 
     def dispatch(self, request, **kwargs):
@@ -104,7 +106,7 @@ class Actions(generic.View):
 
 
 class Base(generic.TemplateView):
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
         return super().get_context_data(**kwargs) | {'host': Host.get(self.request.host.name)}
 
 
@@ -113,13 +115,13 @@ class Action(Base):
     template_name = ''
     instance = ''
 
-    def get_template_name(self):
+    def get_template_name(self) -> str:
         return self.template_name.format(instance=self.instance)
 
-    def get_template_names(self):
+    def get_template_names(self) -> list[str]:
         return [f'{self.template_folder}/{self.get_template_name()}.html'.lstrip('/')]
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
         return super().get_context_data(**kwargs) | {
             'type': self.instance,
             'object': kwargs.get(self.instance),
@@ -136,7 +138,7 @@ class PageMixin(ContextMixin):
     def get_object_list(self, **kwargs):
         return []
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
         from django.core.paginator import Paginator, InvalidPage
         objectlist = self.get_object_list(**kwargs)
         pagenum = self.request.GET.get('page', 1)
@@ -150,7 +152,7 @@ class PageMixin(ContextMixin):
 class List(PageMixin, Action):
     template_name = 'list-{instances}'
 
-    def get_template_name(self):
+    def get_template_name(self) -> str:
         return self.template_name.format(instances=pluralise(self.instance))
 
 

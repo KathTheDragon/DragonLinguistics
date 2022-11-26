@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.shortcuts import redirect
 
 from common import views as base
@@ -5,12 +7,12 @@ from common.shortcuts import get_object_or_404
 from .forms import NewArticle, EditArticle
 from .models import Folder, Article
 
-def process_folder_kwargs(view, **kwargs):
+def process_folder_kwargs(view, **kwargs) -> dict[str, Any]:
     folder, _ = Folder.objects.get_or_create(path=view.article_folder.format(**kwargs))
     return {'folder': folder}
 
 
-def process_article_kwargs(view, slug, **kwargs):
+def process_article_kwargs(view, slug: str, **kwargs) -> dict[str, Any]:
     kwargs = process_folder_kwargs(view, **kwargs)
     return kwargs | {
         'article': get_object_or_404(Article, folder=kwargs['folder'], slug=slug),
@@ -25,10 +27,10 @@ class ListArticles(base.Actions):
     class List(base.List):
         instance = 'article'
 
-        def get_object_list(self, folder, **kwargs):
+        def get_object_list(self, folder: str, **kwargs) -> Article:
             return Article.objects.filter(folder=folder)
 
-        def get_context_data(self, **kwargs):
+        def get_context_data(self, **kwargs) -> dict[str, Any]:
             return super().get_context_data(**kwargs) | {'title': kwargs['folder'].kind().title()}
 
     # class New(base.New):
@@ -36,7 +38,7 @@ class ListArticles(base.Actions):
     #     instance = 'article'
     #     parent = 'folder'
     #
-    #     def get_context_data(self, **kwargs):
+    #     def get_context_data(self, **kwargs) -> dict[str, Any]:
     #         return super().get_context_data(**kwargs) | {'type': kwargs['folder'].kind_singular()}
 
 
@@ -48,7 +50,7 @@ class ViewArticle(base.Actions):
     class View(base.View):
         instance = 'article'
 
-        def get_context_data(self, **kwargs):
+        def get_context_data(self, **kwargs) -> dict[str, Any]:
             return super().get_context_data(**kwargs) | {'no_content_header': True}
 
     # class Edit(base.Edit):

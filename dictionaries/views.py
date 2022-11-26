@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.http import FileResponse, StreamingHttpResponse
 from django.shortcuts import redirect
 from urllib.parse import quote
@@ -9,12 +11,12 @@ from . import forms
 from .models import Dictionary, Word, Variant
 from .utils import make_csv
 
-def process_dictionary_kwargs(view, name):
+def process_dictionary_kwargs(view, name: str) -> dict[str, Any]:
     kwargs = process_language_kwargs(view, name)
     return kwargs | {'dictionary': get_object_or_404(Dictionary, language=kwargs['language'])}
 
 
-def process_word_kwargs(view, name, lemma):
+def process_word_kwargs(view, name: str, lemma: str) -> dict[str, Any]:
     kwargs = process_dictionary_kwargs(view, name)
     homonym = 1
     if '-' in lemma:
@@ -31,10 +33,10 @@ class ViewDictionary(base.Actions):
     class View(base.PageMixin, base.View):
         instance = 'dictionary'
 
-        def get_context_data(self, **kwargs):
+        def get_context_data(self, **kwargs) -> dict[str, Any]:
             return super().get_context_data(**kwargs) | {'type': 'word', 'title': str(kwargs['dictionary'])}
 
-        def get_object_list(self, dictionary, **kwargs):
+        def get_object_list(self, dictionary: Dictionary, **kwargs):
             return Word.objects.filter(dictionary=dictionary)
 
     # class Settings(base.Edit):

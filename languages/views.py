@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.shortcuts import redirect
 
 from articles.views import process_folder_kwargs, process_article_kwargs, ListArticles, ViewArticle
@@ -6,23 +8,23 @@ from common.shortcuts import get_object_or_404
 from .forms import NewLanguage, EditLanguage
 from .models import Language
 
-def get_language_type(view):
+def get_language_type(view) -> str:
     return {
         'conlang': 'conlang',
         'hist': 'natlang',
     }.get(view.request.host.name)
 
 
-def process_language_kwargs(view, name):
+def process_language_kwargs(view, name: str) -> dict[str, Any]:
     return {'language': get_object_or_404(Language, name=name, type=get_language_type(view))}
 
 
-def process_lang_folder_kwargs(view, name):
+def process_lang_folder_kwargs(view, name: str) -> dict[str, Any]:
     kwargs = process_language_kwargs(view, name)
     return kwargs | process_folder_kwargs(view, **kwargs)
 
 
-def process_lang_article_kwargs(view, name, slug):
+def process_lang_article_kwargs(view, name: str, slug: str) -> dict[str, Any]:
     kwargs = process_language_kwargs(view, name)
     return kwargs | process_article_kwargs(view, slug, **kwargs)
 
@@ -36,7 +38,7 @@ class ListLanguages(base.Actions):
         def get_object_list(self, **kwargs):
             return Language.objects.filter(type=get_language_type(self))
 
-        def get_context_data(self, **kwargs):
+        def get_context_data(self, **kwargs) -> dict[str, Any]:
             return super().get_context_data(**kwargs) | {'title': 'Languages'}
 
     # class New(base.New):

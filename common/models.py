@@ -1,17 +1,28 @@
+from collections.abc import Iterator
+
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.utils.safestring import SafeString
 from django_hosts.resolvers import reverse
 
 class BaseModel(models.Model):
-    def get_absolute_url(self):
+    objects: models.Manager
+    DoesNotExist: type[ObjectDoesNotExist]
+    id: int
+
+    def get_absolute_url(self) -> str:
         return self.url()
 
-    def get_classes(self):
+    def url(self) -> str:
+        raise NotImplementedError
+
+    def get_classes(self) -> list[str]:
         return []
 
-    def get_string(self):
+    def get_string(self) -> str:
         return str(self)
 
-    def html(self):
+    def html(self) -> SafeString:
         from django.utils.html import format_html
         classes = ' '.join(self.get_classes())
         if classes:
@@ -24,15 +35,15 @@ class BaseModel(models.Model):
 
 
 class Host:
-    def __init__(self, name, title):
+    def __init__(self, name: str, title: str) -> None:
         self.name = name
         self.title = title
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.title
 
     @staticmethod
-    def get(name='www'):
+    def get(name: str = 'www') -> 'Host':
         title = {
             'www': 'Home',
             'conlang': 'Conlanging',
@@ -40,10 +51,10 @@ class Host:
         }.get(name, 'Other')
         return Host(name, title)
 
-    def url(self):
+    def url(self) -> str:
         return reverse('home', host=self.name)
 
-    def breadcrumbs(self):
+    def breadcrumbs(self) -> Iterator[tuple[str, str]]:
         if self.name != 'www':
             yield from Host.get().breadcrumbs()
-        yield (self.url(), str(self))
+        yield self.url(), str(self)
