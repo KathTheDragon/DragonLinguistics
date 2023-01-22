@@ -1,15 +1,9 @@
 from typing import Any
 
-from django.http import FileResponse, StreamingHttpResponse
-from django.shortcuts import redirect
-from urllib.parse import quote
-
 from common import views as base
 from common.shortcuts import get_object_or_404
 from languages.views import process_language_kwargs
-from . import forms
-from .models import Dictionary, Word, Variant
-from .utils import make_csv
+from .models import Dictionary, Word
 
 def process_dictionary_kwargs(view, name: str) -> dict[str, Any]:
     kwargs = process_language_kwargs(view, name)
@@ -39,63 +33,6 @@ class ViewDictionary(base.Actions):
         def get_object_list(self, dictionary: Dictionary, **kwargs):
             return Word.objects.filter(dictionary=dictionary)
 
-    # class Settings(base.Edit):
-    #     form = forms.EditDictionary
-    #     instance = 'dictionary'
-    #     redirects = base.Edit.redirects | {'edit': lambda obj: f'{obj.url()}?settings'}
-
-    # class Import(base.FormAction):
-    #     template_name = 'import-dictionary'
-    #     form = forms.ImportDictionary
-    #     instance = 'dictionary'
-    #
-    #     def handle_forms(self, form, formset, dictionary, **kwargs):
-    #         action = form.cleaned_data['action']
-    #         entries = form.cleaned_data['entries']
-    #         if action == 'replace':
-    #             Word.objects.filter(dictionary=dictionary).delete()
-    #         for entry in entries:
-    #             word = Word(dictionary=dictionary, **entry['word'])
-    #             word.save()
-    #             for variant in entry['variants']:
-    #                 Variant(word=word, **variant).save()
-    #         return dictionary
-
-    # class Export(base.FormAction):
-    #     template_name = 'export-dictionary'
-    #     form = forms.ExportDictionary
-    #     instance = 'dictionary'
-    #
-    #     def handle_forms(self, form, dictionary, **kwargs):
-    #         return make_csv(dictionary, form.cleaned_data['delimiter'], form.cleaned_data['quotechar'])
-    #
-    #     def get_response(self, request, entries, language, **kwargs):
-    #         filename = f'{language.name}.csv'
-    #         try:
-    #             filename.encode('ascii')
-    #             file_expr = 'filename="{}"'.format(filename)
-    #         except UnicodeEncodeError:
-    #             file_expr = "filename*=utf-8''{}".format(quote(filename))
-    #         return StreamingHttpResponse(entries, content_type='text/csv', headers={
-    #             'Content-Disposition': f'attachment; {file_expr}'})
-
-    # class New(base.New):
-    #     form = forms.NewWord
-    #     instance = 'word'
-    #     parent = 'dictionary'
-    #
-    #     def get_formset_class(self, dictionary, **kwargs):
-    #         return forms.make_variants_formset(dictionary)
-    #
-    #     def get_form_classes(self, dictionary, **kwargs):
-    #         return super().get_form_classes(dictionary=dictionary, **kwargs) | {
-    #             'etymology_form': forms.make_etymology_form(dictionary)
-    #         }
-    #
-    #     def handle_forms(self, etymology_form, **kwargs):
-    #         word = super().handle_forms(**kwargs)
-    #         ...
-
 
 class ViewWord(base.Actions):
     template_folder = 'dictionary'
@@ -103,13 +40,3 @@ class ViewWord(base.Actions):
 
     class View(base.View):
         instance = 'word'
-
-    # class Edit(base.Edit):
-    #     form = forms.EditWord
-    #     instance = 'word'
-    #
-    #     def get_formset_class(self, dictionary, **kwargs):
-    #         return forms.make_variants_formset(dictionary)
-
-    # class Delete(base.Delete):
-    #     instance = 'word'

@@ -1,11 +1,8 @@
 from typing import Any
 
-from django.shortcuts import redirect
-
-from articles.views import process_folder_kwargs, process_article_kwargs, ListArticles, ViewArticle
+from articles.views import process_folder_kwargs, process_article_kwargs
 from common import views as base
 from common.shortcuts import get_object_or_404
-from .forms import NewLanguage, EditLanguage
 from .models import Language
 
 def get_language_type(view) -> str:
@@ -41,13 +38,6 @@ class ListLanguages(base.Actions):
         def get_context_data(self, **kwargs) -> dict[str, Any]:
             return super().get_context_data(**kwargs) | {'title': 'Languages'}
 
-    # class New(base.New):
-    #     form = NewLanguage
-    #     instance = 'language'
-    #
-    #     def get_extra_attrs(self, **kwargs):
-    #         return {'type': get_language_type(self)}
-
 
 class ViewLanguage(base.Actions):
     template_folder = 'languages'
@@ -55,10 +45,3 @@ class ViewLanguage(base.Actions):
 
     class View(base.View):
         instance = 'language'
-
-    # class Edit(base.Edit):
-    #     form = EditLanguage
-    #     instance = 'language'
-
-    # class Delete(base.Delete):
-    #     instance = 'language'

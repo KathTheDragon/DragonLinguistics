@@ -1,9 +1,6 @@
 from typing import Any
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.http import Http404
-from django.shortcuts import redirect
 from django.views import generic
 from django.views.generic.base import ContextMixin
 
@@ -66,10 +63,6 @@ def is_action(obj):
     return isinstance(obj, type) and issubclass(obj, Action)
 
 
-def raise_Http404():
-    raise Http404
-
-
 class Actions(generic.View):
     template_folder = ''
 
@@ -126,10 +119,6 @@ class Action(Base):
             'type': self.instance,
             'object': kwargs.get(self.instance),
         }
-
-
-class SecureAction(LoginRequiredMixin, Action):
-    pass
 
 
 class PageMixin(ContextMixin):
@@ -189,102 +178,3 @@ class View(Action):
 #                 kwargs=kwargs,
 #                 params=request.GET,
 #             )
-
-
-class FormAction(SecureAction):
-    form = None
-    formset = None
-    redirects = {
-        'edit': lambda obj: f'{obj.url()}?edit',
-        'view': lambda obj: f'{obj.url()}',
-        'list': lambda obj: f'{obj.list_url()}',
-    }
-
-    def get_form_class(self, **kwargs):
-        if self.form is None:
-            raise ValueError
-        else:
-            return self.form
-
-    def get_formset_class(self, **kwargs):
-        return self.formset or (lambda data, files, initial, instance=None: None)
-
-    def get_form_classes(self, **kwargs):
-        return {
-            'form': self.get_form_class(**kwargs),
-            'formset': self.get_formset_class(**kwargs),
-        }
-
-    def get_forms(self, form_data=None, form_files=None, form_initial=None, form_kwargs={}, **kwargs):
-        return {
-            key: form_class(form_data, form_files, initial=form_initial, **form_kwargs)
-            for key, form_class in self.get_form_classes(**kwargs)}
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(**kwargs) | self.get_forms(**kwargs)
-
-    def handle_forms(self, form, formset, **kwargs):
-        raise ValueError
-
-    def get_response(self, request, obj, **kwargs):
-        redirect_fn = self.redirects.get(request.POST.get('_redirect'), lambda obj: raise_Http404())
-        return redirect(redirect_fn(obj))
-
-    def post(self, request, **kwargs):
-        forms = self.get_forms(form_data=request.POST, form_files=request.FILES, **kwargs)
-        if '_add-section' in request.POST:
-            post_data = request.POST.copy()
-            key = f'{forms["formset"].prefix}-TOTAL_FORMS'
-            post_data[key] = str(int(post_data[key]) + 1)
-            return self.get(request, **kwargs, form_data=post_data, form_files=request.FILES)
-        elif all((f is None or f.is_valid()) for f in forms.values()):
-            return self.get_response(request, self.handle_forms(**forms, **kwargs), **kwargs)
-        else:
-            return self.get(request, **kwargs, form_data=request.POST, form_files=request.FILES)
-
-
-class New(FormAction):
-    template_name = 'new-{instance}'
-    parent = ''
-    extra_attrs = {}
-    redirects = FormAction.redirects | {'new': lambda obj: f'{obj.list_url()}?new'}
-
-    def get_extra_attrs(self, **kwargs):
-        return self.extra_attrs
-
-    def handle_forms(self, form, formset, **kwargs):
-        obj = form.save(commit=False)
-        if self.parent:
-            setattr(obj, self.parent, kwargs.get(self.parent))
-        for attr, value in self.get_extra_attrs(**kwargs).items():
-            setattr(obj, attr, value)
-        obj.save()
-        if formset is not None:
-            objs = formset.save(commit=False)
-            for _obj in objs:
-                setattr(_obj, self.instance, obj)
-                _obj.save()
-        return obj
-
-
-class Edit(FormAction):
-    template_name = 'edit-{instance}'
-
-    def get_forms(self, form_kwargs={}, **kwargs):
-        return super().get_forms(
-            **kwargs, form_kwargs=form_kwargs | {'instance': kwargs.get(self.instance)})
-
-    def handle_forms(self, form, formset, **kwargs):
-        obj = form.save()
-        if formset is not None:
-            formset.save()
-        return obj
-
-
-class Delete(SecureAction):
-    template_name = 'delete-{instance}'
-
-    def post(self, request, **kwargs):
-        obj = kwargs[self.instance]
-        obj.delete()
-        return redirect(obj.list_url())

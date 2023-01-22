@@ -1,10 +1,7 @@
 from typing import Any
 
-from django.shortcuts import redirect
-
 from common import views as base
 from common.shortcuts import get_object_or_404
-from .forms import NewAuthor, EditAuthor, NewReference, EditReference
 from .models import Author, Reference
 
 def process_author_kwargs(view, name: str) -> dict[str, Any]:
@@ -29,10 +26,6 @@ class ViewBibliography(base.Actions):
                 'authors': Author.objects.all(),
             }
 
-    # class New(base.New):
-    #     form = NewAuthor
-    #     instance = 'author'
-
 
 class ViewAuthor(base.Actions):
     template_folder = 'bibliography'
@@ -45,18 +38,6 @@ class ViewAuthor(base.Actions):
             return super().get_context_data(**kwargs) | {
                 'references': Reference.objects.filter(author=kwargs['author'])}
 
-    # class Edit(base.Edit):
-    #     form = EditAuthor
-    #     instance = 'author'
-
-    # class Delete(base.Delete):
-    #     instance = 'author'
-
-    # class New(base.New):
-    #     form = NewReference
-    #     instance = 'reference'
-    #     parent = 'author'
-
 
 class ViewReference(base.Actions):
     template_folder = 'bibliography'
@@ -64,10 +45,3 @@ class ViewReference(base.Actions):
 
     class View(base.View):
         instance = 'reference'
-
-    # class Edit(base.Edit):
-    #     form = EditReference
-    #     instance = 'reference'
-
-    # class Delete(base.Delete):
-    #     instance = 'reference'

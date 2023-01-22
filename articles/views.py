@@ -1,10 +1,7 @@
 from typing import Any
 
-from django.shortcuts import redirect
-
 from common import views as base
 from common.shortcuts import get_object_or_404
-from .forms import NewArticle, EditArticle
 from .models import Folder, Article
 
 def process_folder_kwargs(view, **kwargs) -> dict[str, Any]:
@@ -33,14 +30,6 @@ class ListArticles(base.Actions):
         def get_context_data(self, **kwargs) -> dict[str, Any]:
             return super().get_context_data(**kwargs) | {'title': kwargs['folder'].kind().title()}
 
-    # class New(base.New):
-    #     form = NewArticle
-    #     instance = 'article'
-    #     parent = 'folder'
-    #
-    #     def get_context_data(self, **kwargs) -> dict[str, Any]:
-    #         return super().get_context_data(**kwargs) | {'type': kwargs['folder'].kind_singular()}
-
 
 class ViewArticle(base.Actions):
     template_folder = 'articles'
@@ -52,10 +41,3 @@ class ViewArticle(base.Actions):
 
         def get_context_data(self, **kwargs) -> dict[str, Any]:
             return super().get_context_data(**kwargs) | {'no_content_header': True}
-
-    # class Edit(base.Edit):
-    #     form = EditArticle
-    #     instance = 'article'
-
-    # class Delete(base.Delete):
-    #     instance = 'article'
