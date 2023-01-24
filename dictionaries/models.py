@@ -298,11 +298,11 @@ class Etymology(models.Model):
                 if len(components) == 1:
                     components_html = components[0]
                 elif len(components) == 2:
-                    components_html = mark_safe(' and '.join(components))
+                    components_html = ' and '.join(components)
                 else:
                     last = components.pop()
-                    components_html = mark_safe(', '.join(components) + f', and {last}')
-                etymology = format_html('{} {} {}.', kind, prep, components_html)
+                    components_html = ', '.join(components) + f', and {last}'
+                etymology = format_html('{} {} {}.', kind, prep, mark_safe(components_html))
         else:
             etymology = 'Unknown etymology.'
         if self.notes:
