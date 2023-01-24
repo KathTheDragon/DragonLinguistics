@@ -291,7 +291,7 @@ class Etymology(models.Model):
         kind, prep = self.word.dictionary.get_derivation_dict().get(self.kind, ('', ''))
         if kind:
             kind = kind.capitalize()
-            components = [component.link() for component in self.get_components()]
+            components = self.get_components()
             if len(components) == 0:
                 etymology = f'{kind}.'
             else:
@@ -311,4 +311,4 @@ class Etymology(models.Model):
 
     def get_components(self):
         components = list(self.components.all())
-        return [components[int(i)] for i in self.order.split(',')]
+        return [(components[int(item)].link() if item.isnumeric() else item) for item in self.order.split(',')]
